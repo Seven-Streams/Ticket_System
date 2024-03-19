@@ -48,6 +48,14 @@ InvalidPrice():exception("Invalid price."){};
 class InvalidTime :public exception{
   public:
   InvalidTime():exception("Invalid time."){};
-}
+};
+class InvalidDate:public exception{
+  public:
+  InvalidDate():exception("Invalid date."){};
+};
+class InvalidType:public exception{
+  public:
+  InvalidType():exception("Invalid type."){};
+};
 } // namespace SevenStream
 #endif

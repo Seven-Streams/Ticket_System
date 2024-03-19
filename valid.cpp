@@ -155,11 +155,11 @@ void Checkname(char *str) {
   }
   return;
 }
-void CheckMail(char* str) {
-    int len = strlen(str);
-    if((!len) ||(len > 30)) {
-      throw(SevenStream::InvalidMail());
-    }
+void CheckMail(char *str) {
+  int len = strlen(str);
+  if ((!len) || (len > 30)) {
+    throw(SevenStream::InvalidMail());
+  }
   for (int i = 0; i < len; ++i) {
     if (str[i] < '0' || str[i] > '9') {
       if (str[i] < 'a' || str[i] > 'z') {
@@ -173,22 +173,22 @@ void CheckMail(char* str) {
   }
   return;
 }
-void CheckPrivilege(char* str) {
+void CheckPrivilege(char *str) {
   int len = strlen(str);
   int res = 0;
-  for(int i = 0; i < len; i++) {
-    if(str[i] < '0' || str[i] > '9') {
+  for (int i = 0; i < len; i++) {
+    if (str[i] < '0' || str[i] > '9') {
       throw(SevenStream::InvalidPrivilege());
     }
     res *= 10;
     res += (str[i] - '0');
   };
-  if(res > 10) {
+  if (res > 10) {
     throw(SevenStream::InvalidPrivilege());
   }
   return;
 };
-void CheckTrainID(char* str) {
+void CheckTrainID(char *str) {
   int len = strlen(str);
   if (len > 20 || (!len)) {
     throw(SevenStream::InvalidTrainID());
@@ -211,23 +211,23 @@ void CheckTrainID(char* str) {
   }
   return;
 }
-void CheckStatNum(char * str){
-    int len = strlen(str);
+void CheckStatNum(char *str) {
+  int len = strlen(str);
   int res = 0;
-  for(int i = 0; i < len; i++) {
-    if(str[i] < '0' || str[i] > '9') {
+  for (int i = 0; i < len; i++) {
+    if (str[i] < '0' || str[i] > '9') {
       throw(SevenStream::InvalidStaNum());
     }
     res *= 10;
     res += (str[i] - '0');
   };
-  if(res < 2 || res > 100) {
+  if (res < 2 || res > 100) {
     throw(SevenStream::InvalidStaNum());
   }
   return;
 }
-void CheckStation(char* str) {
- int len = strlen(str);
+void CheckStation(char *str) {
+  int len = strlen(str);
   int total = 0;
   for (int i = 0; i < len; i++, total++) {
     if (str[i] > 0) {
@@ -345,21 +345,109 @@ void CheckStation(char* str) {
   }
   return;
 }
-void CheckPrice(char* str) {
-      int len = strlen(str);
+void CheckPrice(char *str) {
+  int len = strlen(str);
   int res = 0;
-  for(int i = 0; i < len; i++) {
-    if(str[i] < '0' || str[i] > '9') {
+  for (int i = 0; i < len; i++) {
+    if (str[i] < '0' || str[i] > '9') {
       throw(SevenStream::InvalidPrice());
     }
     res *= 10;
     res += (str[i] - '0');
   };
-  if((!res)  ||(res > 10000)) {
+  if ((!res) || (res > 100000)) {
     throw(SevenStream::InvalidPrice());
   }
   return;
 }
-void CheckStartTime(char*str) {
-  
+void CheckStartTime(char *str) {
+  int len = strlen(str);
+  if (len != 5) {
+    throw(SevenStream::InvalidTime());
+  }
+  if (str[2] != ':') {
+    throw(SevenStream::InvalidTime());
+  }
+  int hour = 0;
+  int min = 0;
+  for (int i = 0; i < 2; i++) {
+    if (str[i] < '0' || str[i] > '9') {
+      throw(SevenStream::InvalidTime());
+    }
+    hour *= 10;
+    hour += (str[i] - '0');
+  }
+  if (hour > 23) {
+    throw(SevenStream::InvalidTime());
+  }
+  for (int i = 3; i < 5; i++) {
+    if (str[i] < '0' || str[i] > '9') {
+      throw(SevenStream::InvalidTime());
+    }
+    min *= 10;
+    min += (str[i] - '0');
+  }
+  if (min > 59) {
+    throw(SevenStream::InvalidTime());
+  }
+  return;
+}
+void CheckInterTime(char *str) {
+  int res = 0;
+  int len = strlen(str);
+  for (int i = 0; i < len; i++) {
+    if (str[i] < '0' || str[i] > '9') {
+      throw(SevenStream::InvalidTime());
+    }
+    res += str[i];
+  }
+  if (res > 10000) {
+    throw(SevenStream::InvalidTime());
+  }
+  return;
+}
+void CheckDate(char *str) {
+  int len = strlen(str);
+  if (len != 5) {
+    throw(SevenStream::InvalidDate());
+  }
+  if (str[2] != '-') {
+    throw(SevenStream::InvalidDate());
+  }
+  int month = 0;
+  int day = 0;
+  for (int i = 0; i < 2; i++) {
+    if (str[i] < '0' || str[i] > '9') {
+      throw(SevenStream::InvalidDate());
+    }
+    month *= 10;
+    month += (str[i] - '0');
+  }
+  if ((month < 6) || (month > 8)) {
+    throw(SevenStream::InvalidDate());
+  }
+  for (int i = 3; i < 5; i++) {
+    if (str[i] < '0' || str[i] > '9') {
+      throw(SevenStream::InvalidDate());
+    }
+    day *= 10;
+    day += (str[i] - '0');
+  }
+  if (day > 31) {
+    throw(SevenStream::InvalidDate());
+  }
+  if ((day == 31) && (month == 6)) {
+    throw(SevenStream::InvalidDate());
+  }
+  return;
+}
+void CheckType(char *str) {
+  int len = strlen(str);
+  if (len != 1) {
+    throw(SevenStream::InvalidType());
+  }
+  if (str[0] < 'A' || str[0] > 'Z') {
+    throw(SevenStream::InvalidType());
+  }
+  return;
 }

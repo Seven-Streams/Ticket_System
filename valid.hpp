@@ -14,4 +14,5 @@ void CheckPrice(char*);
 void CheckStartTime(char*);
 void CheckInterTime(char*);
 void CheckDate(char*);
+void CheckType(char*);
 #endif
