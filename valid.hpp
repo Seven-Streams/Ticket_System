@@ -2,11 +2,11 @@
 #define VALID_HPP
 #include <cstring>
 #include <string>
-bool CheckUsername(char*);
-bool CheckPasserword(char*);
-bool Checkname(char*);
-bool CheckMail(char*);
-bool CheckTrain(char*);
-bool CheckStation(char*);
-bool CheckDate(char*);
+void CheckUsername(char*);
+void CheckPasserword(char*);
+void Checkname(char*);
+void CheckMail(char*);
+void CheckTrain(char*);
+void CheckStation(char*);
+void CheckDate(char*);
 #endif
