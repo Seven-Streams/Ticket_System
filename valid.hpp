@@ -1,7 +1,7 @@
-#ifndef VALID_HPP
-#define VALID_HPP
 #include <cstring>
 #include <string>
+#ifndef VALID_HPP
+#define VALID_HPP
 void CheckUsername(char*);
 void CheckPassword(char*);
 void Checkname(char*);
