@@ -1,4 +1,4 @@
-#include "parser.hpp"
+#include "../include/parser.hpp"
 using std::string;
 
 string ProcessTxt(string &txt) {
