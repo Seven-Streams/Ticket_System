@@ -53,7 +53,7 @@ public:
   friend void AddAccount(std::string);
   ~Account() = default;
 };
-sjtu::vector<HashOfAccount> account_logged;
+sjtu::list<HashOfAccount> account_logged;
 sjtu::BPT<int, 70, 20> account_index("account_index");
 sjtu::MemoryRiver<Account, 1> account_content("account_content");
 Account GetAccount(int pos) {
@@ -129,4 +129,16 @@ void AddFirstAccount(std::string command) {
   account_content.write_info(total, 1);
   account_index.Insert(hash1, hash2, 1);
   return;
+}
+void Logout(std::string user) {
+  CheckUsername(user.c_str());
+  HashOfAccount to_remove(user);
+  for(auto it = account_logged.begin(); it != account_logged.end(); it++) {
+    if(*it == to_remove) {
+      account_logged.erase(it);
+      return;
+    }
+  }
+  throw(SevenStream::exception("This account doesn't login."));
+  return; 
 }
