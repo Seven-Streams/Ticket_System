@@ -7,7 +7,7 @@
 void AddAccount(std::string);
 void Login(std::string);
 void Logout(std::string);
-void QueryAccount(std::string);
-void ModifyAccount(std::string);
+std::string QueryAccount(std::string);
+std::string ModifyAccount(std::string);
 void AddFirstAccount(std::string);
 #endif

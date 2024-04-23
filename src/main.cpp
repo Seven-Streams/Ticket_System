@@ -39,10 +39,22 @@ int main() {
       if(type == "login") {
         Login(command);
         cout << stamp << " 0\n";
+        continue;
       }
       if(type == "logout") {
         Logout(command);
         cout << stamp << " 0\n";
+        continue;
+      }
+      if(type == "query_profile") {
+        std::string ans = QueryAccount(command);
+        cout << stamp << ' ' << ans << '\n';
+        continue;
+      }
+      if(type == "modify_profile") {
+        std::string ans = ModifyAccount(command);
+        cout << stamp << ' ' << ans << '\n';
+        continue;
       }
     }catch(SevenStream::exception& e) {
       // cout << e.what() << '\n';

@@ -1,4 +1,6 @@
 #include "../include/account.hpp"
+#include <cstring>
+#include <string>
 
 using std::string;
 class HashOfAccount {
@@ -51,8 +53,10 @@ public:
     privilege = _privilege;
   }
   ~Account() = default;
-  friend void AddAccount(std::string);
-  friend void Login(std::string);
+  friend void AddAccount(string);
+  friend void Login(string);
+  friend string QueryAccount(string);
+  friend string ModifyAccount(string);
 };
 sjtu::list<HashOfAccount> account_logged;
 sjtu::BPT<int, 70, 20> account_index("account_index");
@@ -62,7 +66,7 @@ Account GetAccount(int pos) {
   account_content.read(res, pos);
   return res;
 }
-void AddAccount(std::string command) {
+void AddAccount(string command) {
   string current_user = ProcessTxt(command);
   string user_name = ProcessTxt(command);
   string password = ProcessTxt(command);
@@ -112,7 +116,7 @@ void AddAccount(std::string command) {
   account_index.Insert(hash1_of_new, hash2_of_new, total);
   return;
 }
-void AddFirstAccount(std::string command) {
+void AddFirstAccount(string command) {
   string user_name = ProcessTxt(command);
   string password = ProcessTxt(command);
   string name = ProcessTxt(command);
@@ -132,8 +136,8 @@ void AddFirstAccount(std::string command) {
   account_index.Insert(hash1, hash2, 1);
   return;
 }
-void Logout(std::string command) {
-  std::string user = ProcessTxt(command);
+void Logout(string command) {
+  string user = ProcessTxt(command);
   CheckUsername(user.c_str());
   HashOfAccount to_remove(user);
   for (auto it = account_logged.begin(); it != account_logged.end(); it++) {
@@ -145,7 +149,7 @@ void Logout(std::string command) {
   throw(SevenStream::exception("This account doesn't login."));
   return;
 }
-void Login(std::string command) {
+void Login(string command) {
   string user = ProcessTxt(command);
   string password = ProcessTxt(command);
   CheckUsername(user.c_str());
@@ -169,4 +173,104 @@ void Login(std::string command) {
   }
   account_logged.push_back(hash_of_login);
   return;
+}
+string QueryAccount(string command) {
+  string current = ProcessTxt(command);
+  string to_query = ProcessTxt(command);
+  CheckUsername(current.c_str());
+  CheckUsername(to_query.c_str());
+  HashOfAccount hash_current(current);
+  bool logged = false;
+  for (auto it = account_logged.begin(); it != account_logged.end(); it++) {
+    if ((*it) == hash_current) {
+      logged = true;
+      break;
+    }
+  }
+  if (!logged) {
+    throw(SevenStream::exception("Not login."));
+  }
+  unsigned long long hash1_current, hash2_current;
+  hash1_current = sjtu::MyHash(current, exp1);
+  hash2_current = sjtu::MyHash(current, exp2);
+  int current_index = account_index.find(hash1_current, hash2_current);
+  Account current_account = GetAccount(current_index);
+  unsigned long long hash1_query, hash2_query;
+  hash1_query = sjtu::MyHash(to_query, exp1);
+  hash2_query = sjtu::MyHash(to_query, exp2);
+  int query_index = account_index.find(hash1_query, hash2_query);
+  Account query_account = GetAccount(query_index);
+  if (query_account.privilege >= current_account.privilege) {
+    throw(SevenStream::exception("Not enough privilege."));
+  }
+  string query_ans;
+  query_ans += query_account.username;
+  query_ans += ' ';
+  query_ans += query_account.name;
+  query_ans += ' ';
+  query_ans += query_account.mail;
+  query_ans += ' ';
+  query_ans += std::to_string(query_account.privilege);
+  return query_ans;
+}
+string ModifyAccount(string command) {
+  string current = ProcessTxt(command);
+  string to_query = ProcessTxt(command);
+  CheckUsername(current.c_str());
+  CheckUsername(to_query.c_str());
+  HashOfAccount hash_current(current);
+  bool logged = false;
+  for (auto it = account_logged.begin(); it != account_logged.end(); it++) {
+    if ((*it) == hash_current) {
+      logged = true;
+      break;
+    }
+  }
+  if (!logged) {
+    throw(SevenStream::exception("Not login."));
+  }
+  unsigned long long hash1_current, hash2_current;
+  hash1_current = sjtu::MyHash(current, exp1);
+  hash2_current = sjtu::MyHash(current, exp2);
+  int current_index = account_index.find(hash1_current, hash2_current);
+  Account current_account = GetAccount(current_index);
+  unsigned long long hash1_query, hash2_query;
+  hash1_query = sjtu::MyHash(to_query, exp1);
+  hash2_query = sjtu::MyHash(to_query, exp2);
+  int query_index = account_index.find(hash1_query, hash2_query);
+  Account query_account = GetAccount(query_index);
+  if (query_account.privilege >= current_account.privilege) {
+    throw(SevenStream::exception("Not enough privilege."));
+  }
+  if(command != "") {
+    string res = ProcessTxt(command);
+    CheckPassword(res.c_str());
+    strcpy(query_account.password, res.c_str());
+  }
+  if(command != "") {
+    string res = ProcessTxt(command);
+    Checkname(res.c_str());
+    strcpy(query_account.name, res.c_str());
+  }
+  if(command != "") {
+    string res = ProcessTxt(command);
+    CheckMail(res.c_str());
+    strcpy(query_account.mail, res.c_str());
+  }
+  if(command != "") {
+    string res = ProcessTxt(command);
+    CheckPrivilege(res.c_str());
+    int pr = std::stoi(res);
+    query_account.privilege = pr;
+  }
+  account_content.write(query_account, query_index);
+  string query_ans;
+  query_ans += query_account.username;
+  query_ans += ' ';
+  query_ans += query_account.name;
+  query_ans += ' ';
+  query_ans += query_account.mail;
+  query_ans += ' ';
+  query_ans += std::to_string(query_account.privilege);
+  return query_ans;
 }
