@@ -11,10 +11,12 @@ int main() {
   while(!cin.eof()) {
     try{
       cin >> command;
+      string stamp;
+      stamp = ProcessTxt(command);
       string type;
       type = ProcessTxt(command);
       if(type == "") {
-        
+
       }
     }catch(SevenStream::exception& e) {
       // cout << e.what() << '\n';
