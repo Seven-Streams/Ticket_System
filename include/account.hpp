@@ -9,4 +9,5 @@ void Login(std::string);
 void LogOut(std::string);
 void QueryAccount(std::string);
 void ModifyAccount(std::string);
+void AddFirstAccount(std::string);
 #endif
