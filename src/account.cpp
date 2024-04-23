@@ -67,12 +67,76 @@ Account GetAccount(int pos) {
   return res;
 }
 void AddAccount(string command) {
-  string current_user = ProcessTxt(command);
-  string user_name = ProcessTxt(command);
-  string password = ProcessTxt(command);
-  string name = ProcessTxt(command);
-  string mail = ProcessTxt(command);
-  string pri_row = ProcessTxt(command);
+  string current_user;
+  string user_name;
+  string password;
+  string name;
+  string mail;
+  string pri_row;
+  bool c, u, p, n, m, g;
+  c = u = p = n = m = g = false;
+  while (command != "") {
+    string res = ProcessTxt(command);
+    if (res[0] != '-') {
+      throw(SevenStream::exception("Incorrect input."));
+    }
+    switch (res[1]) {
+    case 'c': {
+      if (c == true) {
+        throw(SevenStream::exception("Incorrect input."));
+      }
+      c = true;
+      current_user = ProcessTxt(command);
+      break;
+    }
+    case 'u': {
+      if (u == true) {
+        throw(SevenStream::exception("Incorrect input."));
+      }
+      u = true;
+      user_name = ProcessTxt(command);
+      break;
+    }
+    case 'p': {
+      if (p == true) {
+        throw(SevenStream::exception("Incorrect input."));
+      }
+      p = true;
+      password = ProcessTxt(command);
+      break;
+    }
+    case 'n': {
+      if (n == true) {
+        throw(SevenStream::exception("Incorrect input."));
+      }
+      n = true;
+      name = ProcessTxt(command);
+      break;
+    }
+    case 'm': {
+      if (m == true) {
+        throw(SevenStream::exception("Incorrect input."));
+      }
+      m = true;
+      mail = ProcessTxt(command);
+      break;
+    }
+    case 'g': {
+      if (g == true) {
+        throw(SevenStream::exception("Incorrect input."));
+      }
+      g = true;
+      pri_row = ProcessTxt(command);
+      break;
+    }
+    default: {
+      throw(SevenStream::exception("Incorrect input."));
+    }
+    }
+  }
+  if((!c) || (!u) || (!p) || (!n) || (!m) || (!g)) {
+    throw (SevenStream::exception("Incorrect input."));
+  }
   CheckUsername(current_user.c_str());
   CheckUsername(user_name.c_str());
   CheckPassword(password.c_str());
@@ -117,10 +181,58 @@ void AddAccount(string command) {
   return;
 }
 void AddFirstAccount(string command) {
-  string user_name = ProcessTxt(command);
-  string password = ProcessTxt(command);
-  string name = ProcessTxt(command);
-  string mail = ProcessTxt(command);
+  string user_name;
+  string password;
+  string name;
+  string mail;
+  bool u, p, n, m;
+  u = p = n = m = false;
+  while (command != "") {
+    string res = ProcessTxt(command);
+    if (res[0] != '-') {
+      throw(SevenStream::exception("Incorrect input."));
+    }
+    switch (res[1]) {
+    case 'u': {
+      if (u == true) {
+        throw(SevenStream::exception("Incorrect input."));
+      }
+      u = true;
+      user_name = ProcessTxt(command);
+      break;
+    }
+    case 'p': {
+      if (p == true) {
+        throw(SevenStream::exception("Incorrect input."));
+      }
+      p = true;
+      password = ProcessTxt(command);
+      break;
+    }
+    case 'n': {
+      if (n == true) {
+        throw(SevenStream::exception("Incorrect input."));
+      }
+      n = true;
+      name = ProcessTxt(command);
+      break;
+    }
+    case 'm': {
+      if (m == true) {
+        throw(SevenStream::exception("Incorrect input."));
+      }
+      m = true;
+      mail = ProcessTxt(command);
+      break;
+    }
+    default: {
+      throw(SevenStream::exception("Incorrect input."));
+    }
+    }
+  }
+  if((!u) || (!p) || (!n) || (!m)) {
+    throw (SevenStream::exception("Incorrect input."));
+  }
   CheckUsername(user_name.c_str());
   CheckPassword(password.c_str());
   Checkname(name.c_str());
@@ -137,6 +249,10 @@ void AddFirstAccount(string command) {
   return;
 }
 void Logout(string command) {
+  string key = ProcessTxt(command);
+  if (key != "-u") {
+    throw (SevenStream::exception("Incorrect input."));
+  }
   string user = ProcessTxt(command);
   CheckUsername(user.c_str());
   HashOfAccount to_remove(user);
@@ -150,8 +266,40 @@ void Logout(string command) {
   return;
 }
 void Login(string command) {
-  string user = ProcessTxt(command);
-  string password = ProcessTxt(command);
+  string user;
+  string password;
+  bool u, p;
+  u = p = false;
+  while (command != "") {
+    string res = ProcessTxt(command);
+    if (res[0] != '-') {
+      throw(SevenStream::exception("Incorrect input."));
+    }
+    switch (res[1]) {
+    case 'u': {
+      if (u == true) {
+        throw(SevenStream::exception("Incorrect input."));
+      }
+      u = true;
+      user = ProcessTxt(command);
+      break;
+    }
+    case 'p': {
+      if (p == true) {
+        throw(SevenStream::exception("Incorrect input."));
+      }
+      p = true;
+      password = ProcessTxt(command);
+      break;
+    }
+    default: {
+      throw(SevenStream::exception("Incorrect input."));
+    }
+    }
+  }
+  if((!u) || (!p)) {
+    throw (SevenStream::exception("Incorrect input."));
+  }
   CheckUsername(user.c_str());
   CheckPassword(password.c_str());
   HashOfAccount hash_of_login(user);
@@ -175,8 +323,40 @@ void Login(string command) {
   return;
 }
 string QueryAccount(string command) {
-  string current = ProcessTxt(command);
-  string to_query = ProcessTxt(command);
+  string current;
+  string to_query;
+  bool c, u;
+  c = u = false;
+  while(command != "") {
+    string res = ProcessTxt(command);
+    if(res[0] != '-') {
+      throw(SevenStream::exception("Incorrect input."));
+    }
+    switch(res[1]) {
+      case 'c': {
+        if(c == true) {
+          throw(SevenStream::exception("Incorrect input."));
+        }
+        c = true;
+        current = ProcessTxt(command);
+        break;
+      }
+      case 'u': {
+        if(u == true) {
+          throw(SevenStream::exception("Incorrect input."));
+        }
+        u = true;
+        to_query = ProcessTxt(command);
+        break;
+      }
+      default: {
+        throw(SevenStream::exception("Incorrect input."));
+      }
+    }
+  }
+  if((!c) || (!u)) {
+    throw (SevenStream::exception("Incorrect input."));
+  }
   CheckUsername(current.c_str());
   CheckUsername(to_query.c_str());
   HashOfAccount hash_current(current);
@@ -214,10 +394,78 @@ string QueryAccount(string command) {
   return query_ans;
 }
 string ModifyAccount(string command) {
-  string current = ProcessTxt(command);
-  string to_query = ProcessTxt(command);
+  string current;
+  string to_query;
+  string password;
+  string name;
+  string mail;
+  string pri_row;
+  bool c, u, p, n, m, g;
+  c = u = p = n = m = g = false;
+  while (command != "") {
+    string res = ProcessTxt(command);
+    if (res[0] != '-') {
+      throw(SevenStream::exception("Incorrect input."));
+    }
+    switch (res[1]) {
+    case 'c': {
+      if (c == true) {
+        throw(SevenStream::exception("Incorrect input."));
+      }
+      c = true;
+      current = ProcessTxt(command);
+      break;
+    }
+    case 'u': {
+      if (u == true) {
+        throw(SevenStream::exception("Incorrect input."));
+      }
+      u = true;
+      to_query = ProcessTxt(command);
+      break;
+    }
+    case 'p': {
+      if (p == true) {
+        throw(SevenStream::exception("Incorrect input."));
+      }
+      p = true;
+      password = ProcessTxt(command);
+      break;
+    }
+    case 'n': {
+      if (n == true) {
+        throw(SevenStream::exception("Incorrect input."));
+      }
+      n = true;
+      name = ProcessTxt(command);
+      break;
+    }
+    case 'm': {
+      if (m == true) {
+        throw(SevenStream::exception("Incorrect input."));
+      }
+      m = true;
+      mail = ProcessTxt(command);
+      break;
+    }
+    case 'g': {
+      if (g == true) {
+        throw(SevenStream::exception("Incorrect input."));
+      }
+      g = true;
+      pri_row = ProcessTxt(command);
+      break;
+    }
+    default: {
+      throw(SevenStream::exception("Incorrect input."));
+    }
+    }
+  }
   CheckUsername(current.c_str());
   CheckUsername(to_query.c_str());
+  if((!c) || (!u)) {
+    throw(SevenStream::exception("Incorrect input."));
+  }
   HashOfAccount hash_current(current);
   bool logged = false;
   for (auto it = account_logged.begin(); it != account_logged.end(); it++) {
@@ -242,25 +490,21 @@ string ModifyAccount(string command) {
   if (query_account.privilege >= current_account.privilege) {
     throw(SevenStream::exception("Not enough privilege."));
   }
-  if(command != "") {
-    string res = ProcessTxt(command);
-    CheckPassword(res.c_str());
-    strcpy(query_account.password, res.c_str());
+  if (password != "") {
+    CheckPassword(password.c_str());
+    strcpy(query_account.password, password.c_str());
   }
-  if(command != "") {
-    string res = ProcessTxt(command);
-    Checkname(res.c_str());
-    strcpy(query_account.name, res.c_str());
+  if (name != "") {
+    Checkname(name.c_str());
+    strcpy(query_account.name, name.c_str());
   }
-  if(command != "") {
-    string res = ProcessTxt(command);
-    CheckMail(res.c_str());
-    strcpy(query_account.mail, res.c_str());
+  if (mail != "") {
+    CheckMail(mail.c_str());
+    strcpy(query_account.mail, mail.c_str());
   }
-  if(command != "") {
-    string res = ProcessTxt(command);
-    CheckPrivilege(res.c_str());
-    int pr = std::stoi(res);
+  if (pri_row != "") {
+    CheckPrivilege(pri_row.c_str());
+    int pr = std::stoi(pri_row);
     query_account.privilege = pr;
   }
   account_content.write(query_account, query_index);
