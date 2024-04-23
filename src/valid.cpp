@@ -1,14 +1,12 @@
 #include "../include/valid.hpp"
-#include "../include/exception.hpp"
-#include <cstring>
-void CheckUsername(char *str) {
+void CheckUsername(const char *str) {
   int len = strlen(str);
   if (len > 20 || (!len)) {
-    throw(SevenStream::InvalidUsername());
+    throw(SevenStream::exception("InvalidUsername"));
   }
   if ((str[0] < 'a') || str[0] > 'z') {
     if ((str[0] < 'A') || str[0] > 'Z') {
-      throw(SevenStream::InvalidUsername());
+      throw(SevenStream::exception("InvalidUsername"));
     }
   }
   for (int i = 0; i < len; ++i) {
@@ -16,7 +14,7 @@ void CheckUsername(char *str) {
       if (str[i] < 'a' || str[i] > 'z') {
         if (str[i] < 'A' || str[i] > 'Z') {
           if (str[i] != '_') {
-            throw(SevenStream::InvalidUsername());
+            throw(SevenStream::exception("InvalidUsername"));
           }
         }
       }
@@ -24,19 +22,19 @@ void CheckUsername(char *str) {
   }
   return;
 }
-void CheckPassword(char *str) {
+void CheckPassword(const char *str) {
   int len = strlen(str);
   if ((!len) || (len > 30)) {
-    throw(SevenStream::InvalidPassword());
+    throw(SevenStream::exception("InvalidPassword"));
   }
   for (int i = 0; i < len; ++i) {
     if (str[i] <= 32 || str[i] > 126) {
-      throw(SevenStream::InvalidPassword());
+      throw(SevenStream::exception("InvalidPassword"));
     }
   }
   return;
 }
-void Checkname(char *str) {
+void Checkname(const char *str) {
   int len = strlen(str);
   int total = 0;
   for (int i = 0; i < len; i++, total++) {
@@ -57,7 +55,7 @@ void Checkname(char *str) {
       }
       if (how_many == 2) {
         if (i + 1 >= len) {
-          throw(SevenStream::InvalidName());
+          throw(SevenStream::exception("InvalidName"));
         }
         long long byte2 = static_cast<unsigned char>(str[i + 1]);
         trans -= 192;
@@ -67,7 +65,7 @@ void Checkname(char *str) {
       }
       if (how_many == 3) {
         if (i + 2 >= len) {
-          throw(SevenStream::InvalidName());
+          throw(SevenStream::exception("InvalidName"));
         }
         long long byte2 = static_cast<unsigned char>(str[i + 1]);
         trans -= 224;
@@ -81,7 +79,7 @@ void Checkname(char *str) {
       }
       if (how_many == 4) {
         if (i + 3 >= len) {
-          throw(SevenStream::InvalidName());
+          throw(SevenStream::exception("InvalidName"));
         }
         long long byte2 = static_cast<unsigned char>(str[i + 1]);
         trans -= 240;
@@ -145,27 +143,27 @@ void Checkname(char *str) {
         i += (how_many - 1);
         continue;
       }
-      throw(SevenStream::InvalidName());
+      throw(SevenStream::exception("InvalidName"));
     } else {
-      throw(SevenStream::InvalidName());
+      throw(SevenStream::exception("InvalidName"));
     }
   }
   if ((total > 5) || (total < 2)) {
-    throw(SevenStream::InvalidName());
+    throw(SevenStream::exception("InvalidName"));
   }
   return;
 }
-void CheckMail(char *str) {
+void CheckMail(const char *str) {
   int len = strlen(str);
   if ((!len) || (len > 30)) {
-    throw(SevenStream::InvalidMail());
+    throw(SevenStream::exception("InvalidMail"));
   }
   for (int i = 0; i < len; ++i) {
     if (str[i] < '0' || str[i] > '9') {
       if (str[i] < 'a' || str[i] > 'z') {
         if (str[i] < 'A' || str[i] > 'Z') {
           if (str[i] != '@' && str[i] != '.') {
-            throw(SevenStream::InvalidMail());
+            throw(SevenStream::exception("InvalidMail"));
           }
         }
       }
@@ -173,29 +171,29 @@ void CheckMail(char *str) {
   }
   return;
 }
-void CheckPrivilege(char *str) {
+void CheckPrivilege(const char *str) {
   int len = strlen(str);
   int res = 0;
   for (int i = 0; i < len; i++) {
     if (str[i] < '0' || str[i] > '9') {
-      throw(SevenStream::InvalidPrivilege());
+      throw(SevenStream::exception("InvalidPrivilege"));
     }
     res *= 10;
     res += (str[i] - '0');
   };
   if (res > 10) {
-    throw(SevenStream::InvalidPrivilege());
+    throw(SevenStream::exception("InvalidPrivilege"));
   }
   return;
 };
-void CheckTrainID(char *str) {
+void CheckTrainID(const char *str) {
   int len = strlen(str);
   if (len > 20 || (!len)) {
-    throw(SevenStream::InvalidTrainID());
+    throw(SevenStream::exception("InvalidTrainID"));
   }
   if ((str[0] < 'a') || str[0] > 'z') {
     if ((str[0] < 'A') || str[0] > 'Z') {
-      throw(SevenStream::InvalidTrainID());
+      throw(SevenStream::exception("InvalidTrainID"));
     }
   }
   for (int i = 0; i < len; ++i) {
@@ -203,7 +201,7 @@ void CheckTrainID(char *str) {
       if (str[i] < 'a' || str[i] > 'z') {
         if (str[i] < 'A' || str[i] > 'Z') {
           if (str[i] != '_') {
-            throw(SevenStream::InvalidTrainID());
+            throw(SevenStream::exception("InvalidTrainID"));
           }
         }
       }
@@ -211,7 +209,7 @@ void CheckTrainID(char *str) {
   }
   return;
 }
-void CheckStatNum(char *str) {
+void CheckStatNum(const char *str) {
   int len = strlen(str);
   int res = 0;
   for (int i = 0; i < len; i++) {
@@ -226,7 +224,7 @@ void CheckStatNum(char *str) {
   }
   return;
 }
-void CheckStation(char *str) {
+void CheckStation(const char *str) {
   int len = strlen(str);
   int total = 0;
   for (int i = 0; i < len; i++, total++) {
@@ -345,7 +343,7 @@ void CheckStation(char *str) {
   }
   return;
 }
-void CheckPrice(char *str) {
+void CheckPrice(const char *str) {
   int len = strlen(str);
   int res = 0;
   for (int i = 0; i < len; i++) {
@@ -360,7 +358,7 @@ void CheckPrice(char *str) {
   }
   return;
 }
-void CheckStartTime(char *str) {
+void CheckStartTime(const char *str) {
   int len = strlen(str);
   if (len != 5) {
     throw(SevenStream::InvalidTime());
@@ -392,7 +390,7 @@ void CheckStartTime(char *str) {
   }
   return;
 }
-void CheckInterTime(char *str) {
+void CheckInterTime(const char *str) {
   int res = 0;
   int len = strlen(str);
   for (int i = 0; i < len; i++) {
@@ -406,7 +404,7 @@ void CheckInterTime(char *str) {
   }
   return;
 }
-void CheckDate(char *str) {
+void CheckDate(const char *str) {
   int len = strlen(str);
   if (len != 5) {
     throw(SevenStream::InvalidDate());
@@ -441,7 +439,7 @@ void CheckDate(char *str) {
   }
   return;
 }
-void CheckType(char *str) {
+void CheckType(const char *str) {
   int len = strlen(str);
   if (len != 1) {
     throw(SevenStream::InvalidType());

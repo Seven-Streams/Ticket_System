@@ -1,4 +1,7 @@
 #include "store.hpp"
+#include "valid.hpp"
+#include "parser.hpp"
+#include "exception.hpp"
 #ifndef ACCOUNT_HPP
 #define ACCOUNT_HPP
 void AddAccount(std::string);

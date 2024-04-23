@@ -1,18 +1,19 @@
 #include <cstring>
 #include <string>
+#include "../include/exception.hpp"
 #ifndef VALID_HPP
 #define VALID_HPP
-void CheckUsername(char*);
-void CheckPassword(char*);
-void Checkname(char*);
-void CheckMail(char*);
-void CheckPrivilege(char*);
-void CheckTrainID(char*);
-void CheckStatNum(char*);
-void CheckStation(char*);
-void CheckPrice(char*);
-void CheckStartTime(char*);
-void CheckInterTime(char*);
-void CheckDate(char*);
-void CheckType(char*);
+void CheckUsername(const char*);
+void CheckPassword(const char*);
+void Checkname(const char*);
+void CheckMail(const char*);
+void CheckPrivilege(const char*);
+void CheckTrainID(const char*);
+void CheckStatNum(const char*);
+void CheckStation(const char*);
+void CheckPrice(const char*);
+void CheckStartTime(const char*);
+void CheckInterTime(const char*);
+void CheckDate(const char*);
+void CheckType(const char*);
 #endif
