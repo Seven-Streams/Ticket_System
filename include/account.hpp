@@ -6,7 +6,7 @@
 #define ACCOUNT_HPP
 void AddAccount(std::string);
 void Login(std::string);
-void LogOut(std::string);
+void Logout(std::string);
 void QueryAccount(std::string);
 void ModifyAccount(std::string);
 void AddFirstAccount(std::string);

@@ -33,8 +33,16 @@ int main() {
           AddFirstAccount(command);
           has_account = true;
         }
-        cout << 0 << '\n';
+        cout << stamp << " 0\n";
         continue;
+      }
+      if(type == "login") {
+        Login(command);
+        cout << stamp << " 0\n";
+      }
+      if(type == "logout") {
+        Logout(command);
+        cout << stamp << " 0\n";
       }
     }catch(SevenStream::exception& e) {
       // cout << e.what() << '\n';

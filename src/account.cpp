@@ -50,8 +50,9 @@ public:
     strcpy(mail, _mail);
     privilege = _privilege;
   }
-  friend void AddAccount(std::string);
   ~Account() = default;
+  friend void AddAccount(std::string);
+  friend void Login(std::string);
 };
 sjtu::list<HashOfAccount> account_logged;
 sjtu::BPT<int, 70, 20> account_index("account_index");
@@ -120,7 +121,8 @@ void AddFirstAccount(std::string command) {
   CheckPassword(password.c_str());
   Checkname(name.c_str());
   CheckMail(mail.c_str());
-  Account to_add(user_name.c_str(), password.c_str(), name.c_str(), mail.c_str(), 10);
+  Account to_add(user_name.c_str(), password.c_str(), name.c_str(),
+                 mail.c_str(), 10);
   unsigned long long hash1, hash2;
   hash1 = sjtu::MyHash(user_name, exp1);
   hash2 = sjtu::MyHash(user_name, exp2);
@@ -130,15 +132,41 @@ void AddFirstAccount(std::string command) {
   account_index.Insert(hash1, hash2, 1);
   return;
 }
-void Logout(std::string user) {
+void Logout(std::string command) {
+  std::string user = ProcessTxt(command);
   CheckUsername(user.c_str());
   HashOfAccount to_remove(user);
-  for(auto it = account_logged.begin(); it != account_logged.end(); it++) {
-    if(*it == to_remove) {
+  for (auto it = account_logged.begin(); it != account_logged.end(); it++) {
+    if (*it == to_remove) {
       account_logged.erase(it);
       return;
     }
   }
   throw(SevenStream::exception("This account doesn't login."));
-  return; 
+  return;
+}
+void Login(std::string command) {
+  string user = ProcessTxt(command);
+  string password = ProcessTxt(command);
+  CheckUsername(user.c_str());
+  CheckPassword(password.c_str());
+  HashOfAccount hash_of_login(user);
+  for (auto it = account_logged.begin(); it != account_logged.end(); it++) {
+    if ((*it) == hash_of_login) {
+      throw(SevenStream::exception("The account has logged in."));
+    }
+  }
+  unsigned long long hash1, hash2;
+  hash1 = sjtu::MyHash(user, exp1);
+  hash2 = sjtu::MyHash(user, exp2);
+  int index = account_index.find(hash1, hash2);
+  if (index == -1) {
+    throw(SevenStream::exception("This account, doesn't exist."));
+  }
+  Account to_login = GetAccount(index);
+  if (to_login.password != password) {
+    throw(SevenStream::exception("Wrong Password."));
+  }
+  account_logged.push_back(hash_of_login);
+  return;
 }
