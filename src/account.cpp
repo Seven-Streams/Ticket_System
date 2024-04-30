@@ -3,61 +3,39 @@
 #include <string>
 
 using std::string;
-class HashOfAccount {
-private:
-  unsigned long long hash1, hash2;
+HashOfAccount::HashOfAccount(string name) {
+  hash1 = sjtu::MyHash(name, exp1);
+  hash2 = sjtu::MyHash(name, exp2);
+}
+bool HashOfAccount::operator==(const HashOfAccount &other) {
+  return (hash1 == other.hash1) && (hash2 == other.hash2);
+}
 
-public:
-  HashOfAccount() = delete;
-  ~HashOfAccount() = default;
-  HashOfAccount(string name) {
-    hash1 = sjtu::MyHash(name, exp1);
-    hash2 = sjtu::MyHash(name, exp2);
-  }
-  bool operator==(const HashOfAccount &other) {
-    return (hash1 == other.hash1) && (hash2 == other.hash2);
-  }
-};
-class Account {
-private:
-  char username[21];
-  char password[31];
-  char name[21];
-  char mail[31];
-  int privilege;
-  void ModifyPassword(char *_password) {
-    strcpy(password, _password);
-    return;
-  }
-  void ModifyName(char *_name) {
-    strcpy(name, _name);
-    return;
-  }
-  void ModifyMail(char *_mail) {
-    strcpy(mail, _mail);
-    return;
-  }
-  void ModifyPrivilege(int pr) {
-    privilege = pr;
-    return;
-  }
+void Account::ModifyPassword(char *_password) {
+  strcpy(password, _password);
+  return;
+}
+void Account::ModifyName(char *_name) {
+  strcpy(name, _name);
+  return;
+}
+void Account::ModifyMail(char *_mail) {
+  strcpy(mail, _mail);
+  return;
+}
+void Account::ModifyPrivilege(int pr) {
+  privilege = pr;
+  return;
+}
 
-public:
-  Account() = default;
-  Account(const char *_user, const char *_password, const char *_name,
-          const char *_mail, int _privilege) {
-    strcpy(username, _user);
-    strcpy(password, _password);
-    strcpy(name, _name);
-    strcpy(mail, _mail);
-    privilege = _privilege;
-  }
-  ~Account() = default;
-  friend void AddAccount(string);
-  friend void Login(string);
-  friend string QueryAccount(string);
-  friend string ModifyAccount(string);
-};
+Account::Account(const char *_user, const char *_password, const char *_name,
+                 const char *_mail, int _privilege) {
+  strcpy(username, _user);
+  strcpy(password, _password);
+  strcpy(name, _name);
+  strcpy(mail, _mail);
+  privilege = _privilege;
+}
 sjtu::list<HashOfAccount> account_logged;
 sjtu::BPT<int, 70, 20> account_index("account_index");
 sjtu::MemoryRiver<Account, 1> account_content("account_content");
@@ -134,8 +112,8 @@ void AddAccount(string command) {
     }
     }
   }
-  if((!c) || (!u) || (!p) || (!n) || (!m) || (!g)) {
-    throw (SevenStream::exception("Incorrect input."));
+  if ((!c) || (!u) || (!p) || (!n) || (!m) || (!g)) {
+    throw(SevenStream::exception("Incorrect input."));
   }
   CheckUsername(current_user.c_str());
   CheckUsername(user_name.c_str());
@@ -230,8 +208,8 @@ void AddFirstAccount(string command) {
     }
     }
   }
-  if((!u) || (!p) || (!n) || (!m)) {
-    throw (SevenStream::exception("Incorrect input."));
+  if ((!u) || (!p) || (!n) || (!m)) {
+    throw(SevenStream::exception("Incorrect input."));
   }
   CheckUsername(user_name.c_str());
   CheckPassword(password.c_str());
@@ -251,7 +229,7 @@ void AddFirstAccount(string command) {
 void Logout(string command) {
   string key = ProcessTxt(command);
   if (key != "-u") {
-    throw (SevenStream::exception("Incorrect input."));
+    throw(SevenStream::exception("Incorrect input."));
   }
   string user = ProcessTxt(command);
   CheckUsername(user.c_str());
@@ -297,8 +275,8 @@ void Login(string command) {
     }
     }
   }
-  if((!u) || (!p)) {
-    throw (SevenStream::exception("Incorrect input."));
+  if ((!u) || (!p)) {
+    throw(SevenStream::exception("Incorrect input."));
   }
   CheckUsername(user.c_str());
   CheckPassword(password.c_str());
@@ -327,35 +305,35 @@ string QueryAccount(string command) {
   string to_query;
   bool c, u;
   c = u = false;
-  while(command != "") {
+  while (command != "") {
     string res = ProcessTxt(command);
-    if(res[0] != '-') {
+    if (res[0] != '-') {
       throw(SevenStream::exception("Incorrect input."));
     }
-    switch(res[1]) {
-      case 'c': {
-        if(c == true) {
-          throw(SevenStream::exception("Incorrect input."));
-        }
-        c = true;
-        current = ProcessTxt(command);
-        break;
-      }
-      case 'u': {
-        if(u == true) {
-          throw(SevenStream::exception("Incorrect input."));
-        }
-        u = true;
-        to_query = ProcessTxt(command);
-        break;
-      }
-      default: {
+    switch (res[1]) {
+    case 'c': {
+      if (c == true) {
         throw(SevenStream::exception("Incorrect input."));
       }
+      c = true;
+      current = ProcessTxt(command);
+      break;
+    }
+    case 'u': {
+      if (u == true) {
+        throw(SevenStream::exception("Incorrect input."));
+      }
+      u = true;
+      to_query = ProcessTxt(command);
+      break;
+    }
+    default: {
+      throw(SevenStream::exception("Incorrect input."));
+    }
     }
   }
-  if((!c) || (!u)) {
-    throw (SevenStream::exception("Incorrect input."));
+  if ((!c) || (!u)) {
+    throw(SevenStream::exception("Incorrect input."));
   }
   CheckUsername(current.c_str());
   CheckUsername(to_query.c_str());
@@ -463,7 +441,7 @@ string ModifyAccount(string command) {
   }
   CheckUsername(current.c_str());
   CheckUsername(to_query.c_str());
-  if((!c) || (!u)) {
+  if ((!c) || (!u)) {
     throw(SevenStream::exception("Incorrect input."));
   }
   HashOfAccount hash_current(current);
