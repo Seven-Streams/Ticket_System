@@ -1,5 +1,5 @@
 #include<iostream>
-#ifndef PARSER_HPP
-#define PARSER_HPP
+#ifndef UTILITY_HPP
+#define UTILITY_HPP
 std::string ProcessTxt(std::string &);
 #endif

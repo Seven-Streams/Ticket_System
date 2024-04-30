@@ -1,8 +1,8 @@
+#include "../include/account.hpp"
 #include "../include/exception.hpp"
+#include "../include/utility.hpp"
 #include "../include/store.hpp"
 #include "../include/valid.hpp"
-#include "../include/parser.hpp"
-#include "../include/account.hpp"
 #include <iostream>
 using std::cin;
 using std::cout;
@@ -14,20 +14,20 @@ int main() {
   bool has_account;
   int total;
   account_content.get_info(total, 1);
-  if(total) {
+  if (total) {
     has_account = true;
   } else {
     has_account = false;
   }
-  while(!cin.eof()) {
-    try{
+  while (!cin.eof()) {
+    string stamp;
+    try {
       cin >> command;
-      string stamp;
       stamp = ProcessTxt(command);
       string type;
       type = ProcessTxt(command);
-      if(type == "add_user") {
-        if(has_account) {
+      if (type == "add_user") {
+        if (has_account) {
           AddAccount(command);
         } else {
           AddFirstAccount(command);
@@ -36,28 +36,32 @@ int main() {
         cout << stamp << " 0\n";
         continue;
       }
-      if(type == "login") {
+      if (type == "login") {
         Login(command);
         cout << stamp << " 0\n";
         continue;
       }
-      if(type == "logout") {
+      if (type == "logout") {
         Logout(command);
         cout << stamp << " 0\n";
         continue;
       }
-      if(type == "query_profile") {
+      if (type == "query_profile") {
         std::string ans = QueryAccount(command);
         cout << stamp << ' ' << ans << '\n';
         continue;
       }
-      if(type == "modify_profile") {
+      if (type == "modify_profile") {
         std::string ans = ModifyAccount(command);
         cout << stamp << ' ' << ans << '\n';
         continue;
       }
-    }catch(SevenStream::exception& e) {
-      // cout << e.what() << '\n';
+      if (type == "bye") {
+        cout << stamp << " bye\n";
+        return 0;
+      }
+    } catch (SevenStream::exception &e) {
+      cout << stamp << " -1\n";
     }
   }
 }
