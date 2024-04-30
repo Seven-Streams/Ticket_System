@@ -43,3 +43,17 @@ void time::Add(int duration_minutes) {
     return;
   }
 }
+string ProcessMalValue(string &txt) {
+  string tmp;
+  if (txt[0] == '|') {
+    txt.erase(0, 1);
+  }
+  while ((!txt.empty()) && txt[0] != '|') {
+    tmp += txt[0];
+    txt.erase(0, 1);
+  }
+  if (tmp.empty()) {
+    throw(SevenStream::exception("Empty value."));
+  }
+  return tmp;
+}
