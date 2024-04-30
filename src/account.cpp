@@ -3,6 +3,9 @@
 #include <string>
 
 using std::string;
+sjtu::list<HashOfAccount> account_logged;
+sjtu::BPT<int, 70, 20> account_index("account_index");
+sjtu::MemoryRiver<Account, 1> account_content("account_content");
 HashOfAccount::HashOfAccount(string name) {
   hash1 = sjtu::MyHash(name, exp1);
   hash2 = sjtu::MyHash(name, exp2);
@@ -36,9 +39,6 @@ Account::Account(const char *_user, const char *_password, const char *_name,
   strcpy(mail, _mail);
   privilege = _privilege;
 }
-sjtu::list<HashOfAccount> account_logged;
-sjtu::BPT<int, 70, 20> account_index("account_index");
-sjtu::MemoryRiver<Account, 1> account_content("account_content");
 Account GetAccount(int pos) {
   Account res;
   account_content.read(res, pos);

@@ -720,6 +720,14 @@ public:
     file.close();
     return;
   }
+  void clear() {
+    file.open(file_name, std::ios::out);
+    file.close();
+    for(int i = 1; i <= info_len; i++) {
+      write_info(0, i);
+    }
+    return;
+  }
 };
 inline unsigned long long MyHash(const std::string &txt,
                                  const unsigned long long &exp) {
@@ -1384,6 +1392,15 @@ private:
   }
 
 public:
+  void Clear() {
+    recycle.clear();
+    B_total = 0;
+    B_root = 0;
+    B_current = 0;
+    mydatabase.clear();
+    myrecycle.clear();
+    mycache.clear();
+  }
   BPT() = delete;
   BPT(std::string name) {
     mydatabase.ChangeName(name);
