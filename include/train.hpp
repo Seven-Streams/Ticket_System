@@ -20,6 +20,7 @@ private:
   int sale_month = 0;
   int sale_day = 0;
   char type;
+  int status = 0;
 
 public:
   TrainInfo() = default;

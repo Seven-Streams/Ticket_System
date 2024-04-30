@@ -11,6 +11,7 @@ void CheckPrivilege(const char*);
 void CheckTrainID(const char*);
 void CheckStatNum(const char*);
 void CheckStation(const char*);
+void CheckSeatNum(const char*);
 void CheckPrice(const char*);
 void CheckStartTime(const char*);
 void CheckInterTime(const char*);

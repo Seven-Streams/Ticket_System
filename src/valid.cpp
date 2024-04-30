@@ -224,6 +224,21 @@ void CheckStatNum(const char *str) {
   }
   return;
 }
+void CheckSeatNum(const char *str) {
+  int len = strlen(str);
+  int res = 0;
+  for (int i = 0; i < len; i++) {
+    if (str[i] < '0' || str[i] > '9') {
+      throw(SevenStream::exception("InvalidStaNum"));
+    }
+    res *= 10;
+    res += (str[i] - '0');
+  };
+  if (res < 1 || res > 10000) {
+    throw(SevenStream::exception("InvalidStaNum"));
+  }
+  return;
+}
 void CheckStation(const char *str) {
   int len = strlen(str);
   int total = 0;
