@@ -1441,9 +1441,10 @@ public:
     }
     return;
   }
-  int find(const unsigned long long &hash_1, const unsigned long long &hash_2) {
+  std::string find(const unsigned long long &hash_1,
+                   const unsigned long long &hash_2) {
     if (B_total == 0) {
-      return -1;
+      return "";
     }
     Node res;
     MyData to_find;
@@ -1458,7 +1459,7 @@ public:
           break;
         }
         if (i == (res.now_size - 1)) {
-          return -1;
+          return "";
         }
       }
     }
@@ -1466,10 +1467,27 @@ public:
     for (found = 0; found < res.now_size; found++) {
       if ((hash_1 == res.datas[found].hash1) &&
           (hash_2 == res.datas[found].hash2)) {
-        return res.datas[found].value;
+        break;
       }
     }
-    return -1;
+    if (found == res.now_size) {
+      return "";
+    }
+    std::string return_value;
+    while ((hash_1 == res.datas[found].hash1) &&
+           (hash_2 == res.datas[found].hash2)) {
+      return_value += std::to_string(res.datas[found].value);
+      return_value += ' ';
+      found++;
+      if (found == res.now_size) {
+        if (res.right_sibling == 0) {
+          return return_value;
+        }
+        ReadwithCache(res, res.right_sibling);
+        found = 0;
+      }
+    }
+    return return_value;
   }
 
   void Erase(const unsigned long long &hash_1, const unsigned long long &hash_2,

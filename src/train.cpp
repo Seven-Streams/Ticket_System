@@ -4,6 +4,7 @@
 #include "../include/valid.hpp"
 sjtu::BPT<int> train_index("train_index");
 sjtu::MemoryRiver<TrainInfo, 1> train_info;
+sjtu::BPT<int> station_database("station");
 void AddTrain(std::string &command) {
   string ID, num_raw, seat_raw, stations, prices, start_time, travel_time,
       stop_time, sale_date, type;
@@ -83,8 +84,8 @@ void AddTrain(std::string &command) {
   unsigned long long hash1, hash2;
   hash1 = sjtu::MyHash(ID, exp1);
   hash2 = sjtu::MyHash(ID, exp2);
-  int exist_check = train_index.find(hash1, hash2);
-  if (exist_check != 0) {
+  string exist_check = train_index.find(hash1, hash2);
+  if (exist_check != "") {
     throw(SevenStream::exception("The train has been added."));
   }
   res.id_hash1 = hash1;
@@ -98,6 +99,12 @@ void AddTrain(std::string &command) {
     CheckPrice(price_raw.c_str());
     int price = std::stoi(price_raw);
     res.price[i] = price;
+  }
+  for(int i = 0; i < num; i++) {
+    string station = ProcessMalValue(stations);
+    CheckStation(station.c_str());
+    res.station_hash1[i] = sjtu::MyHash(station, exp1);
+    res.station_hash2[i] = sjtu::MyHash(station, exp2);
   }
   CheckStartTime(start_time.c_str());
   int hour = (start_time[0] - '0') * 10 + (start_time[1] - '0');
@@ -126,5 +133,8 @@ void AddTrain(std::string &command) {
   train_info.write(res, ++current);
   train_info.write_info(current, 1);
   train_index.Insert(hash1, hash2, current);
+  for(int i = 0; i < num; i++) {
+    station_database.Insert(res.station_hash1[i], res.station_hash2[i], current);
+  }
   return;
 }
