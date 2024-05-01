@@ -174,3 +174,25 @@ void ReleaseTrain(string &command) {
   train_info.write(to_release, index);
   return;
 }
+void DeleteTrain(string &command) {
+  string op = ProcessTxt(command);
+  if(op != "-i") {
+    throw(SevenStream::exception("Invalid input."));
+  }
+  string id = ProcessTxt(command);
+  CheckTrainID(id.c_str());
+  unsigned long long hash1 = sjtu::MyHash(id, exp1);
+  unsigned long long hash2 = sjtu::MyHash(id, exp2);
+  string index_raw = train_index.find(hash1, hash2);
+  if(index_raw == "") {
+    throw(SevenStream::exception("The train doesn't exist."));
+  }
+  int index = std::stoi(index_raw);
+  TrainInfo to_delete;
+  train_info.read(to_delete, index);
+  if(to_delete.released) {
+    throw(SevenStream::exception("The train has been released."));
+  }
+  train_index.Erase(hash1, hash2, index);
+  return;
+}

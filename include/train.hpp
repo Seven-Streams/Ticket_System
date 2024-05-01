@@ -29,7 +29,9 @@ public:
   ~TrainInfo() = default;
   friend void AddTrain(string &);
   friend void ReleaseTrain(string &);
+  friend void DeleteTrain(string &);
 };
 void AddTrain(string &);
 void ReleaseTrain(string &);
+void DeleteTrain(string &);
 #endif
