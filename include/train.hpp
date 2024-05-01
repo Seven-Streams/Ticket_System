@@ -19,13 +19,17 @@ private:
   // The source is the 0 station.
   int sale_month = 0;
   int sale_day = 0;
+  int des_month = 0;
+  int des_day = 0;
   char type;
-  int status = 0;
+  bool released = false;
 
 public:
   TrainInfo() = default;
   ~TrainInfo() = default;
   friend void AddTrain(string &);
+  friend void ReleaseTrain(string &);
 };
 void AddTrain(string &);
+void ReleaseTrain(string &);
 #endif

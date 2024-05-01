@@ -67,7 +67,6 @@ void AddTrain(std::string &command) {
         throw(SevenStream::exception("Invalid input."));
       }
       sale_date = ProcessTxt(command);
-      CheckDate(sale_date.c_str());
     }
     if (op == "-y") {
       if (type != "") {
@@ -77,7 +76,9 @@ void AddTrain(std::string &command) {
       CheckType(type.c_str());
     }
   }
-  if((ID == "") || (num_raw == "") || (seat_raw == "") || (stations == "") || (prices == "") || (start_time == "") || (travel_time == "") || (stop_time == "") || (sale_date == "") || (type == "")) {
+  if ((ID == "") || (num_raw == "") || (seat_raw == "") || (stations == "") ||
+      (prices == "") || (start_time == "") || (travel_time == "") ||
+      (stop_time == "") || (sale_date == "") || (type == "")) {
     throw(SevenStream::exception("Invalid input."));
   }
   TrainInfo res;
@@ -94,13 +95,13 @@ void AddTrain(std::string &command) {
   res.station_number = num;
   int seat_num = std::stoi(seat_raw);
   res.seat_number = seat_num;
-  for(int i = 1; i < num; i++) {
+  for (int i = 1; i < num; i++) {
     string price_raw = ProcessMalValue(prices);
     CheckPrice(price_raw.c_str());
     int price = std::stoi(price_raw);
     res.price[i] = price;
   }
-  for(int i = 0; i < num; i++) {
+  for (int i = 0; i < num; i++) {
     string station = ProcessMalValue(stations);
     CheckStation(station.c_str());
     res.station_hash1[i] = sjtu::MyHash(station, exp1);
@@ -111,30 +112,65 @@ void AddTrain(std::string &command) {
   int minute = (start_time[3] - '0') * 10 + (start_time[4] - '0');
   res.start_hour = hour;
   res.start_minute = minute;
-  for(int i = 1; i < num; i++) {
+  for (int i = 1; i < num; i++) {
     string travel_time_raw = ProcessMalValue(travel_time);
     CheckInterTime(travel_time_raw.c_str());
     int time = std::stoi(travel_time_raw);
     res.travel[i] = time;
   }
-  for(int i = 1; i < (num - 1); i++) {
+  for (int i = 1; i < (num - 1); i++) {
     string stop_time_raw = ProcessMalValue(stop_time);
     CheckInterTime(stop_time_raw.c_str());
     int time = std::stoi(stop_time_raw);
     res.stop[i] = time;
   }
-  int month = (sale_date[0] - '0') * 10 + (sale_date[1] - '0');
-  int day = (sale_date[3] - '0') * 10 + (sale_date[4] - '0');
+  string date = ProcessMalValue(sale_date);
+  CheckDate(date.c_str());
+  int month = (date[0] - '0') * 10 + (date[1] - '0');
+  int day = (date[3] - '0') * 10 + (date[4] - '0');
   res.sale_month = month;
   res.sale_day = day;
+  date = ProcessMalValue(sale_date);
+  CheckDate(date.c_str());
+  month = (date[0] - '0') * 10 + (date[1] - '0');
+  day = (date[3] - '0') * 10 + (date[4] - '0');
+  res.des_month = month;
+  res.des_day = day;
+
   res.type = type[0];
   int current;
   train_info.get_info(current, 1);
   train_info.write(res, ++current);
   train_info.write_info(current, 1);
   train_index.Insert(hash1, hash2, current);
-  for(int i = 0; i < num; i++) {
-    station_database.Insert(res.station_hash1[i], res.station_hash2[i], current);
+  for (int i = 0; i < num; i++) {
+    station_database.Insert(res.station_hash1[i], res.station_hash2[i],
+                            current);
   }
+  return;
+}
+void ReleaseTrain(string &command) {
+  string op;
+  op = ProcessTxt(command);
+  if (op != "-i") {
+    throw(SevenStream::exception("Invalid input."));
+  }
+  string id = ProcessTxt(command);
+  CheckTrainID(id.c_str());
+  unsigned long long hash1 = sjtu::MyHash(id, exp1);
+  unsigned long long hash2 = sjtu::MyHash(id, exp2);
+  string index_raw = train_index.find(hash1, hash2);
+  if (index_raw == "") {
+    throw(SevenStream::exception("The train doesn't exist."));
+  }
+  int index = std::stoi(index_raw);
+  TrainInfo to_release;
+  train_info.read(to_release, index);
+  to_release.released = true;
+  for (int i = 0; i < to_release.station_number; i++) {
+    station_database.Insert(to_release.station_hash1[i],
+                            to_release.station_hash2[i], index);
+  }
+  train_info.write(to_release, index);
   return;
 }
