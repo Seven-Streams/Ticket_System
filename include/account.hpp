@@ -17,11 +17,11 @@ public:
 };
 class Account {
 private:
-  char username[21];
-  char password[31];
-  char name[21];
-  char mail[31];
-  int privilege;
+  char username[21] = "";
+  char password[31] = "";
+  char name[21] = "";
+  char mail[31] = "";
+  int privilege = 0;
   void ModifyPassword(char *);
   void ModifyName(char *);
   void ModifyMail(char *);

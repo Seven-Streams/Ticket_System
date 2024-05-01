@@ -2,6 +2,7 @@
 #include "../include/exception.hpp"
 #include "../include/store.hpp"
 #include "../include/valid.hpp"
+#include <cstring>
 sjtu::BPT<int> train_index("train_index");
 sjtu::MemoryRiver<TrainInfo, 1> train_info;
 sjtu::BPT<int> station_database("station");
@@ -89,8 +90,7 @@ void AddTrain(std::string &command) {
   if (exist_check != "") {
     throw(SevenStream::exception("The train has been added."));
   }
-  res.id_hash1 = hash1;
-  res.id_hash2 = hash2;
+  strcpy(res.ID, ID.c_str());
   int num = std::stoi(num_raw);
   res.station_number = num;
   int seat_num = std::stoi(seat_raw);
@@ -104,8 +104,7 @@ void AddTrain(std::string &command) {
   for (int i = 0; i < num; i++) {
     string station = ProcessMalValue(stations);
     CheckStation(station.c_str());
-    res.station_hash1[i] = sjtu::MyHash(station, exp1);
-    res.station_hash2[i] = sjtu::MyHash(station, exp2);
+    strcpy(res.stations[i], station.c_str());
   }
   CheckStartTime(start_time.c_str());
   int hour = (start_time[0] - '0') * 10 + (start_time[1] - '0');
@@ -144,8 +143,11 @@ void AddTrain(std::string &command) {
   train_info.write_info(current, 1);
   train_index.Insert(hash1, hash2, current);
   for (int i = 0; i < num; i++) {
-    station_database.Insert(res.station_hash1[i], res.station_hash2[i],
-                            current);
+    unsigned long long station_hash1, station_hash2;
+    string station(res.stations[i]);
+    station_hash1 = sjtu::MyHash(station, exp1);
+    station_hash2 = sjtu::MyHash(station, exp2);
+    station_database.Insert(station_hash1, station_hash2, current);
   }
   return;
 }
@@ -168,15 +170,18 @@ void ReleaseTrain(string &command) {
   train_info.read(to_release, index);
   to_release.released = true;
   for (int i = 0; i < to_release.station_number; i++) {
-    station_database.Insert(to_release.station_hash1[i],
-                            to_release.station_hash2[i], index);
+    string station(to_release.stations[i]);
+    unsigned long long station_hash1, station_hash2;
+    station_hash1 = sjtu::MyHash(station, exp1);
+    station_hash2 = sjtu::MyHash(station, exp2);
+    station_database.Insert(station_hash1, station_hash2, index);
   }
   train_info.write(to_release, index);
   return;
 }
 void DeleteTrain(string &command) {
   string op = ProcessTxt(command);
-  if(op != "-i") {
+  if (op != "-i") {
     throw(SevenStream::exception("Invalid input."));
   }
   string id = ProcessTxt(command);
@@ -184,13 +189,13 @@ void DeleteTrain(string &command) {
   unsigned long long hash1 = sjtu::MyHash(id, exp1);
   unsigned long long hash2 = sjtu::MyHash(id, exp2);
   string index_raw = train_index.find(hash1, hash2);
-  if(index_raw == "") {
+  if (index_raw == "") {
     throw(SevenStream::exception("The train doesn't exist."));
   }
   int index = std::stoi(index_raw);
   TrainInfo to_delete;
   train_info.read(to_delete, index);
-  if(to_delete.released) {
+  if (to_delete.released) {
     throw(SevenStream::exception("The train has been released."));
   }
   train_index.Erase(hash1, hash2, index);

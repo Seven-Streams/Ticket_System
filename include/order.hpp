@@ -9,7 +9,7 @@ private:
   int end_station = 0;
   int number = 0;
   int status = 0;
-  //status = 0, pending; status = 1, success; status = 2, refunded.
+  // status = 0, pending; status = 1, success; status = 2, refunded.
 public:
   Order() = default;
   ~Order() = default;
@@ -18,6 +18,7 @@ class IndexTime {
 private:
   int index = 0;
   int stamp = 0;
+
 public:
   IndexTime() = default;
   ~IndexTime() = default;
@@ -25,5 +26,8 @@ public:
     index = _index;
     stamp = _time;
   }
+  bool operator<(const IndexTime &);
+  bool operator>(const IndexTime &);
+  bool operator==(const IndexTime &);
 };
 #endif

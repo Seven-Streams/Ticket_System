@@ -1,14 +1,13 @@
 #include "utility.hpp"
+#include <cstring>
 #include <string>
 #ifndef TRAIN_HPP
 #define TRAIN_HPP
 using std::string;
 class TrainInfo {
 private:
-  unsigned long long id_hash1 = 0;
-  unsigned long long id_hash2 = 0;
-  unsigned long long station_hash1[100];
-  unsigned long long station_hash2[100];
+  char ID[21] = "";
+  char stations[100][41];
   int station_number = 0;
   int seat_number = 0;
   int price[100];
@@ -25,7 +24,9 @@ private:
   bool released = false;
 
 public:
-  TrainInfo() = default;
+  TrainInfo() {
+    memset(stations, '\0', sizeof(stations));
+  }
   ~TrainInfo() = default;
   friend void AddTrain(string &);
   friend void ReleaseTrain(string &);
