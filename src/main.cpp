@@ -57,7 +57,7 @@ int main() {
         cout << stamp << ' ' << ans << '\n';
         continue;
       }
-      if (type == "bye") {
+      if (type == "exit") {
         cout << stamp << " bye\n";
         return 0;
       }
