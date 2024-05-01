@@ -1,4 +1,8 @@
 #include "store.hpp"
+#include "utility.hpp"
+#include "account.hpp"
+#include "valid.hpp"
+#include "exception.hpp"
 #ifndef ORDER_HPP
 #define ORDER_HPP
 class Order {
@@ -14,20 +18,5 @@ public:
   Order() = default;
   ~Order() = default;
 };
-class IndexTime {
-private:
-  int index = 0;
-  int stamp = 0;
-
-public:
-  IndexTime() = default;
-  ~IndexTime() = default;
-  IndexTime(int _index, int _time) {
-    index = _index;
-    stamp = _time;
-  }
-  bool operator<(const IndexTime &);
-  bool operator>(const IndexTime &);
-  bool operator==(const IndexTime &);
-};
+void QueryOrder(std::string &);
 #endif
