@@ -3,6 +3,7 @@
 #include "../include/utility.hpp"
 #include "../include/store.hpp"
 #include "../include/valid.hpp"
+#include "../include/train.hpp"
 #include <iostream>
 using std::cin;
 using std::cout;
@@ -59,6 +60,21 @@ int main() {
       if (type == "bye") {
         cout << stamp << " bye\n";
         return 0;
+      }
+      if (type == "add_train") {
+        AddTrain(command);
+        cout << stamp << "0\n";
+        continue;
+      }
+      if(type == "delete_train") {
+        DeleteTrain(command);
+        cout << stamp << "0\n";
+        continue;
+      }
+      if(type == "release_train") {
+        ReleaseTrain(command);
+        cout << stamp << "0\n";
+        continue;
       }
     } catch (SevenStream::exception &e) {
       cout << stamp << " -1\n";
