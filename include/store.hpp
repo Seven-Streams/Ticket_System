@@ -743,7 +743,7 @@ private:
   struct MyData {
     unsigned long long hash1 = 0;
     unsigned long long hash2 = 0;
-    int value = 0;
+    Value value = 0;
     int son = 0;
     bool operator>(const MyData &other) {
       if (hash1 != other.hash1) {

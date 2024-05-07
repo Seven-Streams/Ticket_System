@@ -1,22 +1,44 @@
+#include "account.hpp"
+#include "exception.hpp"
 #include "store.hpp"
 #include "utility.hpp"
-#include "account.hpp"
 #include "valid.hpp"
-#include "exception.hpp"
 #ifndef ORDER_HPP
 #define ORDER_HPP
-class Order {
+class OrderByTrain {
 private:
-  unsigned long long id_hash1 = 0;
-  unsigned long long id_hash2 = 0;
   int start_station = 0;
   int end_station = 0;
   int number = 0;
-  int status = 0;
-  // status = 0, pending; status = 1, success; status = 2, refunded.
+  int start_month = 0;
+  int start_day = 0;
+  int stamp = 0;
 public:
-  Order() = default;
-  ~Order() = default;
+  OrderByTrain(const OrderByTrain&) = default;
+  OrderByTrain() = default;
+  ~OrderByTrain() = default;
+  bool operator<(const OrderByTrain&) const;
+  bool operator>(const OrderByTrain&) const;
+  bool operator==(const OrderByTrain&) const;
+};
+class OrderByUser {
+private:
+  char Train_ID[21] = "";
+  char start_station[41] = "";
+  char end_station[41] = "";
+  int number = 0;
+  int start_month = 0;
+  int start_day = 0;
+  int stamp = 0;
+  int status = 0;
+
+public:
+  OrderByUser() = default;
+  OrderByUser(const OrderByUser& rhs) = default;
+  ~OrderByUser() = default;
+  bool operator<(const OrderByUser &) const;
+  bool operator>(const OrderByUser &) const;
+  bool operator==(const OrderByUser &) const;
 };
 void QueryOrder(std::string &);
 #endif
