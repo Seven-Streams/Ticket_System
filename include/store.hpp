@@ -1458,10 +1458,11 @@ public:
     }
     return;
   }
-  std::string find(const unsigned long long &hash_1,
+  sjtu::list<Value> find(const unsigned long long &hash_1,
                    const unsigned long long &hash_2) {
+                    sjtu::list<Value> answers;
     if (B_total == 0) {
-      return "";
+      return answers;
     }
     Node res;
     MyData to_find;
@@ -1476,7 +1477,7 @@ public:
           break;
         }
         if (i == (res.now_size - 1)) {
-          return "";
+          return answers;
         }
       }
     }
@@ -1488,23 +1489,21 @@ public:
       }
     }
     if (found == res.now_size) {
-      return "";
+      return answers;
     }
-    std::string return_value;
     while ((hash_1 == res.datas[found].hash1) &&
            (hash_2 == res.datas[found].hash2)) {
-      return_value += std::to_string(res.datas[found].value);
-      return_value += ' ';
+      answers.push_back(res.datas[found].value);
       found++;
       if (found == res.now_size) {
         if (res.right_sibling == 0) {
-          return return_value;
+          return answers;
         }
         ReadwithCache(res, res.right_sibling);
         found = 0;
       }
     }
-    return return_value;
+    return answers;
   }
 
   void Erase(const unsigned long long &hash_1, const unsigned long long &hash_2,
