@@ -57,3 +57,31 @@ string ProcessMalValue(string &txt) {
   }
   return tmp;
 }
+
+void time::Minus(int duration_minutes) {
+  int to_minus_hour = duration_minutes / 60;
+  int to_minus_min = duration_minutes % 60;
+  if(minute < to_minus_min) {
+    to_minus_hour++;
+    minute += 60;
+  }//to ensure it's positive.
+  minute -= to_minus_min;
+  int to_minus_days = to_minus_hour / 24;
+  to_minus_hour %= 24;
+  if(hour < to_minus_hour) {
+    hour += 24;
+    to_minus_days++;
+  }
+  hour -= to_minus_hour;
+  if(to_minus_days >= day) {
+    if(month == 8) {
+      day += 31;
+      month--;
+    } else {
+      day += 30;
+      month--;
+    }
+  }
+  day -= to_minus_days;
+  return;
+}

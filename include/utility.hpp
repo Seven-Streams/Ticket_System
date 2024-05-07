@@ -14,6 +14,7 @@ public:
   time() = default;
   time(int, int, int, int);
   void Add(int);
+  void Minus(int);
 };
 std::string ProcessTxt(std::string &);
 std::string ProcessMalValue(std::string &);

@@ -32,6 +32,12 @@ public:
   friend void ReleaseTrain(string &);
   friend void DeleteTrain(string &);
 };
+class BetterInTime {
+public:
+  BetterInTime();
+  ~BetterInTime();
+  bool operator()();
+}
 void AddTrain(string &);
 void ReleaseTrain(string &);
 void DeleteTrain(string &);
