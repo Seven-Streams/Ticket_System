@@ -23,7 +23,11 @@ void QueryOrder(string &command) {
   unsigned long long hash1, hash2;
   hash1 = sjtu::MyHash(user_name, exp1);
   hash2 = sjtu::MyHash(user_name, exp2);
-  string orders = order_user.find(hash1, hash2);
+  auto orders = order_user.find(hash1, hash2);
+  for(auto it = orders.begin(); it != orders.end(); it++) {
+    (*it).Print();
+  }
+  return;
 }
 
 bool OrderByTrain::operator<(const OrderByTrain &rhs) const {
@@ -49,4 +53,32 @@ bool OrderByUser::operator>(const OrderByUser &rhs) const {
 }
 bool OrderByUser::operator==(const OrderByUser &rhs) const {
   return stamp == rhs.stamp;
+}
+
+void OrderByUser::Print() {
+  switch(status) {
+    case(1): {
+      std::cout << "[success] ";
+      break;
+    }
+    case(2): {
+      std::cout << "[pending] ";
+      break;
+    }
+    case(3): {
+      std::cout << "[refunded] ";
+      break;
+    }
+    default: {
+      throw(SevenStream::exception("Invalid status."));
+    }
+  }
+  std::cout << Train_ID << ' ';
+  std::cout << start_station << ' ';
+  start_time.Print();
+  std::cout << "->";
+  std::cout << end_station << ' ';
+  end_time.Print();
+  std::cout << price << ' ';
+  std::cout << number << '\n';
 }

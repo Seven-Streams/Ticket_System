@@ -2,7 +2,7 @@
 #include <iostream>
 #ifndef UTILITY_HPP
 #define UTILITY_HPP
-class time {
+class Time {
 private:
   int month = 0;
   int day = 0;
@@ -10,11 +10,12 @@ private:
   int minute = 0;
 
 public:
-  ~time() = default;
-  time() = default;
-  time(int, int, int, int);
+  ~Time() = default;
+  Time() = default;
+  Time(int, int, int, int);
   void Add(int);
   void Minus(int);
+  void Print();
 };
 std::string ProcessTxt(std::string &);
 std::string ProcessMalValue(std::string &);

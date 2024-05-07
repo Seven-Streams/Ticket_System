@@ -27,11 +27,11 @@ private:
   char start_station[41] = "";
   char end_station[41] = "";
   int number = 0;
-  int start_month = 0;
-  int start_day = 0;
+  Time start_time, end_time;
   int stamp = 0;
   int status = 0;
-
+  int price = 0;
+//status = 1, OK; 2, pending; 3, refunded;
 public:
   OrderByUser() = default;
   OrderByUser(const OrderByUser& rhs) = default;
@@ -39,6 +39,7 @@ public:
   bool operator<(const OrderByUser &) const;
   bool operator>(const OrderByUser &) const;
   bool operator==(const OrderByUser &) const;
+  void Print();
 };
 void QueryOrder(std::string &);
 #endif

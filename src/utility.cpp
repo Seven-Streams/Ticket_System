@@ -1,6 +1,6 @@
 #include "../include/utility.hpp"
+using std::cout;
 using std::string;
-
 string ProcessTxt(string &txt) {
   while (txt[0] == ' ') {
     txt.erase(0, 1);
@@ -18,13 +18,13 @@ string ProcessTxt(string &txt) {
   }
   return tmp;
 }
-time::time(int a, int b, int c, int d) {
+Time::Time(int a, int b, int c, int d) {
   month = a;
   day = b;
   hour = c;
   minute = d;
 }
-void time::Add(int duration_minutes) {
+void Time::Add(int duration_minutes) {
   minute += duration_minutes;
   int add_hour = minute / 60;
   minute %= 60;
@@ -58,23 +58,23 @@ string ProcessMalValue(string &txt) {
   return tmp;
 }
 
-void time::Minus(int duration_minutes) {
+void Time::Minus(int duration_minutes) {
   int to_minus_hour = duration_minutes / 60;
   int to_minus_min = duration_minutes % 60;
-  if(minute < to_minus_min) {
+  if (minute < to_minus_min) {
     to_minus_hour++;
     minute += 60;
-  }//to ensure it's positive.
+  } // to ensure it's positive.
   minute -= to_minus_min;
   int to_minus_days = to_minus_hour / 24;
   to_minus_hour %= 24;
-  if(hour < to_minus_hour) {
+  if (hour < to_minus_hour) {
     hour += 24;
     to_minus_days++;
   }
   hour -= to_minus_hour;
-  if(to_minus_days >= day) {
-    if(month == 8) {
+  if (to_minus_days >= day) {
+    if (month == 8) {
       day += 31;
       month--;
     } else {
@@ -83,5 +83,25 @@ void time::Minus(int duration_minutes) {
     }
   }
   day -= to_minus_days;
+  return;
+}
+
+void Time::Print() {
+  if (month < 10) {
+    cout << 0;
+  }
+  cout << month << '-';
+  if (day < 10) {
+    cout << 0;
+  }
+  cout << day << ' ';
+  if (hour < 10) {
+    cout << 0;
+  }
+  cout << hour << ':';
+  if(minute < 10) {
+    cout << 0;
+  }
+  cout << minute << ' ';
   return;
 }

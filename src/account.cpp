@@ -137,13 +137,14 @@ void AddAccount(string command) {
   unsigned long long hash1_of_new, hash2_of_new;
   hash1_of_new = sjtu::MyHash(user_name, exp1);
   hash2_of_new = sjtu::MyHash(user_name, exp2);
-  if (account_index.find(hash1_of_new, hash2_of_new) != "") {
+  auto check = account_index.find(hash1_of_new, hash2_of_new);
+  if (account_index.find(hash1_of_new, hash2_of_new).empty()) {
     throw(SevenStream::exception("The account has been created."));
   }
   unsigned long long hash1_of_current, hash2_of_current;
   hash1_of_current = sjtu::MyHash(current_user, exp1);
   hash2_of_current = sjtu::MyHash(current_user, exp2);
-  int index = std::stoi(account_index.find(hash1_of_current, hash2_of_current));
+  int index = check.front();
   Account current_account = GetAccount(index);
   if (current_account.privilege <= pr) {
     throw(SevenStream::exception("Privilege is not available."));
@@ -289,11 +290,11 @@ void Login(string command) {
   unsigned long long hash1, hash2;
   hash1 = sjtu::MyHash(user, exp1);
   hash2 = sjtu::MyHash(user, exp2);
-  string index_raw = account_index.find(hash1, hash2);
-  if (index_raw == "") {
+  auto index_raw = account_index.find(hash1, hash2);
+  if (index_raw.empty()) {
     throw(SevenStream::exception("This account doesn't exist."));
   }
-  int index = std::stoi(index_raw);
+  int index = index_raw.front();
   Account to_login = GetAccount(index);
   if (to_login.password != password) {
     throw(SevenStream::exception("Wrong Password."));
@@ -352,16 +353,17 @@ string QueryAccount(string command) {
   unsigned long long hash1_current, hash2_current;
   hash1_current = sjtu::MyHash(current, exp1);
   hash2_current = sjtu::MyHash(current, exp2);
-  int current_index = std::stoi(account_index.find(hash1_current, hash2_current));
+  auto current_raw = account_index.find(hash1_current, hash2_current);
+  int current_index = current_raw.front();
   Account current_account = GetAccount(current_index);
   unsigned long long hash1_query, hash2_query;
   hash1_query = sjtu::MyHash(to_query, exp1);
   hash2_query = sjtu::MyHash(to_query, exp2);
-  string query_raw = account_index.find(hash1_query, hash2_query);
-  if(query_raw != "") {
+  auto query_raw = account_index.find(hash1_query, hash2_query);
+  if(query_raw.empty()) {
     throw(SevenStream::exception("The query account doesn't exist."));
   }
-  int query_index = std::stoi(query_raw);
+  int query_index = query_raw.front();
   Account query_account = GetAccount(query_index);
   if (query_account.privilege >= current_account.privilege) {
     throw(SevenStream::exception("Not enough privilege."));
@@ -463,16 +465,17 @@ string ModifyAccount(string command) {
   unsigned long long hash1_current, hash2_current;
   hash1_current = sjtu::MyHash(current, exp1);
   hash2_current = sjtu::MyHash(current, exp2);
-  int current_index = std::stoi(account_index.find(hash1_current, hash2_current));
+  auto current_raw = account_index.find(hash1_current, hash2_current);
+  int current_index = current_raw.front();
   Account current_account = GetAccount(current_index);
   unsigned long long hash1_query, hash2_query;
   hash1_query = sjtu::MyHash(to_query, exp1);
   hash2_query = sjtu::MyHash(to_query, exp2);
-  string query_raw = account_index.find(hash1_query, hash2_query);
-  if(query_raw == "") {
-    throw("The query account doesn't exist.");
+  auto query_raw = account_index.find(hash1_query, hash2_query);
+  if(query_raw.empty()) {
+    throw(SevenStream::exception("The query account doesn't exist."));
   }
-  int query_index = std::stoi(query_raw);
+  int query_index = query_raw.front();
   Account query_account = GetAccount(query_index);
   if (query_account.privilege >= current_account.privilege) {
     throw(SevenStream::exception("Not enough privilege."));
