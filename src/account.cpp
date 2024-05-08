@@ -137,8 +137,8 @@ void AddAccount(string command) {
   unsigned long long hash1_of_new, hash2_of_new;
   hash1_of_new = sjtu::MyHash(user_name, exp1);
   hash2_of_new = sjtu::MyHash(user_name, exp2);
-  auto check = account_index.find(hash1_of_new, hash2_of_new);
-  if (account_index.find(hash1_of_new, hash2_of_new).empty()) {
+  auto check = account_index.find(hash1_of_new, hash2_of_new, minus_max);
+  if (account_index.find(hash1_of_new, hash2_of_new, minus_max).empty()) {
     throw(SevenStream::exception("The account has been created."));
   }
   unsigned long long hash1_of_current, hash2_of_current;
@@ -290,7 +290,7 @@ void Login(string command) {
   unsigned long long hash1, hash2;
   hash1 = sjtu::MyHash(user, exp1);
   hash2 = sjtu::MyHash(user, exp2);
-  auto index_raw = account_index.find(hash1, hash2);
+  auto index_raw = account_index.find(hash1, hash2,minus_max);
   if (index_raw.empty()) {
     throw(SevenStream::exception("This account doesn't exist."));
   }
@@ -353,13 +353,13 @@ string QueryAccount(string command) {
   unsigned long long hash1_current, hash2_current;
   hash1_current = sjtu::MyHash(current, exp1);
   hash2_current = sjtu::MyHash(current, exp2);
-  auto current_raw = account_index.find(hash1_current, hash2_current);
+  auto current_raw = account_index.find(hash1_current, hash2_current, minus_max);
   int current_index = current_raw.front();
   Account current_account = GetAccount(current_index);
   unsigned long long hash1_query, hash2_query;
   hash1_query = sjtu::MyHash(to_query, exp1);
   hash2_query = sjtu::MyHash(to_query, exp2);
-  auto query_raw = account_index.find(hash1_query, hash2_query);
+  auto query_raw = account_index.find(hash1_query, hash2_query, minus_max);
   if(query_raw.empty()) {
     throw(SevenStream::exception("The query account doesn't exist."));
   }
@@ -465,13 +465,13 @@ string ModifyAccount(string command) {
   unsigned long long hash1_current, hash2_current;
   hash1_current = sjtu::MyHash(current, exp1);
   hash2_current = sjtu::MyHash(current, exp2);
-  auto current_raw = account_index.find(hash1_current, hash2_current);
+  auto current_raw = account_index.find(hash1_current, hash2_current, minus_max);
   int current_index = current_raw.front();
   Account current_account = GetAccount(current_index);
   unsigned long long hash1_query, hash2_query;
   hash1_query = sjtu::MyHash(to_query, exp1);
   hash2_query = sjtu::MyHash(to_query, exp2);
-  auto query_raw = account_index.find(hash1_query, hash2_query);
+  auto query_raw = account_index.find(hash1_query, hash2_query, minus_max);
   if(query_raw.empty()) {
     throw(SevenStream::exception("The query account doesn't exist."));
   }

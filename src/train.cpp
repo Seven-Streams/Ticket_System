@@ -86,8 +86,8 @@ void AddTrain(std::string &command) {
   unsigned long long hash1, hash2;
   hash1 = sjtu::MyHash(ID, exp1);
   hash2 = sjtu::MyHash(ID, exp2);
-  string exist_check = train_index.find(hash1, hash2);
-  if (exist_check != "") {
+  auto exist_check = train_index.find(hash1, hash2, minus_max);
+  if (!exist_check.empty()) {
     throw(SevenStream::exception("The train has been added."));
   }
   strcpy(res.ID, ID.c_str());
@@ -161,11 +161,11 @@ void ReleaseTrain(string &command) {
   CheckTrainID(id.c_str());
   unsigned long long hash1 = sjtu::MyHash(id, exp1);
   unsigned long long hash2 = sjtu::MyHash(id, exp2);
-  string index_raw = train_index.find(hash1, hash2);
-  if (index_raw == "") {
+  auto index_raw = train_index.find(hash1, hash2, minus_max);
+  if (index_raw.empty()) {
     throw(SevenStream::exception("The train doesn't exist."));
   }
-  int index = std::stoi(index_raw);
+  int index = index_raw.front();
   TrainInfo to_release;
   train_info.read(to_release, index);
   to_release.released = true;
@@ -188,16 +188,102 @@ void DeleteTrain(string &command) {
   CheckTrainID(id.c_str());
   unsigned long long hash1 = sjtu::MyHash(id, exp1);
   unsigned long long hash2 = sjtu::MyHash(id, exp2);
-  string index_raw = train_index.find(hash1, hash2);
-  if (index_raw == "") {
+  auto index_raw = train_index.find(hash1, hash2, minus_max);
+  if (index_raw.empty()) {
     throw(SevenStream::exception("The train doesn't exist."));
   }
-  int index = std::stoi(index_raw);
+  int index = index_raw.front();
   TrainInfo to_delete;
   train_info.read(to_delete, index);
   if (to_delete.released) {
     throw(SevenStream::exception("The train has been released."));
   }
   train_index.Erase(hash1, hash2, index);
+  return;
+}
+
+void QueryTrain(string &command) {
+  string op = ProcessTxt(command);
+  string id, date;
+  if(op == "-i") {
+    id = ProcessTxt(command);
+  } else {
+    if(op == "-d") {
+      date = ProcessTxt(command);
+    } else {
+      throw(SevenStream::exception("Invalid input."));
+    }
+  }
+  op = ProcessTxt(command);
+  if(op == "-i") {
+    if(id != "") {
+      throw(SevenStream::exception("Invalid input."));
+    }
+    id = ProcessTxt(command);
+  } else {
+    if(op == "-d") {
+      if(date != "") {
+        throw(SevenStream::exception("Invalid input."));
+      }
+      date = ProcessTxt(command);
+    } else {
+      throw(SevenStream::exception("Invalid input."));
+    } 
+  }
+  CheckDate(date.c_str());
+  CheckTrainID(id.c_str());
+  int month, day;
+  month = 0;
+  day = 0;
+  month += date[0] - '0';
+  month *= 10;
+  month += date[1] - '0';
+  day += date[3] - '0';
+  day *= 10;
+  day += date[4];
+  unsigned long long hash1 = sjtu::MyHash(id, exp1);
+  unsigned long long hash2 = sjtu::MyHash(id, exp2);
+  auto index_raw = train_index.find(hash1, hash2, minus_max);
+  if (index_raw.empty()) {
+    throw(SevenStream::exception("The train doesn't exist."));
+  }
+  int index = index_raw.front();
+  TrainInfo to_query;
+  train_info.read(to_query, index);
+  if(month < to_query.sale_month) {
+    throw(SevenStream::exception("Invalid date."));
+  }
+  if(month > to_query.des_month) {
+    throw(SevenStream::exception("Invalid date."));
+  }
+  if((month == to_query.sale_month) && (day < to_query.sale_month)) {
+    throw(SevenStream::exception("Invalid date."));
+  }
+  if((month == to_query.des_month) && (day > to_query.sale_month)) {
+    throw(SevenStream::exception("Invalid date."));
+  }
+  if(!to_query.released) {
+    std::cout << to_query.ID << ' ' << to_query.type << '\n';
+    std::cout << to_query.stations[0] << ' ' << "xx-xx xx:xx ->";
+    Time time(month, day, to_query.start_hour, to_query.start_minute);
+    time.Print();
+    std::cout << 0 << ' ' << to_query.price << '\n';
+    for(int i = 1; i < (to_query.station_number - 1); i++) {
+      std::cout << to_query.stations[i] << ' ';
+      time.Add(to_query.travel[i]);
+      time.Print();
+      std::cout << "-> ";
+      time.Add(to_query.stop[i]);
+      time.Print();
+      std::cout << to_query.price[i] << ' ' << to_query.seat_number << '\n';
+    }
+    std::cout << to_query.stations[to_query.station_number - 1] << ' ';
+    time.Add(to_query.travel[to_query.station_number - 1]);
+    time.Print();
+    std::cout << "-> xx-xx xx:xx ";
+    std::cout << to_query.price[to_query.station_number - 1] << " x\n";
+  } else {
+    //Need to be finished here.
+  }
   return;
 }

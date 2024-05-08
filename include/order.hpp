@@ -40,6 +40,7 @@ public:
   bool operator>(const OrderByUser &) const;
   bool operator==(const OrderByUser &) const;
   void Print();
+  friend void QueryOrder(std::string&);
 };
 void QueryOrder(std::string &);
 #endif

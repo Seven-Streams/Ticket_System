@@ -18,11 +18,11 @@ string ProcessTxt(string &txt) {
   }
   return tmp;
 }
-Time::Time(int a, int b, int c, int d) {
-  month = a;
-  day = b;
-  hour = c;
-  minute = d;
+Time::Time(int _mon, int _d, int _h, int _min) {
+  month = _mon;
+  day = _d;
+  hour = _h;
+  minute = _min;
 }
 void Time::Add(int duration_minutes) {
   minute += duration_minutes;

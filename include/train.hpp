@@ -31,8 +31,10 @@ public:
   friend void AddTrain(string &);
   friend void ReleaseTrain(string &);
   friend void DeleteTrain(string &);
+  friend void QueryTrain(string &);
 };
 void AddTrain(string &);
 void ReleaseTrain(string &);
 void DeleteTrain(string &);
+void QueryTrain(string &);
 #endif

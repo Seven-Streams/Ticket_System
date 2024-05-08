@@ -23,7 +23,9 @@ void QueryOrder(string &command) {
   unsigned long long hash1, hash2;
   hash1 = sjtu::MyHash(user_name, exp1);
   hash2 = sjtu::MyHash(user_name, exp2);
-  auto orders = order_user.find(hash1, hash2);
+  OrderByUser min_element;
+  min_element.stamp = maxn;
+  auto orders = order_user.find(hash1, hash2, min_element);
   for(auto it = orders.begin(); it != orders.end(); it++) {
     (*it).Print();
   }
