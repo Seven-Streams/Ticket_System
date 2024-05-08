@@ -6,6 +6,7 @@
 sjtu::BPT<int> train_index("train_index");
 sjtu::MemoryRiver<TrainInfo, 1> train_info;
 sjtu::BPT<int> station_database("station");
+sjtu::BPT<TrainDay> trains_day("train_day");
 void AddTrain(std::string &command) {
   string ID, num_raw, seat_raw, stations, prices, start_time, travel_time,
       stop_time, sale_date, type;
@@ -176,6 +177,7 @@ void ReleaseTrain(string &command) {
     station_hash2 = sjtu::MyHash(station, exp2);
     station_database.Insert(station_hash1, station_hash2, index);
   }
+  
   train_info.write(to_release, index);
   return;
 }
@@ -205,30 +207,30 @@ void DeleteTrain(string &command) {
 void QueryTrain(string &command) {
   string op = ProcessTxt(command);
   string id, date;
-  if(op == "-i") {
+  if (op == "-i") {
     id = ProcessTxt(command);
   } else {
-    if(op == "-d") {
+    if (op == "-d") {
       date = ProcessTxt(command);
     } else {
       throw(SevenStream::exception("Invalid input."));
     }
   }
   op = ProcessTxt(command);
-  if(op == "-i") {
-    if(id != "") {
+  if (op == "-i") {
+    if (id != "") {
       throw(SevenStream::exception("Invalid input."));
     }
     id = ProcessTxt(command);
   } else {
-    if(op == "-d") {
-      if(date != "") {
+    if (op == "-d") {
+      if (date != "") {
         throw(SevenStream::exception("Invalid input."));
       }
       date = ProcessTxt(command);
     } else {
       throw(SevenStream::exception("Invalid input."));
-    } 
+    }
   }
   CheckDate(date.c_str());
   CheckTrainID(id.c_str());
@@ -250,25 +252,25 @@ void QueryTrain(string &command) {
   int index = index_raw.front();
   TrainInfo to_query;
   train_info.read(to_query, index);
-  if(month < to_query.sale_month) {
+  if (month < to_query.sale_month) {
     throw(SevenStream::exception("Invalid date."));
   }
-  if(month > to_query.des_month) {
+  if (month > to_query.des_month) {
     throw(SevenStream::exception("Invalid date."));
   }
-  if((month == to_query.sale_month) && (day < to_query.sale_month)) {
+  if ((month == to_query.sale_month) && (day < to_query.sale_month)) {
     throw(SevenStream::exception("Invalid date."));
   }
-  if((month == to_query.des_month) && (day > to_query.sale_month)) {
+  if ((month == to_query.des_month) && (day > to_query.sale_month)) {
     throw(SevenStream::exception("Invalid date."));
   }
-  if(!to_query.released) {
+  if (!to_query.released) {
     std::cout << to_query.ID << ' ' << to_query.type << '\n';
     std::cout << to_query.stations[0] << ' ' << "xx-xx xx:xx ->";
     Time time(month, day, to_query.start_hour, to_query.start_minute);
     time.Print();
     std::cout << 0 << ' ' << to_query.price << '\n';
-    for(int i = 1; i < (to_query.station_number - 1); i++) {
+    for (int i = 1; i < (to_query.station_number - 1); i++) {
       std::cout << to_query.stations[i] << ' ';
       time.Add(to_query.travel[i]);
       time.Print();
@@ -283,7 +285,26 @@ void QueryTrain(string &command) {
     std::cout << "-> xx-xx xx:xx ";
     std::cout << to_query.price[to_query.station_number - 1] << " x\n";
   } else {
-    //Need to be finished here.
+    // Need to be finished here.
   }
   return;
+}
+TrainDay::TrainDay(int _m, int _d, int _s) {
+  month = _m;
+  day = _d;
+  for (int &element : ticket) {
+    element = _s;
+  }
+}
+bool TrainDay::operator<(const TrainDay &rhs) const {
+  if (month != rhs.month) {
+    return month < rhs.month;
+  }
+  return (day < rhs.month);
+}
+bool TrainDay::operator>(const TrainDay &rhs) const {
+  return rhs < (*this);
+}
+bool TrainDay::operator==(const TrainDay &rhs) const {
+  return ((!(rhs < (*this))) && (!((*this) < rhs)));
 }

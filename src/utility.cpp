@@ -105,3 +105,27 @@ void Time::Print() {
   cout << minute << ' ';
   return;
 }
+int Time::GetMonth() {
+  return month;
+}
+int Time::GetDay() {
+  return day;
+}
+bool Time::operator<(const Time&rhs) const {
+  if(month != rhs.month) {
+    return (month < rhs.month);
+  }
+  if(day != rhs.day) {
+    return (day < rhs.day);
+  }
+  if(hour != rhs.hour) {
+    return (hour < rhs.hour);
+  }
+  return (minute < rhs.minute);
+}
+bool Time::operator>(const Time&rhs) const {
+  return (rhs < (*this));
+}
+bool Time::operator==(const Time&rhs) const {
+  return ((!((*this) < rhs)) && (!(rhs < (*this))));
+}

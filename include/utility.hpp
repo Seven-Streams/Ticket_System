@@ -1,7 +1,7 @@
-#include "exception.hpp"
-#include <iostream>
 #ifndef UTILITY_HPP
 #define UTILITY_HPP
+#include "exception.hpp"
+#include <iostream>
 class Time {
 private:
   int month = 0;
@@ -16,6 +16,11 @@ public:
   void Add(int);
   void Minus(int);
   void Print();
+  int GetMonth();
+  int GetDay();
+  bool operator<(const Time&rhs) const;
+  bool operator>(const Time&rhs) const;
+  bool operator==(const Time &rhs) const;
 };
 std::string ProcessTxt(std::string &);
 std::string ProcessMalValue(std::string &);

@@ -24,14 +24,26 @@ private:
   bool released = false;
 
 public:
-  TrainInfo() {
-    memset(stations, '\0', sizeof(stations));
-  }
+  TrainInfo() { memset(stations, '\0', sizeof(stations)); }
   ~TrainInfo() = default;
   friend void AddTrain(string &);
   friend void ReleaseTrain(string &);
   friend void DeleteTrain(string &);
   friend void QueryTrain(string &);
+};
+class TrainDay {
+private:
+  int month = 0;
+  int day = 0;
+  int ticket[100];
+
+public:
+  TrainDay() = default;
+  ~TrainDay() = default;
+  TrainDay(int _m, int _d, int _s);
+  bool operator>(const TrainDay &rhs) const;
+  bool operator<(const TrainDay &rhs) const;
+  bool operator==(const TrainDay &rhs) const;
 };
 void AddTrain(string &);
 void ReleaseTrain(string &);
