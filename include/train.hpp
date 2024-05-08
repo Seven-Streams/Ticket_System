@@ -44,6 +44,7 @@ public:
   bool operator>(const TrainDay &rhs) const;
   bool operator<(const TrainDay &rhs) const;
   bool operator==(const TrainDay &rhs) const;
+  friend void ReleaseTrain(string &);
 };
 void AddTrain(string &);
 void ReleaseTrain(string &);

@@ -177,7 +177,14 @@ void ReleaseTrain(string &command) {
     station_hash2 = sjtu::MyHash(station, exp2);
     station_database.Insert(station_hash1, station_hash2, index);
   }
-  
+  Time time(to_release.sale_month, to_release.sale_day, 1, 0);
+  Time end_time(to_release.des_month, to_release.des_day, 1, 0);
+  TrainDay to_release_day(to_release.sale_month, to_release.sale_day, to_release.seat_number);
+  for(auto i = time; i < end_time; i.Add(60 * 24)) {
+    to_release_day.month = i.GetMonth();
+    to_release_day.day = i.GetDay();
+    trains_day.Insert(hash1, hash2, to_release_day);
+  }
   train_info.write(to_release, index);
   return;
 }
