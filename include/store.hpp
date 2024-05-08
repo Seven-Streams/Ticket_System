@@ -1459,7 +1459,7 @@ public:
     return;
   }
   sjtu::list<Value> find(const unsigned long long &hash_1,
-                   const unsigned long long &hash_2) {
+                   const unsigned long long &hash_2, const Value &min) {
                     sjtu::list<Value> answers;
     if (B_total == 0) {
       return answers;
@@ -1468,7 +1468,7 @@ public:
     MyData to_find;
     to_find.hash1 = hash_1;
     to_find.hash2 = hash_2;
-    to_find.value = minus_max;
+    to_find.value = min;
     ReadwithCache(res, B_root);
     while (res.datas[0].son != 0) {
       for (int i = 0; i < res.now_size; i++) {
