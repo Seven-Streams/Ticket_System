@@ -193,4 +193,35 @@ void Buy(std::string &command, int stamp) {
   order_by_user.number = number;
   order_by_user.stamp = stamp;
   order_by_user.price = price;
+  order_by_user.start_time = train_total.AskLeaveTime(start_index, out_month, out_day);
+  order_by_user.end_time = train_total.AskArriveTime(end_index, out_month, out_day);
+  unsigned long long user_hash1, user_hash2;
+  user_hash1 = sjtu::MyHash(user, exp1);
+  user_hash2 = sjtu::MyHash(user, exp2);
+  if(available < number) {
+    order_by_user.status = 2;
+    OrderByTrain to_queue;
+    to_queue.user_hash1 = user_hash1;
+    to_queue.user_hash2 = user_hash2;
+    to_queue.end_station = end_index;
+    to_queue.start_station = start_index;
+    to_queue.start_month = out_month;
+    to_queue.start_day = out_day;
+    to_queue.number = number;
+    to_queue.stamp = stamp;
+    queue_list.Insert(id_hash1, id_hash2, to_queue);
+    order_user.Insert(user_hash1, user_hash2, order_by_user);
+    std::cout << "queue\n";
+  } else {
+    order_by_user.status = 1;
+    order_user.Insert(user_hash1, user_hash2, order_by_user);
+    for(int i = start_index; i < end_index; i++) {
+      acutual_train.ticket[i] -= number;
+    }
+    trains_day.Erase(id_hash1, id_hash2, acutual_train);
+    trains_day.Insert(id_hash1, id_hash2, acutual_train);
+    int total_price = number * price;
+    std::cout << total_price << '\n';
+  }
+  return;
 }
