@@ -183,22 +183,28 @@ void Buy(std::string &command, int stamp) {
   for (int i = start_index; i < end_index; i++) {
     available = std::min(available, acutual_train.ticket[i]);
   }
-  if((available < number) && (!queue)) {
+  if ((available < number) && (!queue)) {
     throw(SevenStream::exception("Not enough tickets."));
   }
   OrderByUser order_by_user;
   strcpy(order_by_user.end_station, end_station.c_str());
   strcpy(order_by_user.Train_ID, id.c_str());
   strcpy(order_by_user.start_station, start_station.c_str());
+  order_by_user.start_index = start_index;
+  order_by_user.end_index = end_index;
+  order_by_user.out_month = out_month;
+  order_by_user.out_day = out_day;
   order_by_user.number = number;
   order_by_user.stamp = stamp;
   order_by_user.price = price;
-  order_by_user.start_time = train_total.AskLeaveTime(start_index, out_month, out_day);
-  order_by_user.end_time = train_total.AskArriveTime(end_index, out_month, out_day);
+  order_by_user.start_time =
+      train_total.AskLeaveTime(start_index, out_month, out_day);
+  order_by_user.end_time =
+      train_total.AskArriveTime(end_index, out_month, out_day);
   unsigned long long user_hash1, user_hash2;
   user_hash1 = sjtu::MyHash(user, exp1);
   user_hash2 = sjtu::MyHash(user, exp2);
-  if(available < number) {
+  if (available < number) {
     order_by_user.status = 2;
     OrderByTrain to_queue;
     to_queue.user_hash1 = user_hash1;
@@ -215,7 +221,7 @@ void Buy(std::string &command, int stamp) {
   } else {
     order_by_user.status = 1;
     order_user.Insert(user_hash1, user_hash2, order_by_user);
-    for(int i = start_index; i < end_index; i++) {
+    for (int i = start_index; i < end_index; i++) {
       acutual_train.ticket[i] -= number;
     }
     trains_day.Erase(id_hash1, id_hash2, acutual_train);
@@ -224,4 +230,72 @@ void Buy(std::string &command, int stamp) {
     std::cout << total_price << '\n';
   }
   return;
+}
+void Refund(std::string &command) {
+  int number = 1;
+  string user;
+  while (command != "") {
+    string op = ProcessTxt(command);
+    if (op == "-u") {
+      user = ProcessTxt(command);
+    }
+    if (op == "-n") {
+      string res = ProcessTxt(command);
+      number = std::stoi(res);
+    }
+  }
+  bool logged = false;
+  HashOfAccount to_check(user);
+  for (auto it = account_logged.begin(); it != account_logged.end(); it++) {
+    if ((*it) == to_check) {
+      logged = true;
+      break;
+    }
+  }
+  if (!logged) {
+    throw(SevenStream::exception("The account doesn't login."));
+  }
+  unsigned long long user_hash1, user_hash2;
+  user_hash1 = sjtu::MyHash(user, exp1);
+  user_hash2 = sjtu::MyHash(user, exp2);
+  OrderByUser nothing;
+  nothing.stamp = maxn;
+  auto orders = order_user.find(user_hash1, user_hash2, nothing);
+  int cnt = 1;
+  auto it = orders.begin();
+  while (cnt < number) {
+    it++;
+  }
+  auto to_refund = *it;
+  to_refund.status = 3;
+  order_user.Erase(user_hash1, user_hash2, to_refund);
+  order_user.Insert(user_hash1, user_hash2, to_refund);
+  unsigned long long id_hash1, id_hash2;
+  id_hash1 = sjtu::MyHash(to_refund.Train_ID, exp1);
+  id_hash2 = sjtu::MyHash(to_refund.Train_ID, exp2);
+  TrainDay empty_train(to_refund.out_month, to_refund.out_day, 0);
+  auto train_actual_raw = trains_day.find(id_hash1, id_hash2, empty_train);
+  auto train_actual = train_actual_raw.front();
+  for (int i = to_refund.start_index; i < to_refund.end_index; i++) {
+    train_actual.ticket[i] += to_refund.number;
+  }
+  OrderByTrain nothing_order;
+  nothing_order.start_month = to_refund.out_month;
+  nothing_order.start_day = to_refund.out_day;
+  nothing_order.stamp = minus_max;
+  auto queues = queue_list.find(id_hash1, id_hash2, nothing_order);
+  for (auto it = queues.begin(); it != queues.end(); it++) {
+    bool OK = true;
+    for (int j = it->start_station; j < it->end_station; j++) {
+      if (train_actual.ticket[j] < it->number) {
+        OK = false;
+        break;
+      }
+    }
+    if (OK) {
+      for (int j = it->start_station; j < it->end_station; j++) {
+        train_actual.ticket[j] -= it->number;
+      }
+    }
+  }
 }

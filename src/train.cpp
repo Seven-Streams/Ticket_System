@@ -3,6 +3,7 @@
 #include "../include/store.hpp"
 #include "../include/valid.hpp"
 #include <cstring>
+#include <string>
 sjtu::BPT<int> train_index("train_index");
 sjtu::MemoryRiver<TrainInfo, 1> train_info;
 sjtu::BPT<int> station_database("station");
@@ -403,4 +404,19 @@ Time TrainInfo::AskArriveTime(int index, int _m, int _d) {
   }
   ans.Add(travel[index]);
   return ans;
+}
+void QueryTicket(string &command) {
+  int number = 1;
+  string user;
+  while(command != "") {
+    string op = ProcessTxt(command);
+    if(op == "-u") {
+      user = ProcessTxt(command);
+    }
+    if(op == "-n") {
+      string res = ProcessTxt(command);
+      number = std::stoi(res);
+    }
+  }
+  
 }

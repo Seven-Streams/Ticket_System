@@ -23,6 +23,7 @@ public:
   bool operator>(const OrderByTrain&) const;
   bool operator==(const OrderByTrain&) const;
   friend void Buy(std::string&, int);
+  friend void Refund(std::string &);
 };
 class OrderByUser {
 private:
@@ -34,6 +35,10 @@ private:
   int stamp = 0;
   int status = 0;
   int price = 0;
+  int out_month = 0;
+  int out_day = 0;
+  int start_index = 0;
+  int end_index = 0;
 //status = 1, OK; 2, pending; 3, refunded;
 public:
   OrderByUser() = default;
@@ -45,7 +50,9 @@ public:
   void Print();
   friend void QueryOrder(std::string&);
   friend void Buy(std::string &, int);
+  friend void Refund(std::string &);
 };
 void QueryOrder(std::string &);
 void Buy(std::string &, int);
+void Refund(std::string &);
 #endif
