@@ -54,6 +54,7 @@ public:
   bool operator==(const TrainDay &rhs) const;
   friend void ReleaseTrain(string &);
   friend void Buy(std::string &, int);
+  friend void QueryTrain(string &);
 };
 void AddTrain(string &);
 void ReleaseTrain(string &);

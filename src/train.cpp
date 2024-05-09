@@ -277,7 +277,7 @@ void QueryTrain(string &command) {
     std::cout << to_query.stations[0] << ' ' << "xx-xx xx:xx ->";
     Time time(month, day, to_query.start_hour, to_query.start_minute);
     time.Print();
-    std::cout << 0 << ' ' << to_query.price << '\n';
+    std::cout << 0 << ' ' << to_query.seat_number << '\n';
     for (int i = 1; i < (to_query.station_number - 1); i++) {
       std::cout << to_query.stations[i] << ' ';
       time.Add(to_query.travel[i]);
@@ -293,7 +293,31 @@ void QueryTrain(string &command) {
     std::cout << "-> xx-xx xx:xx ";
     std::cout << to_query.price[to_query.station_number - 1] << " x\n";
   } else {
-    // Need to be finished here.
+    std::cout << to_query.ID << ' ' << to_query.type << '\n';
+    std::cout << to_query.stations[0] << ' ' << "xx-xx xx:xx ->";
+    Time time(month, day, to_query.start_hour, to_query.start_minute);
+    time.Print();
+    TrainDay actual_train(month, day, 0);
+    unsigned long long id_hash1, id_hash2;
+    id_hash1 = sjtu::MyHash(id, exp1);
+    id_hash2 = sjtu::MyHash(id, exp2);
+    auto raw_actual_train = trains_day.find(id_hash1, id_hash2 ,actual_train);
+    actual_train = raw_actual_train.front();
+    std::cout << 0 << ' ' << actual_train.ticket[0] << '\n';
+    for (int i = 1; i < (to_query.station_number - 1); i++) {
+      std::cout << to_query.stations[i] << ' ';
+      time.Add(to_query.travel[i]);
+      time.Print();
+      std::cout << "-> ";
+      time.Add(to_query.stop[i]);
+      time.Print();
+      std::cout << to_query.price[i] << ' ' << actual_train.ticket[i] << '\n';
+    }
+    std::cout << to_query.stations[to_query.station_number - 1] << ' ';
+    time.Add(to_query.travel[to_query.station_number - 1]);
+    time.Print();
+    std::cout << "-> xx-xx xx:xx ";
+    std::cout << to_query.price[to_query.station_number - 1] << " x\n";
   }
   return;
 }
@@ -349,23 +373,23 @@ Time TrainInfo::AskOutTime(int index, int month, int day) {
   return start_time;
 }
 bool TrainInfo::IsSaleTime(int _m, int _d) {
-  if(_m < sale_month) {
+  if (_m < sale_month) {
     return false;
   }
-  if((_m == sale_month) && (_d < sale_day)) {
+  if ((_m == sale_month) && (_d < sale_day)) {
     return false;
   }
-  if(_m > des_month) {
+  if (_m > des_month) {
     return false;
   }
-  if((_m == des_month) && (_d > des_day)) {
+  if ((_m == des_month) && (_d > des_day)) {
     return false;
   }
   return true;
 }
 Time TrainInfo::AskLeaveTime(int index, int _m, int _d) {
   Time ans(_m, _d, start_hour, start_minute);
-  for(int i = 1; i <= index; i++) {
+  for (int i = 1; i <= index; i++) {
     ans.Add(travel[i]);
     ans.Add(stop[i]);
   }
@@ -373,7 +397,7 @@ Time TrainInfo::AskLeaveTime(int index, int _m, int _d) {
 }
 Time TrainInfo::AskArriveTime(int index, int _m, int _d) {
   Time ans(_m, _d, start_hour, start_minute);
-  for(int i = 1; i < index; i++) {
+  for (int i = 1; i < index; i++) {
     ans.Add(travel[i]);
     ans.Add(stop[i]);
   }
