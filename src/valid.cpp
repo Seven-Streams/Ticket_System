@@ -1,4 +1,5 @@
 #include "../include/valid.hpp"
+#include <cstring>
 void CheckUsername(const char *str) {
   int len = strlen(str);
   if (len > 20 || (!len)) {
@@ -461,6 +462,14 @@ void CheckType(const char *str) {
   }
   if (str[0] < 'A' || str[0] > 'Z') {
     throw(SevenStream::exception("InvalidType"));
+  }
+  return;
+}
+void CheckNumber(const char *str) {
+  for(int i = 0; i < strlen(str); i++) {
+    if((str[i] < '0') || (str[i] > '9')) {
+      throw(SevenStream::exception("InvalidNumber."));
+    }
   }
   return;
 }

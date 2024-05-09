@@ -179,8 +179,9 @@ void ReleaseTrain(string &command) {
   }
   Time time(to_release.sale_month, to_release.sale_day, 1, 0);
   Time end_time(to_release.des_month, to_release.des_day, 1, 0);
-  TrainDay to_release_day(to_release.sale_month, to_release.sale_day, to_release.seat_number);
-  for(auto i = time; i < end_time; i.Add(60 * 24)) {
+  TrainDay to_release_day(to_release.sale_month, to_release.sale_day,
+                          to_release.seat_number);
+  for (auto i = time; i < end_time; i.Add(60 * 24)) {
     to_release_day.month = i.GetMonth();
     to_release_day.day = i.GetDay();
     trains_day.Insert(hash1, hash2, to_release_day);
@@ -309,9 +310,73 @@ bool TrainDay::operator<(const TrainDay &rhs) const {
   }
   return (day < rhs.month);
 }
-bool TrainDay::operator>(const TrainDay &rhs) const {
-  return rhs < (*this);
-}
+bool TrainDay::operator>(const TrainDay &rhs) const { return rhs < (*this); }
 bool TrainDay::operator==(const TrainDay &rhs) const {
   return ((!(rhs < (*this))) && (!((*this) < rhs)));
+}
+bool TrainInfo::IsReleased() { return released; }
+int TrainInfo::FindIndex(const char *str) {
+  for (int i = 0; i < station_number; i++) {
+    if (str == stations[i]) {
+      return i;
+    }
+  }
+  throw(SevenStream::exception("No such station."));
+}
+int TrainInfo::AskPrice(int start, int end) {
+  int ans = 0;
+  for (int i = (start + 1); i <= end; i++) {
+    ans += price[i];
+  }
+  return ans;
+}
+Time TrainInfo::AskOutTime(int index, int month, int day) {
+  Time start_time(month, day, start_hour, start_minute);
+  Time time = start_time;
+  for (int i = 1; i < index; i++) {
+    time.Add(travel[i]);
+    time.Add(stop[i]);
+  }
+  int final_month, final_day;
+  final_month = time.GetMonth();
+  final_day = time.GetDay();
+  while ((final_month != month) || (final_day != day)) {
+    time.Minus(24 * 60);
+    final_month = time.GetMonth();
+    final_day = time.GetDay();
+    start_time.Minus(24 * 60);
+  }
+  return start_time;
+}
+bool TrainInfo::IsSaleTime(int _m, int _d) {
+  if(_m < sale_month) {
+    return false;
+  }
+  if((_m == sale_month) && (_d < sale_day)) {
+    return false;
+  }
+  if(_m > des_month) {
+    return false;
+  }
+  if((_m == des_month) && (_d > des_day)) {
+    return false;
+  }
+  return true;
+}
+Time TrainInfo::AskLeaveTime(int index, int _m, int _d) {
+  Time ans(_m, _d, start_hour, start_minute);
+  for(int i = 1; i <= index; i++) {
+    ans.Add(travel[i]);
+    ans.Add(stop[i]);
+  }
+  return ans;
+}
+Time TrainInfo::AskArriveTime(int index, int _m, int _d) {
+  Time ans(_m, _d, start_hour, start_minute);
+  for(int i = 1; i < index; i++) {
+    ans.Add(travel[i]);
+    ans.Add(stop[i]);
+  }
+  ans.Add(travel[index]);
+  return ans;
 }

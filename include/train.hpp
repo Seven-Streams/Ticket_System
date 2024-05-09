@@ -1,6 +1,7 @@
 #include "utility.hpp"
 #include <cstring>
 #include <string>
+#include "exception.hpp"
 #ifndef TRAIN_HPP
 #define TRAIN_HPP
 using std::string;
@@ -26,6 +27,13 @@ private:
 public:
   TrainInfo() { memset(stations, '\0', sizeof(stations)); }
   ~TrainInfo() = default;
+  bool IsReleased();
+  int FindIndex(const char*);
+  int AskPrice(int, int);
+  Time AskOutTime(int, int, int);
+  bool IsSaleTime(int, int);
+  Time AskLeaveTime(int, int, int);
+  Time AskArriveTime(int, int, int);
   friend void AddTrain(string &);
   friend void ReleaseTrain(string &);
   friend void DeleteTrain(string &);
@@ -45,6 +53,7 @@ public:
   bool operator<(const TrainDay &rhs) const;
   bool operator==(const TrainDay &rhs) const;
   friend void ReleaseTrain(string &);
+  friend void Buy(std::string &, int);
 };
 void AddTrain(string &);
 void ReleaseTrain(string &);

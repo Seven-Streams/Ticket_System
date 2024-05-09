@@ -1,46 +1,196 @@
-#include "account.hpp"
-#include "exception.hpp"
-#include "store.hpp"
-#include "utility.hpp"
-#include "valid.hpp"
-#ifndef ORDER_HPP
-#define ORDER_HPP
-class OrderByTrain {
-private:
-  int start_station = 0;
-  int end_station = 0;
-  int number = 0;
-  int start_month = 0;
-  int start_day = 0;
-  int stamp = 0;
-public:
-  OrderByTrain(const OrderByTrain&) = default;
-  OrderByTrain() = default;
-  ~OrderByTrain() = default;
-  bool operator<(const OrderByTrain&) const;
-  bool operator>(const OrderByTrain&) const;
-  bool operator==(const OrderByTrain&) const;
-};
-class OrderByUser {
-private:
-  char Train_ID[21] = "";
-  char start_station[41] = "";
-  char end_station[41] = "";
-  int number = 0;
-  Time start_time, end_time;
-  int stamp = 0;
-  int status = 0;
-  int price = 0;
-//status = 1, OK; 2, pending; 3, refunded;
-public:
-  OrderByUser() = default;
-  OrderByUser(const OrderByUser& rhs) = default;
-  ~OrderByUser() = default;
-  bool operator<(const OrderByUser &) const;
-  bool operator>(const OrderByUser &) const;
-  bool operator==(const OrderByUser &) const;
-  void Print();
-  friend void QueryOrder(std::string&);
-};
-void QueryOrder(std::string &);
-#endif
+#include "../include/order.hpp"
+#include <cstring>
+#include <string>
+using std::string;
+sjtu::BPT<OrderByUser> order_user("order_user");
+sjtu::BPT<OrderByTrain> queue_list("queue");
+// Consider that if a user ordered first, the index will be smaller.
+extern sjtu::list<HashOfAccount> account_logged;
+extern sjtu::BPT<int> train_index;
+extern sjtu::MemoryRiver<TrainInfo, 1> train_info;
+extern sjtu::BPT<TrainDay> trains_day;
+void QueryOrder(string &command) {
+  string op = ProcessTxt(command);
+  if (op != "-u") {
+    throw(SevenStream::exception("The user doesn't log in."));
+  }
+  string user_name = ProcessTxt(command);
+  bool logged = false;
+  for (auto it = account_logged.begin(); it != account_logged.end(); it++) {
+    if ((*it) == user_name) {
+      logged = true;
+      break;
+    }
+  }
+  if (!logged) {
+    throw(SevenStream::exception("The account doesn't log in."));
+  }
+  unsigned long long hash1, hash2;
+  hash1 = sjtu::MyHash(user_name, exp1);
+  hash2 = sjtu::MyHash(user_name, exp2);
+  OrderByUser min_element;
+  min_element.stamp = maxn;
+  auto orders = order_user.find(hash1, hash2, min_element);
+  for (auto it = orders.begin(); it != orders.end(); it++) {
+    (*it).Print();
+  }
+  return;
+}
+
+bool OrderByTrain::operator<(const OrderByTrain &rhs) const {
+  if (start_month != rhs.start_month) {
+    return rhs.start_month > start_month;
+  }
+  if (start_day != rhs.start_day) {
+    return rhs.start_day > start_day;
+  }
+  return stamp < rhs.stamp;
+}
+bool OrderByTrain::operator>(const OrderByTrain &rhs) const {
+  return rhs < *this;
+}
+bool OrderByTrain::operator==(const OrderByTrain &rhs) const {
+  return (!(*this < rhs)) && (!(rhs < *this));
+}
+bool OrderByUser::operator<(const OrderByUser &rhs) const {
+  return stamp > rhs.stamp;
+}
+bool OrderByUser::operator>(const OrderByUser &rhs) const {
+  return stamp < rhs.stamp;
+}
+bool OrderByUser::operator==(const OrderByUser &rhs) const {
+  return stamp == rhs.stamp;
+}
+
+void OrderByUser::Print() {
+  switch (status) {
+  case (1): {
+    std::cout << "[success] ";
+    break;
+  }
+  case (2): {
+    std::cout << "[pending] ";
+    break;
+  }
+  case (3): {
+    std::cout << "[refunded] ";
+    break;
+  }
+  default: {
+    throw(SevenStream::exception("Invalid status."));
+  }
+  }
+  std::cout << Train_ID << ' ';
+  std::cout << start_station << ' ';
+  start_time.Print();
+  std::cout << "->";
+  std::cout << end_station << ' ';
+  end_time.Print();
+  std::cout << price << ' ';
+  std::cout << number << '\n';
+}
+
+void Buy(std::string &command, int stamp) {
+  bool queue = false;
+  string user, id, date, number_raw, start_station, end_station;
+  while (command != "") {
+    string op = ProcessTxt(command);
+    if (op == "-u") {
+      user = ProcessTxt(command);
+      CheckUsername(user.c_str());
+      continue;
+    }
+    if (op == "-i") {
+      id = ProcessTxt(command);
+      CheckTrainID(id.c_str());
+      continue;
+    }
+    if (op == "-d") {
+      date = ProcessTxt(command);
+      CheckDate(date.c_str());
+      continue;
+    }
+    if (op == "-n") {
+      number_raw = ProcessTxt(command);
+      CheckNumber(number_raw.c_str());
+      continue;
+    }
+    if (op == "-f") {
+      start_station = ProcessTxt(command);
+      CheckStation(start_station.c_str());
+      continue;
+    }
+    if (op == "-t") {
+      end_station = ProcessTxt(command);
+      CheckStation(end_station.c_str());
+      continue;
+    }
+    if (op == "-q") {
+      string res = ProcessTxt(command);
+      if ((res != "true") && (res != "false")) {
+        throw(SevenStream::exception("Invalid queue_status."));
+      }
+      if (res == "true") {
+        queue = true;
+      }
+    }
+  }
+  HashOfAccount hash_user(user);
+  bool logged = false;
+  for (auto it = account_logged.begin(); it != account_logged.end(); it++) {
+    if (hash_user == (*it)) {
+      logged = true;
+      break;
+    }
+  }
+  if (!logged) {
+    throw(SevenStream::exception("Not log in."));
+  }
+  unsigned long long id_hash1, id_hash2;
+  id_hash1 = sjtu::MyHash(id, exp1);
+  id_hash2 = sjtu::MyHash(id, exp2);
+  auto index_raw = train_index.find(id_hash1, id_hash2, minus_max);
+  int index = index_raw.front();
+  TrainInfo train_total;
+  train_info.read(train_total, index);
+  if (!train_total.IsReleased()) {
+    throw(SevenStream::exception("The train haven't been released."));
+  }
+  int start_index, end_index;
+  start_index = train_total.FindIndex(start_station.c_str());
+  end_index = train_total.FindIndex(end_station.c_str());
+  if (end_index <= start_index) {
+    throw(SevenStream::exception("Invalid station."));
+  }
+  int number = std::stoi(number_raw);
+  int price = train_total.AskPrice(start_index, end_index);
+  int ask_month = date[0] - '0';
+  ask_month *= 10;
+  ask_month += date[1] - '0';
+  int ask_day = date[3] - '0';
+  ask_day *= 10;
+  ask_day += date[4] - '0';
+  Time out_time = train_total.AskOutTime(start_index, ask_month, ask_day);
+  int out_month = out_time.GetMonth();
+  int out_day = out_time.GetDay();
+  if (!train_total.IsSaleTime(out_month, out_day)) {
+    throw(SevenStream::exception("Not in sale time."));
+  }
+  TrainDay acutual_train(out_month, out_day, 0);
+  auto find = trains_day.find(id_hash1, id_hash2, acutual_train);
+  acutual_train = find.front();
+  int available = 1e7;
+  for (int i = start_index; i < end_index; i++) {
+    available = std::min(available, acutual_train.ticket[i]);
+  }
+  if((available < number) && (!queue)) {
+    throw(SevenStream::exception("Not enough tickets."));
+  }
+  OrderByUser order_by_user;
+  strcpy(order_by_user.end_station, end_station.c_str());
+  strcpy(order_by_user.Train_ID, id.c_str());
+  strcpy(order_by_user.start_station, start_station.c_str());
+  order_by_user.number = number;
+  order_by_user.stamp = stamp;
+  order_by_user.price = price;
+}

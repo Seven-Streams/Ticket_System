@@ -3,6 +3,8 @@
 #include "store.hpp"
 #include "utility.hpp"
 #include "valid.hpp"
+#include <string>
+#include "train.hpp"
 #ifndef ORDER_HPP
 #define ORDER_HPP
 class OrderByTrain {
@@ -20,6 +22,7 @@ public:
   bool operator<(const OrderByTrain&) const;
   bool operator>(const OrderByTrain&) const;
   bool operator==(const OrderByTrain&) const;
+  friend void Buy(std::string&, int);
 };
 class OrderByUser {
 private:
@@ -41,6 +44,8 @@ public:
   bool operator==(const OrderByUser &) const;
   void Print();
   friend void QueryOrder(std::string&);
+  friend void Buy(std::string &, int);
 };
 void QueryOrder(std::string &);
+void Buy(std::string &, int);
 #endif

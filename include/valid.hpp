@@ -17,4 +17,5 @@ void CheckStartTime(const char*);
 void CheckInterTime(const char*);
 void CheckDate(const char*);
 void CheckType(const char*);
+void CheckNumber(const char*);
 #endif
