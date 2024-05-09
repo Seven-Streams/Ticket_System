@@ -1431,7 +1431,7 @@ public:
     return;
   }
   void Insert(const unsigned long long &hash1, unsigned long long hash2,
-              const int &value) {
+              const Value &value) {
     int total = B_total;
     if (total == 0) {
       Node res1;
@@ -1507,7 +1507,7 @@ public:
   }
 
   void Erase(const unsigned long long &hash_1, const unsigned long long &hash_2,
-             const int &value) {
+             const Value &value) {
     MyData to_delete;
     to_delete.hash1 = hash_1;
     to_delete.hash2 = hash_2;

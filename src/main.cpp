@@ -76,6 +76,11 @@ int main() {
         cout << stamp << "0\n";
         continue;
       }
+      if(type == "query_train") {
+        QueryTrain(command);
+        cout << stamp << "0\n";
+        continue;
+      }
     } catch (SevenStream::exception &e) {
       cout << stamp << " -1\n";
     }

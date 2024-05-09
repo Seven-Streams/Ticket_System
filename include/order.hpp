@@ -13,8 +13,8 @@ private:
   int start_month = 0;
   int start_day = 0;
   int stamp = 0;
+  unsigned long long user_hash1, user_hash2 = 0;
 public:
-  OrderByTrain(const OrderByTrain&) = default;
   OrderByTrain() = default;
   ~OrderByTrain() = default;
   bool operator<(const OrderByTrain&) const;
