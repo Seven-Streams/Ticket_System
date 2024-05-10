@@ -296,6 +296,15 @@ void Refund(std::string &command) {
       for (int j = it->start_station; j < it->end_station; j++) {
         train_actual.ticket[j] -= it->number;
       }
+      queue_list.Erase(id_hash1, id_hash2, *it);
+      OrderByUser to_change;
+      to_change.stamp = it->stamp;
+      auto to_find = order_user.find(it->user_hash1, it->user_hash2, to_change);
+      to_change = to_find.front();
+      to_change.status = 1;
+      order_user.Erase(it->user_hash1, it->user_hash2, to_change);
+      order_user.Insert(it->user_hash1, it->user_hash2, to_change);
     }
   }
+  return;
 }

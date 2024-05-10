@@ -1472,7 +1472,7 @@ public:
     ReadwithCache(res, B_root);
     while (res.datas[0].son != 0) {
       for (int i = 0; i < res.now_size; i++) {
-        if (to_find < res.datas[i]) {
+        if (to_find <= res.datas[i]) {
           ReadwithCache(res, res.datas[i].son);
           break;
         }
