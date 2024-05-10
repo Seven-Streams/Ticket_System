@@ -427,15 +427,21 @@ void QueryTicket(string &command) {
     }
     if (op == "-p") {
       string res = ProcessTxt(command);
-      if(command == "time") {
+      if (command == "time") {
         continue;
       }
-      if(command == "cost") {
+      if (command == "cost") {
         by_time = false;
       }
       throw(SevenStream::exception("Invalid priority type."));
     }
   }
+  int month = date[0] - '0';
+  month *= 10;
+  month += date[1] - '0';
+  int day = date[3] - '0';
+  day *= 10;
+  day += date[4] - '0';
   unsigned long long start_hash1, start_hash2;
   start_hash1 = sjtu::MyHash(start, exp1);
   start_hash2 = sjtu::MyHash(start, exp2);
@@ -444,4 +450,119 @@ void QueryTicket(string &command) {
   end_hash1 = sjtu::MyHash(end, exp1);
   end_hash2 = sjtu::MyHash(end, exp2);
   auto end_index_raw = station_database.find(end_hash1, end_hash2, -1);
+  sjtu::priority_queue<int> start_indexs, end_indexs;
+  for (auto it = start_index_raw.begin(); it != start_index_raw.end(); it++) {
+    start_indexs.push(*it);
+  }
+  for (auto it = end_index_raw.begin(); it != end_index_raw.end(); it++) {
+    end_indexs.push(*it);
+  }
+  sjtu::list<int> same_index;
+  int start_index, end_index;
+  while ((!start_indexs.empty()) && (!end_indexs.empty())) {
+    start_index = start_indexs.top();
+    end_index = end_indexs.top();
+    if (start_index == end_index) {
+      same_index.push_back(start_index);
+      start_indexs.pop();
+      end_indexs.pop();
+    } else {
+      if (start_index < end_index) {
+        start_indexs.pop();
+      } else {
+        end_indexs.pop();
+      }
+    }
+  } // to get the train_ID.
+  sjtu::list<AskData> condidate_trains;
+  for (auto it = same_index.begin(); it != same_index.end(); it++) {
+    TrainInfo res;
+    train_info.read(res, *it);
+    int start_index, end_index;
+    start_index = res.FindIndex(start.c_str());
+    end_index = res.FindIndex(end.c_str());
+    if (end_index > start_index) {
+      AskData to_push;
+      to_push.ID = res.ID;
+      to_push.end_index = end_index;
+      to_push.start_index = start_index;
+      to_push.price = res.AskPrice(start_index, end_index);
+      to_push.out_time = res.AskOutTime(start_index, month, day);
+      to_push.start_time = res.AskLeaveTime(start_index, to_push.out_time.GetMonth(), to_push.out_time.GetDay());
+      to_push.end_time = res.AskArriveTime(end_index, to_push.out_time.GetMonth(), to_push.out_time.GetDay());
+      to_push.time = res.AskTime(start_index, end_index);
+      condidate_trains.push_back(to_push);
+    }
+  }
+  sjtu::list<AskData> confirmed_data;
+  for (auto it = condidate_trains.begin(); it != condidate_trains.end(); it++) {
+    unsigned long long hash1, hash2;
+    hash1 = sjtu::MyHash(it->ID, exp1);
+    hash2 = sjtu::MyHash(it->ID, exp2);
+    TrainDay to_find((it->out_time).GetMonth(), (it->out_time).GetDay(), 0);
+    auto trains = trains_day.find(hash1, hash2, to_find);
+    if (trains.size()) {
+      auto to_check = trains.front();
+      if ((to_check.month == it->out_time.GetMonth()) &&
+          (to_check.day == it->out_time.GetDay())) {
+        int available = maxn;
+        for (int i = it->start_index; i < it->end_index; i++) {
+          available = std::min(available, to_check.ticket[i]);
+        }
+        it->seat = available;
+        confirmed_data.push_back(*it);
+      }
+    }
+  }
+  sjtu::list<AskData> output_list;
+  if(by_time) {
+    sjtu::priority_queue<AskData, SortTrainByTime> output;
+    for(auto it = confirmed_data.begin(); it != confirmed_data.end(); it++) {
+      output.push(*it);
+    }
+    while(!output.empty()) {
+      output_list.push_back(output.top());
+      output.pop();
+    }
+  } else {
+      sjtu::priority_queue<AskData, SortTrainByCost> output;
+    for(auto it = confirmed_data.begin(); it != confirmed_data.end(); it++) {
+      output.push(*it);
+    }
+    while(!output.empty()) {
+      output_list.push_back(output.top());
+      output.pop();
+    } 
+  }
+  std::cout << output_list.size() << '\n';
+  for(auto it = output_list.begin(); it != output_list.end(); it++) {
+    std::cout << it->ID << ' ' << start << ' ';
+    it->start_time.Print();
+    std::cout << "-> " << end << ' ';
+    it->end_time.Print();
+    std::cout << it->price << ' ' << it->seat << '\n';
+  }
+  return;
+}
+
+int TrainInfo::AskTime(int start_index, int end_index) {
+  int ans = 0;
+  for (int i = start_index + 1; i < end_index; i++) {
+    ans += travel[i];
+    ans += stop[i];
+  }
+  ans += travel[end_index];
+  return ans;
+}
+bool SortTrainByTime::operator()(AskData lhs, AskData rhs) {
+  if (lhs.time != rhs.time) {
+    return (lhs.time < rhs.time);
+  }
+  return (lhs.ID < rhs.ID);
+}
+bool SortTrainByCost::operator()(AskData lhs, AskData rhs) {
+  if (lhs.price != rhs.price) {
+    return (lhs.price < rhs.price);
+  }
+  return (lhs.ID < rhs.ID);
 }

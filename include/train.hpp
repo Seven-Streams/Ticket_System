@@ -5,6 +5,22 @@
 #ifndef TRAIN_HPP
 #define TRAIN_HPP
 using std::string;
+class AskData {
+private:
+  int start_index;
+  int end_index;
+  int price = 0;
+  int time = 0;
+  Time start_time;
+  Time end_time;
+  Time out_time;
+  string ID = "";
+  int seat;
+public:
+  friend void QueryTicket(string&);
+  friend class SortTrainByTime;
+  friend class SortTrainByCost;
+};
 class TrainInfo {
 private:
   char ID[21] = "";
@@ -30,14 +46,16 @@ public:
   bool IsReleased();
   int FindIndex(const char *);
   int AskPrice(int, int);
-  Time AskOutTime(int, int, int);
+  Time AskOutTime(int index, int month, int day);
   bool IsSaleTime(int, int);
   Time AskLeaveTime(int, int, int);
   Time AskArriveTime(int, int, int);
+  int AskTime(int, int);
   friend void AddTrain(string &);
   friend void ReleaseTrain(string &);
   friend void DeleteTrain(string &);
   friend void QueryTrain(string &);
+  friend void QueryTicket(string &);
 };
 class TrainDay {
 private:
@@ -56,6 +74,15 @@ public:
   friend void Buy(std::string &, int);
   friend void QueryTrain(string &);
   friend void Refund(string &);
+  friend void QueryTicket(string &);
+};
+class SortTrainByTime {
+public:
+  bool operator()(AskData, AskData);
+};
+class SortTrainByCost {
+public:
+  bool operator()(AskData, AskData);
 };
 void AddTrain(string &);
 void ReleaseTrain(string &);

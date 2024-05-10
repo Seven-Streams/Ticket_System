@@ -723,7 +723,7 @@ public:
   void clear() {
     file.open(file_name, std::ios::out);
     file.close();
-    for(int i = 1; i <= info_len; i++) {
+    for (int i = 1; i <= info_len; i++) {
       write_info(0, i);
     }
     return;
@@ -1459,8 +1459,8 @@ public:
     return;
   }
   sjtu::list<Value> find(const unsigned long long &hash_1,
-                   const unsigned long long &hash_2, const Value &min) {
-                    sjtu::list<Value> answers;
+                         const unsigned long long &hash_2, const Value &min) {
+    sjtu::list<Value> answers;
     if (B_total == 0) {
       return answers;
     }
@@ -1530,10 +1530,17 @@ namespace sjtu {
 /**
  * a container like std::priority_queue which is a heap internal.
  */
-
-template <typename T, class Compare = std::less<T>> class priority_queue {
+class Less {
+public:
+  bool operator()(int a, int b) {
+    return a < b;
+  }
+};
+template <typename T, class Compare = Less> class priority_queue {
   class Node;
+
 private:
+  Compare tool;
   Node *root = nullptr;
   size_t total = 0;
   void Clear() {
@@ -1545,122 +1552,121 @@ private:
     return;
   }
   Node *NodeMerge(Node *x, Node *y) {
-  if (x == nullptr) {
-    return y;
-  }
-  if (y == nullptr) {
-    return x;
-  } // The other child is empty.
-  Node *tmp = nullptr;
-  Node *x_ls, *x_rs, *y_ls, *y_rs;
-  x_ls = x->left_son;
-  x_rs = x->right_son;
-  y_ls = y->left_son;
-  y_rs = y->right_son;
-  int x_depth = x->depth;
-  int y_depth = y->depth;
-  Compare tool;
-  try {
-    if (!tool(*(x->value), *(y->value))) {
-      x->right_son = NodeMerge(x->right_son, y);
-      if (x->right_son == nullptr || x->left_son == nullptr) {
-        x->depth = 1;
-        if (x->left_son == nullptr) {
-          x->left_son = x->right_son;
-          x->right_son = nullptr;
-        }
-      } else {
-        x->depth = (x->right_son->depth) > (x->left_son->depth)
-                       ? x->left_son->depth + 1
-                       : x->right_son->depth + 1;
-        if (x->left_son->depth < x->right_son->depth) {
-          tmp = x->left_son;
-          x->left_son = x->right_son;
-          x->right_son = tmp;
-        }
-      }
-      return x;
-    } else {
-      y->right_son = NodeMerge(y->right_son, x);
-      if (y->right_son == nullptr || y->left_son == nullptr) {
-        y->depth = 1;
-        if (y->left_son == nullptr) {
-          y->left_son = y->right_son;
-          y->right_son = nullptr;
-        }
-      } else {
-        y->depth = (y->right_son->depth) > (y->left_son->depth)
-                       ? y->left_son->depth + 1
-                       : y->right_son->depth + 1;
-        if (y->left_son->depth < y->right_son->depth) {
-          tmp = y->left_son;
-          y->left_son = y->right_son;
-          y->right_son = tmp;
-        }
-      }
+    if (x == nullptr) {
       return y;
-    } // This part is to merge the larger ls and the rs of the relative root.
-  } catch (...) {
-    x->left_son = x_ls;
-    x->right_son = x_rs;
-    y->left_son = y_ls;
-    y->right_son = y_rs;
-    x->depth = x_depth;
-    y->depth = y_depth;
-    throw(1);
-    return nullptr;
+    }
+    if (y == nullptr) {
+      return x;
+    } // The other child is empty.
+    Node *tmp = nullptr;
+    Node *x_ls, *x_rs, *y_ls, *y_rs;
+    x_ls = x->left_son;
+    x_rs = x->right_son;
+    y_ls = y->left_son;
+    y_rs = y->right_son;
+    int x_depth = x->depth;
+    int y_depth = y->depth;
+    try {
+      if (tool((*(x->value)),(*(y->value)))) {
+        x->right_son = NodeMerge(x->right_son, y);
+        if (x->right_son == nullptr || x->left_son == nullptr) {
+          x->depth = 1;
+          if (x->left_son == nullptr) {
+            x->left_son = x->right_son;
+            x->right_son = nullptr;
+          }
+        } else {
+          x->depth = (x->right_son->depth) > (x->left_son->depth)
+                         ? x->left_son->depth + 1
+                         : x->right_son->depth + 1;
+          if (x->left_son->depth < x->right_son->depth) {
+            tmp = x->left_son;
+            x->left_son = x->right_son;
+            x->right_son = tmp;
+          }
+        }
+        return x;
+      } else {
+        y->right_son = NodeMerge(y->right_son, x);
+        if (y->right_son == nullptr || y->left_son == nullptr) {
+          y->depth = 1;
+          if (y->left_son == nullptr) {
+            y->left_son = y->right_son;
+            y->right_son = nullptr;
+          }
+        } else {
+          y->depth = (y->right_son->depth) > (y->left_son->depth)
+                         ? y->left_son->depth + 1
+                         : y->right_son->depth + 1;
+          if (y->left_son->depth < y->right_son->depth) {
+            tmp = y->left_son;
+            y->left_son = y->right_son;
+            y->right_son = tmp;
+          }
+        }
+        return y;
+      } // This part is to merge the larger ls and the rs of the relative root.
+    } catch (...) {
+      x->left_son = x_ls;
+      x->right_son = x_rs;
+      y->left_son = y_ls;
+      y->right_son = y_rs;
+      x->depth = x_depth;
+      y->depth = y_depth;
+      throw(1);
+      return nullptr;
+    }
   }
-}
-class Node {
-private:
-  Node *left_son = nullptr;
-  Node *right_son = nullptr;
-  T *value = nullptr;
-  int depth = 1;
+  class Node {
+  private:
+    Node *left_son = nullptr;
+    Node *right_son = nullptr;
+    T *value = nullptr;
+    int depth = 1;
 
-public:
-  friend class priority_queue;
-  Node() {
-    left_son = nullptr;
-    right_son = nullptr;
-    value = nullptr;
-    depth = 1;
-  }
-  Node(const Node &other) = delete;
-  Node(const T &input) {
-    left_son = nullptr;
-    right_son = nullptr;
-    value = new T(input);
-    depth = 1;
-  }
-  ~Node() { delete value; }
-  const T &GetValue() { return *value; }
-  void Copy(Node *other) {
-    this->value = new T(*(other->value));
-    this->depth = other->depth;
-    if (other->left_son != nullptr) {
-      this->left_son = new Node();
-      this->left_son->Copy(other->left_son);
+  public:
+    friend class priority_queue;
+    Node() {
+      left_son = nullptr;
+      right_son = nullptr;
+      value = nullptr;
+      depth = 1;
     }
-    if (other->right_son != nullptr) {
-      this->right_son = new Node();
-      this->right_son->Copy(other->right_son);
+    Node(const Node &other) = delete;
+    Node(const T &input) {
+      left_son = nullptr;
+      right_son = nullptr;
+      value = new T(input);
+      depth = 1;
     }
-    return;
-  }
-  void Clear() {
-    if (left_son != nullptr) {
-      left_son->Clear();
-      delete left_son;
+    ~Node() { delete value; }
+    const T &GetValue() { return *value; }
+    void Copy(Node *other) {
+      this->value = new T(*(other->value));
+      this->depth = other->depth;
+      if (other->left_son != nullptr) {
+        this->left_son = new Node();
+        this->left_son->Copy(other->left_son);
+      }
+      if (other->right_son != nullptr) {
+        this->right_son = new Node();
+        this->right_son->Copy(other->right_son);
+      }
+      return;
     }
-    if (right_son != nullptr) {
-      right_son->Clear();
-      delete right_son;
-    }
-    return;
-  } // This function is to clear all the child nodes.
-  friend class map;
-};
+    void Clear() {
+      if (left_son != nullptr) {
+        left_son->Clear();
+        delete left_son;
+      }
+      if (right_son != nullptr) {
+        right_son->Clear();
+        delete right_son;
+      }
+      return;
+    } // This function is to clear all the child nodes.
+    friend class map;
+  };
 
 public:
   /**
