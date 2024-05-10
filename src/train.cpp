@@ -302,7 +302,7 @@ void QueryTrain(string &command) {
     unsigned long long id_hash1, id_hash2;
     id_hash1 = sjtu::MyHash(id, exp1);
     id_hash2 = sjtu::MyHash(id, exp2);
-    auto raw_actual_train = trains_day.find(id_hash1, id_hash2 ,actual_train);
+    auto raw_actual_train = trains_day.find(id_hash1, id_hash2, actual_train);
     actual_train = raw_actual_train.front();
     std::cout << 0 << ' ' << actual_train.ticket[0] << '\n';
     for (int i = 1; i < (to_query.station_number - 1); i++) {
@@ -406,17 +406,42 @@ Time TrainInfo::AskArriveTime(int index, int _m, int _d) {
   return ans;
 }
 void QueryTicket(string &command) {
-  int number = 1;
-  string user;
-  while(command != "") {
+  string start, end, date;
+  bool by_time = true;
+  while (command != "") {
     string op = ProcessTxt(command);
-    if(op == "-u") {
-      user = ProcessTxt(command);
+    if (op == "-s") {
+      start = ProcessTxt(command);
+      CheckStation(start.c_str());
+      continue;
     }
-    if(op == "-n") {
+    if (op == "-t") {
+      end = ProcessTxt(command);
+      CheckStation(start.c_str());
+      continue;
+    }
+    if (op == "-d") {
+      date = ProcessTxt(command);
+      CheckDate(date.c_str());
+      continue;
+    }
+    if (op == "-p") {
       string res = ProcessTxt(command);
-      number = std::stoi(res);
+      if(command == "time") {
+        continue;
+      }
+      if(command == "cost") {
+        by_time = false;
+      }
+      throw(SevenStream::exception("Invalid priority type."));
     }
   }
-  
+  unsigned long long start_hash1, start_hash2;
+  start_hash1 = sjtu::MyHash(start, exp1);
+  start_hash2 = sjtu::MyHash(start, exp2);
+  auto start_index_raw = station_database.find(start_hash1, start_hash2, -1);
+  unsigned long long end_hash1, end_hash2;
+  end_hash1 = sjtu::MyHash(end, exp1);
+  end_hash2 = sjtu::MyHash(end, exp2);
+  auto end_index_raw = station_database.find(end_hash1, end_hash2, -1);
 }
