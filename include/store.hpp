@@ -744,7 +744,7 @@ private:
   struct MyData {
     unsigned long long hash1 = 0;
     unsigned long long hash2 = 0;
-    Value value = 0;
+    Value value;
     int son = 0;
     bool operator>(const MyData &other) {
       if (hash1 != other.hash1) {
@@ -1473,7 +1473,7 @@ public:
     ReadwithCache(res, B_root);
     while (res.datas[0].son != 0) {
       for (int i = 0; i < res.now_size; i++) {
-        if (to_find <= res.datas[i]) {
+        if ((to_find < res.datas[i])|| (to_find == res.datas[i])) {
           ReadwithCache(res, res.datas[i].son);
           break;
         }
