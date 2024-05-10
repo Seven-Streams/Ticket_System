@@ -18,12 +18,15 @@ public:
   void Print();
   int GetMonth();
   int GetDay();
+  friend int IntervalMinute(Time, Time);
   bool operator<(const Time &rhs) const;
   bool operator>(const Time &rhs) const;
   bool operator==(const Time &rhs) const;
 };
+int IntervalMinute(Time, Time);
+std::string ProcessTxt(std::string &);
+std::string ProcessMalValue(std::string &);
 namespace sjtu {
-
 template <class T1, class T2> class pair {
 public:
   T1 first;
@@ -40,6 +43,4 @@ public:
 };
 
 } // namespace sjtu
-std::string ProcessTxt(std::string &);
-std::string ProcessMalValue(std::string &);
 #endif

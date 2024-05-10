@@ -488,8 +488,10 @@ void QueryTicket(string &command) {
       to_push.start_index = start_index;
       to_push.price = res.AskPrice(start_index, end_index);
       to_push.out_time = res.AskOutTime(start_index, month, day);
-      to_push.start_time = res.AskLeaveTime(start_index, to_push.out_time.GetMonth(), to_push.out_time.GetDay());
-      to_push.end_time = res.AskArriveTime(end_index, to_push.out_time.GetMonth(), to_push.out_time.GetDay());
+      to_push.start_time = res.AskLeaveTime(
+          start_index, to_push.out_time.GetMonth(), to_push.out_time.GetDay());
+      to_push.end_time = res.AskArriveTime(
+          end_index, to_push.out_time.GetMonth(), to_push.out_time.GetDay());
       to_push.time = res.AskTime(start_index, end_index);
       condidate_trains.push_back(to_push);
     }
@@ -515,27 +517,27 @@ void QueryTicket(string &command) {
     }
   }
   sjtu::list<AskData> output_list;
-  if(by_time) {
+  if (by_time) {
     sjtu::priority_queue<AskData, SortTrainByTime> output;
-    for(auto it = confirmed_data.begin(); it != confirmed_data.end(); it++) {
+    for (auto it = confirmed_data.begin(); it != confirmed_data.end(); it++) {
       output.push(*it);
     }
-    while(!output.empty()) {
+    while (!output.empty()) {
       output_list.push_back(output.top());
       output.pop();
     }
   } else {
-      sjtu::priority_queue<AskData, SortTrainByCost> output;
-    for(auto it = confirmed_data.begin(); it != confirmed_data.end(); it++) {
+    sjtu::priority_queue<AskData, SortTrainByCost> output;
+    for (auto it = confirmed_data.begin(); it != confirmed_data.end(); it++) {
       output.push(*it);
     }
-    while(!output.empty()) {
+    while (!output.empty()) {
       output_list.push_back(output.top());
       output.pop();
-    } 
+    }
   }
   std::cout << output_list.size() << '\n';
-  for(auto it = output_list.begin(); it != output_list.end(); it++) {
+  for (auto it = output_list.begin(); it != output_list.end(); it++) {
     std::cout << it->ID << ' ' << start << ' ';
     it->start_time.Print();
     std::cout << "-> " << end << ' ';
@@ -565,4 +567,58 @@ bool SortTrainByCost::operator()(AskData lhs, AskData rhs) {
     return (lhs.price < rhs.price);
   }
   return (lhs.ID < rhs.ID);
+}
+void QueryTransfer(string &command) {
+  string start, end, date;
+  bool by_time = true;
+  while (command != "") {
+    string op = ProcessTxt(command);
+    if (op == "-s") {
+      start = ProcessTxt(command);
+      CheckStation(start.c_str());
+      continue;
+    }
+    if (op == "-t") {
+      end = ProcessTxt(command);
+      CheckStation(start.c_str());
+      continue;
+    }
+    if (op == "-d") {
+      date = ProcessTxt(command);
+      CheckDate(date.c_str());
+      continue;
+    }
+    if (op == "-p") {
+      string res = ProcessTxt(command);
+      if (command == "time") {
+        continue;
+      }
+      if (command == "cost") {
+        by_time = false;
+      }
+      throw(SevenStream::exception("Invalid priority type."));
+    }
+  }
+  int month = date[0] - '0';
+  month *= 10;
+  month += date[1] - '0';
+  int day = date[3] - '0';
+  day *= 10;
+  day += date[4] - '0';
+  unsigned long long start_hash1, start_hash2;
+  start_hash1 = sjtu::MyHash(start, exp1);
+  start_hash2 = sjtu::MyHash(start, exp2);
+  auto start_index_raw = station_database.find(start_hash1, start_hash2, -1);
+  unsigned long long end_hash1, end_hash2;
+  end_hash1 = sjtu::MyHash(end, exp1);
+  end_hash2 = sjtu::MyHash(end, exp2);
+  auto end_index_raw = station_database.find(end_hash1, end_hash2, -1);
+  sjtu::map<string, bool, SortString> end_ids;
+  for(auto it = end_index_raw.begin(); it != end_index_raw.end(); it++) {
+    end_ids.insert(sjtu::pair<string, bool>(*it, true));
+  }
+}
+
+bool SortString::operator()(string str1, string str2) {
+  return (str1 < str2);
 }

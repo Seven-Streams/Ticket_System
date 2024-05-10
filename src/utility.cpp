@@ -1,4 +1,5 @@
 #include "../include/utility.hpp"
+#include <fstream>
 using std::cout;
 using std::string;
 string ProcessTxt(string &txt) {
@@ -99,33 +100,58 @@ void Time::Print() {
     cout << 0;
   }
   cout << hour << ':';
-  if(minute < 10) {
+  if (minute < 10) {
     cout << 0;
   }
   cout << minute << ' ';
   return;
 }
-int Time::GetMonth() {
-  return month;
-}
-int Time::GetDay() {
-  return day;
-}
-bool Time::operator<(const Time&rhs) const {
-  if(month != rhs.month) {
+int Time::GetMonth() { return month; }
+int Time::GetDay() { return day; }
+bool Time::operator<(const Time &rhs) const {
+  if (month != rhs.month) {
     return (month < rhs.month);
   }
-  if(day != rhs.day) {
+  if (day != rhs.day) {
     return (day < rhs.day);
   }
-  if(hour != rhs.hour) {
+  if (hour != rhs.hour) {
     return (hour < rhs.hour);
   }
   return (minute < rhs.minute);
 }
-bool Time::operator>(const Time&rhs) const {
-  return (rhs < (*this));
-}
-bool Time::operator==(const Time&rhs) const {
+bool Time::operator>(const Time &rhs) const { return (rhs < (*this)); }
+bool Time::operator==(const Time &rhs) const {
   return ((!((*this) < rhs)) && (!(rhs < (*this))));
+}
+int IntervalMinute(Time time1, Time time2) {
+  int ans = 0;
+  if (time1 == time2) {
+    return 0;
+  }
+  if (time1 > time2) {
+    std::swap(time1, time2);
+  }
+  while (time1 < time2) {
+    time2.Minus(24 * 60);
+    ans += 24 * 60;
+  }
+  if(time1 == time2) {
+    return ans;
+  }
+  time2.Add(24 * 60);
+  ans -= 24 * 60;
+  while(time1 < time2) {
+    time2.Minus(60);
+    ans += 60;
+  }
+  if(time1 == time2) {
+    return ans;
+  }
+  time2.Add(60);
+  while(time1 < time2) {
+    time2.Minus(1);
+    ans++;
+  }
+  return ans;
 }

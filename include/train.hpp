@@ -21,6 +21,13 @@ public:
   friend class SortTrainByTime;
   friend class SortTrainByCost;
 };
+class TransferData {
+private:
+  AskData line1, line2;
+  int stop_time;
+public:
+  friend void QueryTransfer(string &);
+};
 class TrainInfo {
 private:
   char ID[21] = "";
@@ -84,9 +91,14 @@ class SortTrainByCost {
 public:
   bool operator()(AskData, AskData);
 };
+class SortString {
+public:
+  bool operator()(string, string);
+};
 void AddTrain(string &);
 void ReleaseTrain(string &);
 void DeleteTrain(string &);
 void QueryTrain(string &);
 void QueryTicket(string &);
+void QueryTransfer(string &);
 #endif
