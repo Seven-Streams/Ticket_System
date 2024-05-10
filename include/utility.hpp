@@ -16,8 +16,8 @@ public:
   void Add(int);
   void Minus(int);
   void Print();
-  int GetMonth();
-  int GetDay();
+  int GetMonth() const;
+  int  GetDay() const;
   friend int IntervalMinute(Time, Time);
   bool operator<(const Time &rhs) const;
   bool operator>(const Time &rhs) const;

@@ -106,8 +106,8 @@ void Time::Print() {
   cout << minute << ' ';
   return;
 }
-int Time::GetMonth() { return month; }
-int Time::GetDay() { return day; }
+int Time::GetMonth() const { return month; }
+int Time::GetDay()const  { return day; }
 bool Time::operator<(const Time &rhs) const {
   if (month != rhs.month) {
     return (month < rhs.month);

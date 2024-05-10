@@ -5,28 +5,35 @@
 #ifndef TRAIN_HPP
 #define TRAIN_HPP
 using std::string;
+const int smell = 114514191;
 class AskData {
 private:
   int start_index;
   int end_index;
-  int price = 0;
-  int time = 0;
+  int price = smell;
+  int time = smell;
   Time start_time;
   Time end_time;
   Time out_time;
   string ID = "";
   int seat;
+
 public:
-  friend void QueryTicket(string&);
+  friend void QueryTicket(string &);
+  friend void QueryTransfer(string &);
   friend class SortTrainByTime;
   friend class SortTrainByCost;
+  friend class CompareTransferByCost;
+  friend class CompareTransferByTime;
 };
 class TransferData {
 private:
   AskData line1, line2;
-  int stop_time;
+  string transfer = "";
 public:
   friend void QueryTransfer(string &);
+  friend class CompareTransferByCost;
+  friend class CompareTransferByTime;
 };
 class TrainInfo {
 private:
@@ -57,12 +64,14 @@ public:
   bool IsSaleTime(int, int);
   Time AskLeaveTime(int, int, int);
   Time AskArriveTime(int, int, int);
+  bool CheckAvailable(const Time &);
   int AskTime(int, int);
   friend void AddTrain(string &);
   friend void ReleaseTrain(string &);
   friend void DeleteTrain(string &);
   friend void QueryTrain(string &);
   friend void QueryTicket(string &);
+  friend void QueryTransfer(string &);
 };
 class TrainDay {
 private:
@@ -82,6 +91,7 @@ public:
   friend void QueryTrain(string &);
   friend void Refund(string &);
   friend void QueryTicket(string &);
+  friend void QueryTransfer(string &);
 };
 class SortTrainByTime {
 public:
@@ -91,9 +101,13 @@ class SortTrainByCost {
 public:
   bool operator()(AskData, AskData);
 };
-class SortString {
+class CompareTransferByCost {
 public:
-  bool operator()(string, string);
+  bool operator()(TransferData, TransferData);
+};
+class CompareTransferByTime {
+public:
+  bool operator()(TransferData, TransferData);
 };
 void AddTrain(string &);
 void ReleaseTrain(string &);

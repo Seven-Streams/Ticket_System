@@ -2,6 +2,7 @@
 #include "../include/exception.hpp"
 #include "../include/store.hpp"
 #include "../include/valid.hpp"
+#include <algorithm>
 #include <cstring>
 #include <string>
 sjtu::BPT<int> train_index("train_index");
@@ -333,7 +334,7 @@ bool TrainDay::operator<(const TrainDay &rhs) const {
   if (month != rhs.month) {
     return month < rhs.month;
   }
-  return (day < rhs.month);
+  return (day < rhs.day);
 }
 bool TrainDay::operator>(const TrainDay &rhs) const { return rhs < (*this); }
 bool TrainDay::operator==(const TrainDay &rhs) const {
@@ -569,6 +570,7 @@ bool SortTrainByCost::operator()(AskData lhs, AskData rhs) {
   return (lhs.ID < rhs.ID);
 }
 void QueryTransfer(string &command) {
+  TransferData ans;
   string start, end, date;
   bool by_time = true;
   while (command != "") {
@@ -613,12 +615,187 @@ void QueryTransfer(string &command) {
   end_hash1 = sjtu::MyHash(end, exp1);
   end_hash2 = sjtu::MyHash(end, exp2);
   auto end_index_raw = station_database.find(end_hash1, end_hash2, -1);
-  sjtu::map<string, bool, SortString> end_ids;
-  for(auto it = end_index_raw.begin(); it != end_index_raw.end(); it++) {
-    end_ids.insert(sjtu::pair<string, bool>(*it, true));
+  sjtu::map<int, bool> end_indexs;
+  for (auto it = end_index_raw.begin(); it != end_index_raw.end(); it++) {
+    end_indexs[*it] = true;
   }
+  sjtu::list<TransferData> transfers;
+  for (auto it = start_index_raw.begin(); it != start_index_raw.end(); it++) {
+    TrainInfo res;
+    train_info.read(res, *it);
+    int start_index = res.FindIndex(start.c_str());
+    Time out_time = res.AskOutTime(start_index, month, day);
+    if (!res.CheckAvailable(out_time)) {
+      continue;
+    }
+    unsigned long long id_hash1, id_hash2;
+    id_hash1 = sjtu::MyHash(res.ID, exp1);
+    id_hash2 = sjtu::MyHash(res.ID, exp2);
+    TrainDay actual_train;
+    actual_train.month = out_time.GetMonth();
+    actual_train.day = out_time.GetDay();
+    auto day_trains_raw = trains_day.find(id_hash1, id_hash2, actual_train);
+    if (day_trains_raw.empty() ||
+        (day_trains_raw.front().day != actual_train.day) ||
+        (day_trains_raw.front().month != day_trains_raw.front().month)) {
+      continue;
+    }
+    AskData first_train;
+    first_train.ID = res.ID;
+    first_train.out_time = out_time;
+    first_train.start_time =
+        res.AskLeaveTime(start_index, out_time.GetMonth(), out_time.GetDay());
+    first_train.seat = 2e7;
+    for (int i = (start_index + 1); i < res.station_number; i++) {
+      string inter_station = res.stations[i];
+      unsigned long long station_hash1, station_hash2;
+      station_hash1 = sjtu::MyHash(inter_station, exp1);
+      station_hash2 = sjtu::MyHash(inter_station, exp2);
+      first_train.end_time =
+          res.AskArriveTime(i, out_time.GetMonth(), out_time.GetDay());
+      first_train.time = res.AskTime(start_index, i);
+      first_train.price = res.AskPrice(start_index, i);
+      first_train.seat = std::min(actual_train.ticket[i - 1], first_train.seat);
+      auto possible_trains =
+          station_database.find(station_hash1, station_hash2, -1);
+      for (auto it2 = possible_trains.begin(); it2 != possible_trains.end();
+           it++) {
+        if (!end_indexs.count(*it2)) {
+          continue;
+        } // Can't reach the target.
+        if ((*it) == (*it2)) {
+          continue;
+        }
+        TrainInfo second_train_info;
+        train_info.read(second_train_info, *it2);
+        if (!second_train_info.CheckAvailable(first_train.end_time)) {
+          continue;
+        }
+        int start_index2, end_index2;
+        start_index2 = second_train_info.FindIndex(inter_station.c_str());
+        end_index2 = second_train_info.FindIndex(end.c_str());
+        if (end_index2 < start_index2) {
+          continue;
+        } // The direction is reversed.
+        Time test_out_time;
+        test_out_time = second_train_info.AskOutTime(
+            start_index2, first_train.end_time.GetMonth(),
+            first_train.end_time.GetDay());
+        Time test_leave_time;
+        test_leave_time = second_train_info.AskLeaveTime(
+            start_index2, test_out_time.GetMonth(), test_out_time.GetDay());
+        while (test_leave_time < first_train.end_time) {
+          test_out_time.Add(24 * 60);
+          test_leave_time = second_train_info.AskLeaveTime(
+              start_index2, test_out_time.GetMonth(), test_out_time.GetDay());
+        }
+        unsigned long long id2_hash1, id2_hash2;
+        id2_hash1 = sjtu::MyHash(second_train_info.ID, exp1);
+        id2_hash2 = sjtu::MyHash(second_train_info.ID, exp2);
+        TrainDay second_day_train;
+        second_day_train.month = test_out_time.GetMonth();
+        second_day_train.day = test_out_time.GetDay();
+        auto second_day_trains =
+            trains_day.find(id2_hash1, id2_hash2, second_day_train);
+        if (second_day_trains.empty()) {
+          continue;
+        }
+        second_day_train = second_day_trains.front();
+        AskData second_train;
+        second_train.ID = second_train_info.ID;
+        second_train.start_index = start_index2;
+        second_train.end_index = end_index2;
+        second_train.time = second_train_info.AskTime(start_index2, end_index2);
+        second_train.price =
+            second_train_info.AskPrice(start_index2, end_index2);
+        second_train.out_time = second_train_info.AskLeaveTime(
+            0, test_out_time.GetMonth(), test_out_time.GetDay());
+        second_train.end_time = second_train_info.AskArriveTime(
+            end_index2, test_out_time.GetMonth(), test_out_time.GetDay());
+        second_train.seat = 2e7;
+        for (int k = start_index2; k < end_index2; k++) {
+          second_train.seat =
+              std::min(second_train.seat, second_day_train.ticket[k]);
+        }
+        TransferData condidate_answer;
+        condidate_answer.line1 = first_train;
+        condidate_answer.line2 = second_train;
+        condidate_answer.transfer = inter_station;
+        if(by_time) {
+          CompareTransferByTime tool;
+          if(tool(condidate_answer, ans)) {
+            ans = condidate_answer;
+          }
+        } else {
+          CompareTransferByCost tool;
+          if(tool(condidate_answer, ans)) {
+            ans = condidate_answer;
+          }
+        }
+      }
+    }
+  }
+  if(ans.transfer == "") {
+    std::cout << 0 << '\n';
+    return;
+  }
+  std::cout << ans.line1.ID << ' ' << start << ' ';
+  ans.line1.start_time.Print();
+  std::cout << "-> " << ans.transfer;
+  ans.line1.end_time.Print();
+  std::cout << ans.line1.price << ' ' << ans.line1.seat << '\n';
+  std::cout << ans.line2.ID << ' ' << ans.transfer << ' ';
+  ans.line2.start_time.Print();
+  std::cout << "-> " << end;
+  ans.line2.end_time.Print();
+  std::cout << ans.line2.price << ' ' << ans.line2.seat << '\n';
+  return;
 }
 
-bool SortString::operator()(string str1, string str2) {
-  return (str1 < str2);
+bool TrainInfo::CheckAvailable(const Time &out_time) {
+  if (out_time.GetMonth() < sale_month) {
+    return false;
+  }
+  if (out_time.GetMonth() > des_month) {
+    return false;
+  }
+  if ((out_time.GetMonth() == sale_month) && (out_time.GetDay() < sale_day)) {
+    return false;
+  }
+  if ((out_time.GetMonth() == des_month) && (out_time.GetDay() > des_day)) {
+    return false;
+  }
+  return true;
+}
+bool CompareTransferByCost::operator()(TransferData lhs, TransferData rhs) {
+  int price_1 = (lhs.line1.price + lhs.line2.price);
+  int price_2 = (rhs.line1.price + rhs.line2.price);
+  if (price_1 != price_2) {
+    return price_1 < price_2;
+  }
+  int time_1 = IntervalMinute(lhs.line1.start_time, lhs.line2.end_time);
+  int time_2 = IntervalMinute(rhs.line1.start_time, rhs.line2.end_time);
+  if (time_1 != time_2) {
+    return (time_1 < time_2);
+  }
+  if (lhs.line1.ID != rhs.line1.ID) {
+    return (lhs.line1.ID < rhs.line1.ID);
+  }
+  return (lhs.line2.ID < rhs.line2.ID);
+}
+bool CompareTransferByTime::operator()(TransferData lhs, TransferData rhs) {
+  int time_1 = IntervalMinute(lhs.line1.start_time, lhs.line2.end_time);
+  int time_2 = IntervalMinute(rhs.line1.start_time, rhs.line2.end_time);
+  if (time_1 != time_2) {
+    return (time_1 < time_2);
+  }
+  int price_1 = (lhs.line1.price + lhs.line2.price);
+  int price_2 = (rhs.line1.price + rhs.line2.price);
+  if (price_1 != price_2) {
+    return price_1 < price_2;
+  }
+  if (lhs.line1.ID != rhs.line1.ID) {
+    return (lhs.line1.ID < rhs.line1.ID);
+  }
+  return (lhs.line2.ID < rhs.line2.ID);
 }
