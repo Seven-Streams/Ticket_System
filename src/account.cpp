@@ -138,12 +138,13 @@ void AddAccount(string command) {
   hash1_of_new = sjtu::MyHash(user_name, exp1);
   hash2_of_new = sjtu::MyHash(user_name, exp2);
   auto check = account_index.find(hash1_of_new, hash2_of_new, minus_max);
-  if (account_index.find(hash1_of_new, hash2_of_new, minus_max).empty()) {
+  if (!account_index.find(hash1_of_new, hash2_of_new, minus_max).empty()) {
     throw(SevenStream::exception("The account has been created."));
   }
   unsigned long long hash1_of_current, hash2_of_current;
   hash1_of_current = sjtu::MyHash(current_user, exp1);
   hash2_of_current = sjtu::MyHash(current_user, exp2);
+  check = account_index.find(hash1_of_current, hash2_of_current, minus_max);
   int index = check.front();
   Account current_account = GetAccount(index);
   if (current_account.privilege <= pr) {
@@ -169,12 +170,20 @@ void AddFirstAccount(string command) {
   while (command != "") {
     string res = ProcessTxt(command);
     if (res[0] != '-') {
-      throw(SevenStream::exception("Incorrect input."));
+      throw(SevenStream::exception("Incorrect input1."));
     }
     switch (res[1]) {
+    case 'c': {
+      ProcessTxt(command);
+      break;
+    }
+    case 'g': {
+      ProcessTxt(command);
+      break;
+    }
     case 'u': {
       if (u == true) {
-        throw(SevenStream::exception("Incorrect input."));
+        throw(SevenStream::exception("Incorrect input2."));
       }
       u = true;
       user_name = ProcessTxt(command);
@@ -182,7 +191,7 @@ void AddFirstAccount(string command) {
     }
     case 'p': {
       if (p == true) {
-        throw(SevenStream::exception("Incorrect input."));
+        throw(SevenStream::exception("Incorrect input3."));
       }
       p = true;
       password = ProcessTxt(command);
@@ -190,7 +199,7 @@ void AddFirstAccount(string command) {
     }
     case 'n': {
       if (n == true) {
-        throw(SevenStream::exception("Incorrect input."));
+        throw(SevenStream::exception("Incorrect input4."));
       }
       n = true;
       name = ProcessTxt(command);
@@ -198,19 +207,19 @@ void AddFirstAccount(string command) {
     }
     case 'm': {
       if (m == true) {
-        throw(SevenStream::exception("Incorrect input."));
+        throw(SevenStream::exception("Incorrect input5."));
       }
       m = true;
       mail = ProcessTxt(command);
       break;
     }
     default: {
-      throw(SevenStream::exception("Incorrect input."));
+      throw(SevenStream::exception("Incorrect input6."));
     }
     }
   }
   if ((!u) || (!p) || (!n) || (!m)) {
-    throw(SevenStream::exception("Incorrect input."));
+    throw(SevenStream::exception("Incorrect input7."));
   }
   CheckUsername(user_name.c_str());
   CheckPassword(password.c_str());
@@ -365,7 +374,7 @@ string QueryAccount(string command) {
   }
   int query_index = query_raw.front();
   Account query_account = GetAccount(query_index);
-  if (query_account.privilege >= current_account.privilege) {
+  if (query_account.privilege >= current_account.privilege && (to_query != current)){
     throw(SevenStream::exception("Not enough privilege."));
   }
   string query_ans;

@@ -1,5 +1,6 @@
 #include "../include/valid.hpp"
 #include <cstring>
+#include <iostream>
 void CheckUsername(const char *str) {
   int len = strlen(str);
   if (len > 20 || (!len)) {
@@ -39,8 +40,8 @@ void Checkname(const char *str) {
   int len = strlen(str);
   int total = 0;
   for (int i = 0; i < len; i++, total++) {
-    if (str[i] > 0) {
-      long long byte1 = static_cast<unsigned char>(str[i]);
+    long long byte1 = static_cast<unsigned char>(str[i]);
+    if (byte1 > 127) {
       long long trans = byte1;
       int how_many = 0;
       for (int i = 8; i; i--) {
@@ -56,7 +57,7 @@ void Checkname(const char *str) {
       }
       if (how_many == 2) {
         if (i + 1 >= len) {
-          throw(SevenStream::exception("InvalidName"));
+          throw(SevenStream::exception("InvalidName1"));
         }
         long long byte2 = static_cast<unsigned char>(str[i + 1]);
         trans -= 192;
@@ -66,7 +67,7 @@ void Checkname(const char *str) {
       }
       if (how_many == 3) {
         if (i + 2 >= len) {
-          throw(SevenStream::exception("InvalidName"));
+          throw(SevenStream::exception("InvalidName2"));
         }
         long long byte2 = static_cast<unsigned char>(str[i + 1]);
         trans -= 224;
@@ -80,7 +81,7 @@ void Checkname(const char *str) {
       }
       if (how_many == 4) {
         if (i + 3 >= len) {
-          throw(SevenStream::exception("InvalidName"));
+          throw(SevenStream::exception("InvalidName3"));
         }
         long long byte2 = static_cast<unsigned char>(str[i + 1]);
         trans -= 240;
@@ -144,13 +145,16 @@ void Checkname(const char *str) {
         i += (how_many - 1);
         continue;
       }
-      throw(SevenStream::exception("InvalidName"));
+      throw(SevenStream::exception("InvalidName4"));
     } else {
-      throw(SevenStream::exception("InvalidName"));
+      if (str[i] == 0) {
+        continue;
+      }
+      throw(SevenStream::exception("InvalidName5"));
     }
   }
   if ((total > 5) || (total < 2)) {
-    throw(SevenStream::exception("InvalidName"));
+    throw(SevenStream::exception("InvalidName6"));
   }
   return;
 }
@@ -466,8 +470,8 @@ void CheckType(const char *str) {
   return;
 }
 void CheckNumber(const char *str) {
-  for(int i = 0; i < strlen(str); i++) {
-    if((str[i] < '0') || (str[i] > '9')) {
+  for (int i = 0; i < strlen(str); i++) {
+    if ((str[i] < '0') || (str[i] > '9')) {
       throw(SevenStream::exception("InvalidNumber."));
     }
   }

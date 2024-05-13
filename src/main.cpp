@@ -45,7 +45,7 @@ int main() {
   while (!cin.eof()) {
     string stamp;
     try {
-      cin >> command;
+      getline(cin, command);
       stamp = ProcessTxt(command);
       string type;
       type = ProcessTxt(command);
@@ -57,31 +57,31 @@ int main() {
           AddFirstAccount(command);
           has_account = true;
         }
-        cout << "0\n";
+        cout << "0" << std::endl;
         continue;
       }
       if (type == "login") {
         cout << stamp << ' ';
         Login(command);
-        cout << "0\n";
+        cout << "0" << std::endl;
         continue;
       }
       if (type == "logout") {
         cout << stamp << ' ';
         Logout(command);
-        cout << "0\n";
+        cout << "0" << std::endl;
         continue;
       }
       if (type == "query_profile") {
         cout << stamp << ' ';
         std::string ans = QueryAccount(command);
-        cout << ans << '\n';
+        cout << ans << std::endl;
         continue;
       }
       if (type == "modify_profile") {
         cout << stamp << ' ';
         std::string ans = ModifyAccount(command);
-        cout << ans << '\n';
+        cout << ans << std::endl;
         continue;
       }
       if (type == "exit") {
@@ -148,7 +148,8 @@ int main() {
         continue;
       }
     } catch (SevenStream::exception &e) {
-      cout << stamp << "-1\n";
+      // cout << e.what() << std::endl;
+      cout <<  "-1" << std::endl;
     }
   }
   return 0;
