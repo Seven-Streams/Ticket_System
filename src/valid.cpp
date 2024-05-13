@@ -234,13 +234,13 @@ void CheckSeatNum(const char *str) {
   int res = 0;
   for (int i = 0; i < len; i++) {
     if (str[i] < '0' || str[i] > '9') {
-      throw(SevenStream::exception("InvalidStaNum"));
+      throw(SevenStream::exception("InvalidSeatNum"));
     }
     res *= 10;
     res += (str[i] - '0');
   };
-  if (res < 1 || res > 10000) {
-    throw(SevenStream::exception("InvalidStaNum"));
+  if (res < 1 || res > 100000) {
+    throw(SevenStream::exception("InvalidSeatNum"));
   }
   return;
 }
@@ -248,8 +248,8 @@ void CheckStation(const char *str) {
   int len = strlen(str);
   int total = 0;
   for (int i = 0; i < len; i++, total++) {
-    if (str[i] > 0) {
-      long long byte1 = static_cast<unsigned char>(str[i]);
+    long long byte1 = static_cast<unsigned char>(str[i]);
+    if (byte1 > 127) {
       long long trans = byte1;
       int how_many = 0;
       for (int i = 8; i; i--) {

@@ -148,8 +148,8 @@ int main() {
         continue;
       }
     } catch (SevenStream::exception &e) {
-      // cout << e.what() << std::endl;
-      cout <<  "-1" << std::endl;
+      cout << e.what() << std::endl;
+      // cout <<  "-1" << std::endl;
     }
   }
   return 0;
