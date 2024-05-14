@@ -147,13 +147,6 @@ void AddTrain(std::string &command) {
   train_info.write_info(current, 1);
   train_info.write(res, current);
   train_index.Insert(hash1, hash2, current);
-  for (int i = 0; i < num; i++) {
-    unsigned long long station_hash1, station_hash2;
-    string station(res.stations[i]);
-    station_hash1 = sjtu::MyHash(station, exp1);
-    station_hash2 = sjtu::MyHash(station, exp2);
-    station_database.Insert(station_hash1, station_hash2, current);
-  }
   return;
 }
 void ReleaseTrain(string &command) {
@@ -454,30 +447,16 @@ void QueryTicket(string &command) {
   end_hash1 = sjtu::MyHash(end, exp1);
   end_hash2 = sjtu::MyHash(end, exp2);
   auto end_index_raw = station_database.find(end_hash1, end_hash2, -1);
-  sjtu::priority_queue<int> start_indexs, end_indexs;
+  sjtu::map<int, bool> start_indexs;
   for (auto it = start_index_raw.begin(); it != start_index_raw.end(); it++) {
-    start_indexs.push(*it);
-  }
-  for (auto it = end_index_raw.begin(); it != end_index_raw.end(); it++) {
-    end_indexs.push(*it);
+    start_indexs[*it] = true;
   }
   sjtu::list<int> same_index;
-  int start_index, end_index;
-  while ((!start_indexs.empty()) && (!end_indexs.empty())) {
-    start_index = start_indexs.top();
-    end_index = end_indexs.top();
-    if (start_index == end_index) {
-      same_index.push_back(start_index);
-      start_indexs.pop();
-      end_indexs.pop();
-    } else {
-      if (start_index < end_index) {
-        start_indexs.pop();
-      } else {
-        end_indexs.pop();
-      }
+  for (auto it = end_index_raw.begin(); it != end_index_raw.end(); it++) {
+    if(start_indexs.count(*it)) {
+      same_index.push_back(*it);
     }
-  } // to get the train_ID.
+  }
   sjtu::list<AskData> condidate_trains;
   for (auto it = same_index.begin(); it != same_index.end(); it++) {
     TrainInfo res;
@@ -725,21 +704,21 @@ void QueryTransfer(string &command) {
         condidate_answer.line1 = first_train;
         condidate_answer.line2 = second_train;
         condidate_answer.transfer = inter_station;
-        if(by_time) {
+        if (by_time) {
           CompareTransferByTime tool;
-          if(tool(condidate_answer, ans)) {
+          if (tool(condidate_answer, ans)) {
             ans = condidate_answer;
           }
         } else {
           CompareTransferByCost tool;
-          if(tool(condidate_answer, ans)) {
+          if (tool(condidate_answer, ans)) {
             ans = condidate_answer;
           }
         }
       }
     }
   }
-  if(ans.transfer == "") {
+  if (ans.transfer == "") {
     std::cout << 0 << '\n';
     return;
   }

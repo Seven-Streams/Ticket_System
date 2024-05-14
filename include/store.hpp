@@ -1,9 +1,9 @@
+#include "utility.hpp"
 #include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <string>
-#include "utility.hpp"
 #ifndef STORE_HPP
 #define STORE_HPP
 const unsigned long long exp1 = 13331, exp2 = 131;
@@ -1473,7 +1473,7 @@ public:
     ReadwithCache(res, B_root);
     while (res.datas[0].son != 0) {
       for (int i = 0; i < res.now_size; i++) {
-        if ((to_find < res.datas[i])|| (to_find == res.datas[i])) {
+        if ((to_find < res.datas[i]) || (to_find == res.datas[i])) {
           ReadwithCache(res, res.datas[i].son);
           break;
         }
@@ -1494,7 +1494,9 @@ public:
     }
     while ((hash_1 == res.datas[found].hash1) &&
            (hash_2 == res.datas[found].hash2)) {
-      answers.push_back(res.datas[found].value);
+      if ((res.datas[found].value > min) || (res.datas[found].value == min)) {
+        answers.push_back(res.datas[found].value);
+      }
       found++;
       if (found == res.now_size) {
         if (res.right_sibling == 0) {
@@ -1533,9 +1535,7 @@ namespace sjtu {
  */
 class Less {
 public:
-  bool operator()(int a, int b) {
-    return a < b;
-  }
+  bool operator()(int a, int b) { return a < b; }
 };
 template <typename T, class Compare = Less> class priority_queue {
   class Node;
@@ -1568,7 +1568,7 @@ private:
     int x_depth = x->depth;
     int y_depth = y->depth;
     try {
-      if (tool((*(x->value)),(*(y->value)))) {
+      if (tool((*(x->value)), (*(y->value)))) {
         x->right_son = NodeMerge(x->right_son, y);
         if (x->right_son == nullptr || x->left_son == nullptr) {
           x->depth = 1;
