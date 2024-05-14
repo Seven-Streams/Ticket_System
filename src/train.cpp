@@ -435,6 +435,7 @@ void QueryTicket(string &command) {
       }
       if (res == "cost") {
         by_time = false;
+        continue;
       }
       throw(SevenStream::exception("Invalid priority type."));
     }
@@ -599,6 +600,7 @@ void QueryTransfer(string &command) {
       }
       if (res == "cost") {
         by_time = false;
+        continue;
       }
       throw(SevenStream::exception("Invalid priority type."));
     }
