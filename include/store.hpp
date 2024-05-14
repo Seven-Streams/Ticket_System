@@ -739,7 +739,7 @@ inline unsigned long long MyHash(const std::string &txt,
   }
   return ans;
 }
-template <class Value = int, int size = 170, int cachesize = 100> class BPT {
+template <class Value = int, int size = 170, int cachesize = 200> class BPT {
 private:
   struct MyData {
     unsigned long long hash1 = 0;
@@ -1508,7 +1508,59 @@ public:
     }
     return answers;
   }
-
+  sjtu::list<Value> find2(const unsigned long long &hash_1,
+                          const unsigned long long &hash_2, const Value &min,
+                          const Value &max) {
+    sjtu::list<Value> answers;
+    if (B_total == 0) {
+      return answers;
+    }
+    Node res;
+    MyData to_find;
+    to_find.hash1 = hash_1;
+    to_find.hash2 = hash_2;
+    to_find.value = min;
+    ReadwithCache(res, B_root);
+    while (res.datas[0].son != 0) {
+      for (int i = 0; i < res.now_size; i++) {
+        if ((to_find < res.datas[i]) || (to_find == res.datas[i])) {
+          ReadwithCache(res, res.datas[i].son);
+          break;
+        }
+        if (i == (res.now_size - 1)) {
+          return answers;
+        }
+      }
+    }
+    int found = 0;
+    for (found = 0; found < res.now_size; found++) {
+      if ((hash_1 == res.datas[found].hash1) &&
+          (hash_2 == res.datas[found].hash2)) {
+        break;
+      }
+    }
+    if (found == res.now_size) {
+      return answers;
+    }
+    while ((hash_1 == res.datas[found].hash1) &&
+           (hash_2 == res.datas[found].hash2)) {
+      if ((res.datas[found].value > max) || (res.datas[found].value == max)) {
+        return answers;
+      }
+      if (((res.datas[found].value > min) || (res.datas[found].value == min))) {
+        answers.push_back(res.datas[found].value);
+      }
+      found++;
+      if (found == res.now_size) {
+        if (res.right_sibling == 0) {
+          return answers;
+        }
+        ReadwithCache(res, res.right_sibling);
+        found = 0;
+      }
+    }
+    return answers;
+  }
   void Erase(const unsigned long long &hash_1, const unsigned long long &hash_2,
              const Value &value) {
     MyData to_delete;
@@ -1533,11 +1585,11 @@ namespace sjtu {
 /**
  * a container like std::priority_queue which is a heap internal.
  */
-class Less {
+template <class T> class Less {
 public:
-  bool operator()(int a, int b) { return a < b; }
+  bool operator()(T a, T b) { return a < b; }
 };
-template <typename T, class Compare = Less> class priority_queue {
+template <typename T, class Compare = Less<T>> class priority_queue {
   class Node;
 
 private:
@@ -1790,7 +1842,7 @@ template <typename T> struct my_type_traits {
     return t.value;
   }
 };
-template <class Key, class T, class Compare = Less> class map {
+template <class Key, class T, class Compare = Less<Key>> class map {
   class Node;
 
 private:

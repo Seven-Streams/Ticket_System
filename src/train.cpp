@@ -9,7 +9,7 @@
 sjtu::BPT<int> train_index("train_index");
 sjtu::MemoryRiver<TrainInfo, 1> train_info("train_database");
 sjtu::BPT<int> station_database("station");
-sjtu::BPT<TrainDay> trains_day("train_day");
+sjtu::BPT<TrainDay, 20> trains_day("train_day");
 void AddTrain(std::string &command) {
   string ID, num_raw, seat_raw, stations, prices, start_time, travel_time,
       stop_time, sale_date, type;
@@ -303,7 +303,9 @@ void QueryTrain(string &command) {
     unsigned long long id_hash1, id_hash2;
     id_hash1 = sjtu::MyHash(id, exp1);
     id_hash2 = sjtu::MyHash(id, exp2);
-    auto raw_actual_train = trains_day.find(id_hash1, id_hash2, actual_train);
+    auto bigger_train = actual_train;
+    bigger_train.day++;
+    auto raw_actual_train = trains_day.find2(id_hash1, id_hash2, actual_train, bigger_train);
     actual_train = raw_actual_train.front();
     std::cout << 0 << ' ' << actual_train.ticket[0] << '\n';
     int price = 0;
@@ -497,7 +499,9 @@ void QueryTicket(string &command) {
     hash1 = sjtu::MyHash(it->ID, exp1);
     hash2 = sjtu::MyHash(it->ID, exp2);
     TrainDay to_find((it->out_time).GetMonth(), (it->out_time).GetDay(), 0);
-    auto trains = trains_day.find(hash1, hash2, to_find);
+    auto bigger_find = to_find;
+    bigger_find.day++;
+    auto trains = trains_day.find2(hash1, hash2, to_find, bigger_find);
     if (trains.size()) {
       auto to_check = trains.front();
       if ((to_check.month == it->out_time.GetMonth()) &&

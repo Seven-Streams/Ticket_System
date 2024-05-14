@@ -2,13 +2,13 @@
 #include <cstring>
 #include <string>
 using std::string;
-sjtu::BPT<OrderByUser> order_user("order_user");
-sjtu::BPT<OrderByTrain> queue_list("queue");
+sjtu::BPT<OrderByUser, 20> order_user("order_user");
+sjtu::BPT<OrderByTrain, 70> queue_list("queue");
 // Consider that if a user ordered first, the index will be smaller.
-extern sjtu::list<HashOfAccount> account_logged;
+extern sjtu::map<HashOfAccount, bool, sjtu::Less<HashOfAccount>> account_logged;
 extern sjtu::BPT<int> train_index;
 extern sjtu::MemoryRiver<TrainInfo, 1> train_info;
-extern sjtu::BPT<TrainDay> trains_day;
+extern sjtu::BPT<TrainDay, 20> trains_day;
 void QueryOrder(string &command) {
   string op = ProcessTxt(command);
   if (op != "-u") {
@@ -16,13 +16,8 @@ void QueryOrder(string &command) {
   }
   string user_name = ProcessTxt(command);
   bool logged = false;
-  for (auto it = account_logged.begin(); it != account_logged.end(); it++) {
-    if ((*it) == user_name) {
-      logged = true;
-      break;
-    }
-  }
-  if (!logged) {
+  HashOfAccount user_hash(user_name);
+  if (!account_logged.count(user_hash)) {
     throw(SevenStream::exception("The account doesn't log in."));
   }
   unsigned long long hash1, hash2;
@@ -139,14 +134,7 @@ void Buy(std::string &command, int stamp) {
     }
   }
   HashOfAccount hash_user(user);
-  bool logged = false;
-  for (auto it = account_logged.begin(); it != account_logged.end(); it++) {
-    if (hash_user == (*it)) {
-      logged = true;
-      break;
-    }
-  }
-  if (!logged) {
+  if (!account_logged.count(hash_user)) {
     throw(SevenStream::exception("Not log in."));
   }
   unsigned long long id_hash1, id_hash2;
@@ -186,7 +174,9 @@ void Buy(std::string &command, int stamp) {
     throw(SevenStream::exception("Not in sale time."));
   }
   TrainDay acutual_train(out_month, out_day, 0);
-  auto find = trains_day.find(id_hash1, id_hash2, acutual_train);
+  auto bigger_train = acutual_train;
+  bigger_train.day++;
+  auto find = trains_day.find2(id_hash1, id_hash2, acutual_train, bigger_train);
   if (find.empty()) {
     throw(SevenStream::exception("No available train."));
   }
@@ -258,13 +248,7 @@ void Refund(std::string &command) {
   }
   bool logged = false;
   HashOfAccount to_check(user);
-  for (auto it = account_logged.begin(); it != account_logged.end(); it++) {
-    if ((*it) == to_check) {
-      logged = true;
-      break;
-    }
-  }
-  if (!logged) {
+  if (!account_logged.count(to_check)) {
     throw(SevenStream::exception("The account doesn't login."));
   }
   unsigned long long user_hash1, user_hash2;
@@ -307,7 +291,9 @@ void Refund(std::string &command) {
   id_hash1 = sjtu::MyHash(to_refund.Train_ID, exp1);
   id_hash2 = sjtu::MyHash(to_refund.Train_ID, exp2);
   TrainDay empty_train(to_refund.out_month, to_refund.out_day, 0);
-  auto train_actual_raw = trains_day.find(id_hash1, id_hash2, empty_train);
+  auto bigger_day_train = empty_train;
+  bigger_day_train.day++;
+  auto train_actual_raw = trains_day.find2(id_hash1, id_hash2, empty_train, bigger_day_train);
   auto train_actual = train_actual_raw.front();
   for (int i = to_refund.start_index; i < to_refund.end_index; i++) {
     train_actual.ticket[i] += to_refund.number;
@@ -316,7 +302,9 @@ void Refund(std::string &command) {
   nothing_order.start_month = to_refund.out_month;
   nothing_order.start_day = to_refund.out_day;
   nothing_order.stamp = minus_max;
-  auto queues = queue_list.find(id_hash1, id_hash2, nothing_order);
+  OrderByTrain biggest = nothing_order;
+  biggest.stamp = maxn;
+  auto queues = queue_list.find2(id_hash1, id_hash2, nothing_order, biggest);
   for (auto it = queues.begin(); it != queues.end(); it++) {
     if ((it->start_day != to_refund.out_day) ||
         (it->start_month != to_refund.out_month)) {
@@ -335,8 +323,10 @@ void Refund(std::string &command) {
       }
       queue_list.Erase(id_hash1, id_hash2, *it);
       OrderByUser to_change;
+      OrderByUser bigger = to_change;
+      bigger.stamp++;
       to_change.stamp = it->stamp;
-      auto to_find = order_user.find(it->user_hash1, it->user_hash2, to_change);
+      auto to_find = order_user.find2(it->user_hash1, it->user_hash2, to_change, bigger);
       to_change = to_find.front();
       to_change.status = 1;
       order_user.Erase(it->user_hash1, it->user_hash2, to_change);

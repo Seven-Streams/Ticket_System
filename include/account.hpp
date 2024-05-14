@@ -14,6 +14,8 @@ public:
   ~HashOfAccount() = default;
   HashOfAccount(string);
   bool operator==(const HashOfAccount &);
+  bool operator<(const HashOfAccount &);
+  bool operator>(const HashOfAccount &);
 };
 class Account {
 private:
