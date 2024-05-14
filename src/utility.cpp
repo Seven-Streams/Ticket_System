@@ -75,7 +75,7 @@ void Time::Minus(int duration_minutes) {
   }
   hour -= to_minus_hour;
   if (to_minus_days >= day) {
-    if (month == 8) {
+    if ((month == 8) || (month == 9)) {
       day += 31;
       month--;
     } else {

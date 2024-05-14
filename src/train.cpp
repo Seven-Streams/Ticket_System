@@ -646,6 +646,9 @@ void QueryTransfer(string &command) {
     first_train.seat = 2e7;
     for (int i = (start_index + 1); i < res.station_number; i++) {
       string inter_station = res.stations[i];
+      if(inter_station == end) {
+        continue;
+      }
       unsigned long long station_hash1, station_hash2;
       station_hash1 = sjtu::MyHash(inter_station, exp1);
       station_hash2 = sjtu::MyHash(inter_station, exp2);
