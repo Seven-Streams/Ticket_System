@@ -143,9 +143,9 @@ void AddTrain(std::string &command) {
   res.type = type[0];
   int current;
   train_info.get_info(current, 1);
-  std::cout << current << "current" << std::endl;
   current++;
   train_info.write_info(current, 1);
+  train_info.write(res, current);
   train_index.Insert(hash1, hash2, current);
   for (int i = 0; i < num; i++) {
     unsigned long long station_hash1, station_hash2;
@@ -171,7 +171,6 @@ void ReleaseTrain(string &command) {
     throw(SevenStream::exception("The train doesn't exist."));
   }
   int index = index_raw.front();
-  std::cout << index << "index" << std::endl;
   TrainInfo to_release;
   train_info.read(to_release, index);
   to_release.released = true;
@@ -345,11 +344,14 @@ bool TrainDay::operator==(const TrainDay &rhs) const {
 }
 bool TrainInfo::IsReleased() { return released; }
 int TrainInfo::FindIndex(const char *str) {
+  std::cout << ID << " ID" << std::endl;
+  std::cout << station_number << std::endl;
   for (int i = 0; i < station_number; i++) {
     if (str == stations[i]) {
       return i;
     }
   }
+  std::cout << str << ' ';
   throw(SevenStream::exception("No such station."));
 }
 int TrainInfo::AskPrice(int start, int end) {
