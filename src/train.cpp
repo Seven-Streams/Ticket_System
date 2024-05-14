@@ -632,6 +632,7 @@ void QueryTransfer(string &command) {
         (day_trains_raw.front().month != day_trains_raw.front().month)) {
       continue;
     }
+    actual_train = day_trains_raw.front();
     AskData first_train;
     first_train.ID = res.ID;
     first_train.out_time = out_time;
@@ -660,9 +661,6 @@ void QueryTransfer(string &command) {
         }
         TrainInfo second_train_info;
         train_info.read(second_train_info, *it2);
-        if (!second_train_info.CheckAvailable(first_train.end_time)) {
-          continue;
-        }
         int start_index2, end_index2;
         start_index2 = second_train_info.FindIndex(inter_station.c_str());
         end_index2 = second_train_info.FindIndex(end.c_str());
@@ -701,9 +699,11 @@ void QueryTransfer(string &command) {
         second_train.price =
             second_train_info.AskPrice(start_index2, end_index2);
         second_train.out_time = second_train_info.AskLeaveTime(
-            0, test_out_time.GetMonth(), test_out_time.GetDay());
+            0, second_day_train.month, second_day_train.day);
+        second_train.start_time = second_train_info.AskLeaveTime(
+            start_index2, second_day_train.month, second_day_train.day);
         second_train.end_time = second_train_info.AskArriveTime(
-            end_index2, test_out_time.GetMonth(), test_out_time.GetDay());
+            end_index2, second_day_train.month, second_day_train.day);
         second_train.seat = 2e7;
         for (int k = start_index2; k < end_index2; k++) {
           second_train.seat =
@@ -715,12 +715,12 @@ void QueryTransfer(string &command) {
         condidate_answer.transfer = inter_station;
         if (by_time) {
           CompareTransferByTime tool;
-          if (tool(condidate_answer, ans)) {
+          if (tool(condidate_answer, ans) || (ans.transfer == "")) {
             ans = condidate_answer;
           }
         } else {
           CompareTransferByCost tool;
-          if (tool(condidate_answer, ans)) {
+          if (tool(condidate_answer, ans) || (ans.transfer == "")) {
             ans = condidate_answer;
           }
         }
@@ -733,12 +733,12 @@ void QueryTransfer(string &command) {
   }
   std::cout << ans.line1.ID << ' ' << start << ' ';
   ans.line1.start_time.Print();
-  std::cout << "-> " << ans.transfer;
+  std::cout << "-> " << ans.transfer << ' ';
   ans.line1.end_time.Print();
   std::cout << ans.line1.price << ' ' << ans.line1.seat << '\n';
   std::cout << ans.line2.ID << ' ' << ans.transfer << ' ';
   ans.line2.start_time.Print();
-  std::cout << "-> " << end;
+  std::cout << "-> " << end << ' ';
   ans.line2.end_time.Print();
   std::cout << ans.line2.price << ' ' << ans.line2.seat << '\n';
   return;
