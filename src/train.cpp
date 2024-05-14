@@ -4,9 +4,10 @@
 #include "../include/valid.hpp"
 #include <algorithm>
 #include <cstring>
+#include <iostream>
 #include <string>
 sjtu::BPT<int> train_index("train_index");
-sjtu::MemoryRiver<TrainInfo, 1> train_info;
+sjtu::MemoryRiver<TrainInfo, 1> train_info("train_database");
 sjtu::BPT<int> station_database("station");
 sjtu::BPT<TrainDay> trains_day("train_day");
 void AddTrain(std::string &command) {
@@ -142,7 +143,8 @@ void AddTrain(std::string &command) {
   res.type = type[0];
   int current;
   train_info.get_info(current, 1);
-  train_info.write(res, ++current);
+  std::cout << current << "current" << std::endl;
+  current++;
   train_info.write_info(current, 1);
   train_index.Insert(hash1, hash2, current);
   for (int i = 0; i < num; i++) {
@@ -169,6 +171,7 @@ void ReleaseTrain(string &command) {
     throw(SevenStream::exception("The train doesn't exist."));
   }
   int index = index_raw.front();
+  std::cout << index << "index" << std::endl;
   TrainInfo to_release;
   train_info.read(to_release, index);
   to_release.released = true;
