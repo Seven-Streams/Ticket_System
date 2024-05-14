@@ -169,6 +169,9 @@ void Buy(std::string &command, int stamp) {
     throw(SevenStream::exception("Invalid station."));
   }
   int number = std::stoi(number_raw);
+  if(number > train_total.seat_number) {
+    throw(SevenStream::exception("There aren't enough seats!"));
+  }
   int price = train_total.AskPrice(start_index, end_index);
   int ask_month = date[0] - '0';
   ask_month *= 10;
@@ -281,7 +284,7 @@ void Refund(std::string &command) {
   }
   auto to_refund = *it;
   if (to_refund.status == 3) {
-    return;
+    throw(SevenStream::exception("Have been refunded."));
   }
   if (to_refund.status == 2) {
     to_refund.status = 3;
@@ -289,6 +292,8 @@ void Refund(std::string &command) {
     order_user.Insert(user_hash1, user_hash2, to_refund);
     OrderByTrain to_remove;
     to_remove.stamp = to_refund.stamp;
+    to_remove.start_month = to_refund.out_month;
+    to_remove.start_day = to_refund.out_day;
     unsigned long long hash1, hash2;
     hash1 = sjtu::MyHash(to_refund.Train_ID, exp1);
     hash2 = sjtu::MyHash(to_refund.Train_ID, exp2);

@@ -148,6 +148,7 @@ int IntervalMinute(Time time1, Time time2) {
   if(time1 == time2) {
     return ans;
   }
+  ans -= 60;
   time2.Add(60);
   while(time1 < time2) {
     time2.Minus(1);

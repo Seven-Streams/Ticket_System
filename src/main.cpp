@@ -5,6 +5,7 @@
 #include "../include/train.hpp"
 #include "../include/utility.hpp"
 #include "../include/valid.hpp"
+#include <ios>
 #include <iostream>
 #include <string>
 using std::cin;
@@ -33,6 +34,9 @@ void Clean() {
   return;
 }
 int main() {
+  std::ios_base::sync_with_stdio(false);
+  cin.tie(0);
+  cout.tie(0);
   string command;
   bool has_account;
   int total;
@@ -57,31 +61,31 @@ int main() {
           AddFirstAccount(command);
           has_account = true;
         }
-        cout << "0" << std::endl;
+        cout << "0" << '\n';
         continue;
       }
       if (type == "login") {
         cout << stamp << ' ';
         Login(command);
-        cout << "0" << std::endl;
+        cout << "0" << '\n';
         continue;
       }
       if (type == "logout") {
         cout << stamp << ' ';
         Logout(command);
-        cout << "0" << std::endl;
+        cout << "0" << '\n';
         continue;
       }
       if (type == "query_profile") {
         cout << stamp << ' ';
         std::string ans = QueryAccount(command);
-        cout << ans << std::endl;
+        cout << ans << '\n';
         continue;
       }
       if (type == "modify_profile") {
         cout << stamp << ' ';
         std::string ans = ModifyAccount(command);
-        cout << ans << std::endl;
+        cout << ans << '\n';
         continue;
       }
       if (type == "exit") {
@@ -148,8 +152,8 @@ int main() {
         continue;
       }
     } catch (SevenStream::exception &e) {
-      // cout << e.what() << std::endl;
-      cout << "-1" << std::endl;
+      // cout << e.what() << '\n';
+      cout << "-1" << '\n';
     }
   }
   return 0;

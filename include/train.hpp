@@ -29,6 +29,7 @@ public:
 class TransferData {
 private:
   AskData line1, line2;
+  int interval;
   string transfer = "";
 public:
   friend void QueryTransfer(string &);
@@ -72,6 +73,7 @@ public:
   friend void QueryTrain(string &);
   friend void QueryTicket(string &);
   friend void QueryTransfer(string &);
+  friend void Buy(std::string &, int);
 };
 class TrainDay {
 private:
