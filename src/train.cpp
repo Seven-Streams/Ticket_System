@@ -166,6 +166,9 @@ void ReleaseTrain(string &command) {
   int index = index_raw.front();
   TrainInfo to_release;
   train_info.read(to_release, index);
+  if(to_release.released) {
+    throw(SevenStream::exception("The train has been released."));
+  }
   to_release.released = true;
   for (int i = 0; i < to_release.station_number; i++) {
     string station(to_release.stations[i]);
@@ -247,7 +250,7 @@ void QueryTrain(string &command) {
   month += date[1] - '0';
   day += date[3] - '0';
   day *= 10;
-  day += date[4];
+  day += date[4] - '0';
   unsigned long long hash1 = sjtu::MyHash(id, exp1);
   unsigned long long hash2 = sjtu::MyHash(id, exp2);
   auto index_raw = train_index.find(hash1, hash2, minus_max);
@@ -258,23 +261,24 @@ void QueryTrain(string &command) {
   TrainInfo to_query;
   train_info.read(to_query, index);
   if (month < to_query.sale_month) {
-    throw(SevenStream::exception("Invalid date."));
+    throw(SevenStream::exception("Invalid date1."));
   }
   if (month > to_query.des_month) {
-    throw(SevenStream::exception("Invalid date."));
+    throw(SevenStream::exception("Invalid date2."));
   }
-  if ((month == to_query.sale_month) && (day < to_query.sale_month)) {
-    throw(SevenStream::exception("Invalid date."));
+  if ((month == to_query.sale_month) && (day < to_query.sale_day)) {
+    throw(SevenStream::exception("Invalid date3."));
   }
-  if ((month == to_query.des_month) && (day > to_query.sale_month)) {
-    throw(SevenStream::exception("Invalid date."));
+  if ((month == to_query.des_month) && (day > to_query.des_day)) {
+    throw(SevenStream::exception("Invalid date4."));
   }
   if (!to_query.released) {
     std::cout << to_query.ID << ' ' << to_query.type << '\n';
-    std::cout << to_query.stations[0] << ' ' << "xx-xx xx:xx ->";
+    std::cout << to_query.stations[0] << ' ' << "xx-xx xx:xx -> ";
     Time time(month, day, to_query.start_hour, to_query.start_minute);
     time.Print();
     std::cout << 0 << ' ' << to_query.seat_number << '\n';
+    int price = 0;
     for (int i = 1; i < (to_query.station_number - 1); i++) {
       std::cout << to_query.stations[i] << ' ';
       time.Add(to_query.travel[i]);
@@ -282,16 +286,17 @@ void QueryTrain(string &command) {
       std::cout << "-> ";
       time.Add(to_query.stop[i]);
       time.Print();
-      std::cout << to_query.price[i] << ' ' << to_query.seat_number << '\n';
+      price += to_query.price[i];
+      std::cout << price << ' ' << to_query.seat_number << '\n';
     }
     std::cout << to_query.stations[to_query.station_number - 1] << ' ';
     time.Add(to_query.travel[to_query.station_number - 1]);
     time.Print();
     std::cout << "-> xx-xx xx:xx ";
-    std::cout << to_query.price[to_query.station_number - 1] << " x\n";
+    std::cout << price + to_query.price[to_query.station_number - 1] << " x\n";
   } else {
     std::cout << to_query.ID << ' ' << to_query.type << '\n';
-    std::cout << to_query.stations[0] << ' ' << "xx-xx xx:xx ->";
+    std::cout << to_query.stations[0] << ' ' << "xx-xx xx:xx -> ";
     Time time(month, day, to_query.start_hour, to_query.start_minute);
     time.Print();
     TrainDay actual_train(month, day, 0);
@@ -301,6 +306,7 @@ void QueryTrain(string &command) {
     auto raw_actual_train = trains_day.find(id_hash1, id_hash2, actual_train);
     actual_train = raw_actual_train.front();
     std::cout << 0 << ' ' << actual_train.ticket[0] << '\n';
+    int price = 0;
     for (int i = 1; i < (to_query.station_number - 1); i++) {
       std::cout << to_query.stations[i] << ' ';
       time.Add(to_query.travel[i]);
@@ -308,13 +314,14 @@ void QueryTrain(string &command) {
       std::cout << "-> ";
       time.Add(to_query.stop[i]);
       time.Print();
-      std::cout << to_query.price[i] << ' ' << actual_train.ticket[i] << '\n';
+      price += to_query.price[i];
+      std::cout << price << ' ' << actual_train.ticket[i] << '\n';
     }
     std::cout << to_query.stations[to_query.station_number - 1] << ' ';
     time.Add(to_query.travel[to_query.station_number - 1]);
     time.Print();
     std::cout << "-> xx-xx xx:xx ";
-    std::cout << to_query.price[to_query.station_number - 1] << " x\n";
+    std::cout << price + to_query.price[to_query.station_number - 1] << " x\n";
   }
   return;
 }

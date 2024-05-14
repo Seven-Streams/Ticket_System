@@ -47,7 +47,7 @@ int main() {
     try {
       getline(cin, command);
       stamp = ProcessTxt(command);
-      if(stamp == "[5527]") {
+      if(stamp == "[5931]") {
         return 0;
       }
       string type;
