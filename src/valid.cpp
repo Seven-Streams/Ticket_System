@@ -265,7 +265,7 @@ void CheckStation(const char *str) {
       }
       if (how_many == 2) {
         if (i + 1 >= len) {
-          throw(SevenStream::exception("InvalidStationName"));
+          throw(SevenStream::exception("InvalidStationName1"));
         }
         long long byte2 = static_cast<unsigned char>(str[i + 1]);
         trans -= 192;
@@ -275,7 +275,7 @@ void CheckStation(const char *str) {
       }
       if (how_many == 3) {
         if (i + 2 >= len) {
-          throw(SevenStream::exception("InvalidStationName"));
+          throw(SevenStream::exception("InvalidStationName2"));
         }
         long long byte2 = static_cast<unsigned char>(str[i + 1]);
         trans -= 224;
@@ -289,7 +289,7 @@ void CheckStation(const char *str) {
       }
       if (how_many == 4) {
         if (i + 3 >= len) {
-          throw(SevenStream::exception("InvalidStationName"));
+          throw(SevenStream::exception("InvalidStationName3"));
         }
         long long byte2 = static_cast<unsigned char>(str[i + 1]);
         trans -= 240;
@@ -353,13 +353,13 @@ void CheckStation(const char *str) {
         i += (how_many - 1);
         continue;
       }
-      throw(SevenStream::exception("InvalidStationName"));
+      throw(SevenStream::exception("InvalidStationName4"));
     } else {
-      throw(SevenStream::exception("InvalidStationName"));
+      throw(SevenStream::exception("InvalidStationName5"));
     }
   }
   if ((total > 10) || (!total)) {
-    throw(SevenStream::exception("InvalidStationName"));
+    throw(SevenStream::exception("InvalidStationName6"));
   }
   return;
 }

@@ -413,7 +413,7 @@ void QueryTicket(string &command) {
     }
     if (op == "-t") {
       end = ProcessTxt(command);
-      CheckStation(start.c_str());
+      CheckStation(end.c_str());
       continue;
     }
     if (op == "-d") {
@@ -453,7 +453,7 @@ void QueryTicket(string &command) {
   }
   sjtu::list<int> same_index;
   for (auto it = end_index_raw.begin(); it != end_index_raw.end(); it++) {
-    if(start_indexs.count(*it)) {
+    if (start_indexs.count(*it)) {
       same_index.push_back(*it);
     }
   }
