@@ -153,6 +153,9 @@ void Buy(std::string &command, int stamp) {
   id_hash1 = sjtu::MyHash(id, exp1);
   id_hash2 = sjtu::MyHash(id, exp2);
   auto index_raw = train_index.find(id_hash1, id_hash2, minus_max);
+  if(index_raw.empty()) {
+    throw(SevenStream::exception("The Train Doesn't exist."));
+  }
   int index = index_raw.front();
   TrainInfo train_total;
   train_info.read(train_total, index);
@@ -181,6 +184,9 @@ void Buy(std::string &command, int stamp) {
   }
   TrainDay acutual_train(out_month, out_day, 0);
   auto find = trains_day.find(id_hash1, id_hash2, acutual_train);
+  if(find.empty()) {
+    throw(SevenStream::exception("No available train."));
+  }
   acutual_train = find.front();
   int available = 1e7;
   for (int i = start_index; i < end_index; i++) {
