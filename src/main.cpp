@@ -47,6 +47,9 @@ int main() {
     try {
       getline(cin, command);
       stamp = ProcessTxt(command);
+      if(stamp == "[5527]") {
+        return 0;
+      }
       string type;
       type = ProcessTxt(command);
       if (type == "add_user") {

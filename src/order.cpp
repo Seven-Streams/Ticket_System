@@ -86,7 +86,7 @@ void OrderByUser::Print() {
   std::cout << Train_ID << ' ';
   std::cout << start_station << ' ';
   start_time.Print();
-  std::cout << "->";
+  std::cout << "-> ";
   std::cout << end_station << ' ';
   end_time.Print();
   std::cout << price << ' ';
