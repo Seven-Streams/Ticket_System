@@ -192,27 +192,28 @@ void CheckPrivilege(const char *str) {
   return;
 };
 void CheckTrainID(const char *str) {
-  int len = strlen(str);
-  if (len > 20 || (!len)) {
-    throw(SevenStream::exception("InvalidTrainID"));
-  }
-  if ((str[0] < 'a') || str[0] > 'z') {
-    if ((str[0] < 'A') || str[0] > 'Z') {
-      throw(SevenStream::exception("InvalidTrainID"));
-    }
-  }
-  for (int i = 0; i < len; ++i) {
-    if (str[i] < '0' || str[i] > '9') {
-      if (str[i] < 'a' || str[i] > 'z') {
-        if (str[i] < 'A' || str[i] > 'Z') {
-          if (str[i] != '_') {
-            throw(SevenStream::exception("InvalidTrainID"));
-          }
-        }
-      }
-    }
-  }
   return;
+  // int len = strlen(str);
+  // if (len > 20 || (!len)) {
+  //   throw(SevenStream::exception("InvalidTrainID"));
+  // }
+  // if ((str[0] < 'a') || str[0] > 'z') {
+  //   if ((str[0] < 'A') || str[0] > 'Z') {
+  //     throw(SevenStream::exception("InvalidTrainID"));
+  //   }
+  // }
+  // for (int i = 0; i < len; ++i) {
+  //   if (str[i] < '0' || str[i] > '9') {
+  //     if (str[i] < 'a' || str[i] > 'z') {
+  //       if (str[i] < 'A' || str[i] > 'Z') {
+  //         if (str[i] != '_') {
+  //           throw(SevenStream::exception("InvalidTrainID"));
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+  // return;
 }
 void CheckStatNum(const char *str) {
   int len = strlen(str);

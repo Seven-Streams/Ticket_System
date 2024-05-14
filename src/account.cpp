@@ -486,7 +486,7 @@ string ModifyAccount(string command) {
   }
   int query_index = query_raw.front();
   Account query_account = GetAccount(query_index);
-  if (query_account.privilege >= current_account.privilege) {
+  if ((query_account.privilege >= current_account.privilege) && (current != to_query)) {
     throw(SevenStream::exception("Not enough privilege."));
   }
   if (password != "") {
@@ -505,6 +505,9 @@ string ModifyAccount(string command) {
     CheckPrivilege(pri_row.c_str());
     int pr = std::stoi(pri_row);
     query_account.privilege = pr;
+    if(pr >= current_account.privilege) {
+      throw(SevenStream::exception("Not Enough privilege."));
+    }
   }
   account_content.write(query_account, query_index);
   string query_ans;
