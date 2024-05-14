@@ -430,10 +430,10 @@ void QueryTicket(string &command) {
     }
     if (op == "-p") {
       string res = ProcessTxt(command);
-      if (command == "time") {
+      if (res == "time") {
         continue;
       }
-      if (command == "cost") {
+      if (res == "cost") {
         by_time = false;
       }
       throw(SevenStream::exception("Invalid priority type."));
