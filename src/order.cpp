@@ -2,13 +2,14 @@
 #include <cstring>
 #include <string>
 using std::string;
-sjtu::BPT<OrderByUser, 20> order_user("order_user");
-sjtu::BPT<OrderByTrain, 70> queue_list("queue");
+sjtu::BPT<OrderByUser, 20, 33>  order_user("order_user");
+sjtu::BPT<OrderByTrain, 66, 15> queue_list("queue");
 // Consider that if a user ordered first, the index will be smaller.
 extern sjtu::map<HashOfAccount, bool, sjtu::Less<HashOfAccount>> account_logged;
 extern sjtu::BPT<int> train_index;
 extern sjtu::MemoryRiver<TrainInfo, 1> train_info;
-extern sjtu::BPT<TrainDay, 20> trains_day;
+extern sjtu::MemoryRiver<TrainDay, 1> train_day_info;
+extern sjtu::BPT<TrainDayIndex, 126, 12> trains_day_index;
 void QueryOrder(string &command) {
   string op = ProcessTxt(command);
   if (op != "-u") {
@@ -174,13 +175,16 @@ void Buy(std::string &command, int stamp) {
     throw(SevenStream::exception("Not in sale time."));
   }
   TrainDay acutual_train(out_month, out_day, 0);
-  auto bigger_train = acutual_train;
+  TrainDayIndex train_index;
+  train_index.month = acutual_train.month;
+  train_index.day = acutual_train.day;
+  auto bigger_train = train_index;
   bigger_train.day++;
-  auto find = trains_day.find2(id_hash1, id_hash2, acutual_train, bigger_train);
+  auto find = trains_day_index.find2(id_hash1, id_hash2, train_index, bigger_train);
   if (find.empty()) {
     throw(SevenStream::exception("No available train."));
   }
-  acutual_train = find.front();
+  train_day_info.read(acutual_train, find.front().index);
   int available = 1e7;
   for (int i = start_index; i < end_index; i++) {
     available = std::min(available, acutual_train.ticket[i]);
@@ -226,8 +230,11 @@ void Buy(std::string &command, int stamp) {
     for (int i = start_index; i < end_index; i++) {
       acutual_train.ticket[i] -= number;
     }
-    trains_day.Erase(id_hash1, id_hash2, acutual_train);
-    trains_day.Insert(id_hash1, id_hash2, acutual_train);
+    TrainDayIndex to_find;
+    to_find.month = acutual_train.month;
+    to_find.day = acutual_train.day;
+    auto to_find_raw = trains_day_index.find(id_hash1, id_hash2, to_find);
+    train_day_info.write(acutual_train, to_find_raw.front().index);
     int total_price = number * price;
     std::cout << total_price << '\n';
   }
@@ -291,10 +298,14 @@ void Refund(std::string &command) {
   id_hash1 = sjtu::MyHash(to_refund.Train_ID, exp1);
   id_hash2 = sjtu::MyHash(to_refund.Train_ID, exp2);
   TrainDay empty_train(to_refund.out_month, to_refund.out_day, 0);
-  auto bigger_day_train = empty_train;
-  bigger_day_train.day++;
-  auto train_actual_raw = trains_day.find2(id_hash1, id_hash2, empty_train, bigger_day_train);
-  auto train_actual = train_actual_raw.front();
+  TrainDayIndex train_index;
+  train_index.month = empty_train.month;
+  train_index.day = empty_train.day;
+  auto bigger_train = train_index;
+  bigger_train.day++;
+  auto train_actual_raw = trains_day_index.find2(id_hash1, id_hash2, train_index, bigger_train);
+  TrainDay train_actual;
+  train_day_info.read(train_actual, train_actual_raw.front().index);
   for (int i = to_refund.start_index; i < to_refund.end_index; i++) {
     train_actual.ticket[i] += to_refund.number;
   }
@@ -333,7 +344,11 @@ void Refund(std::string &command) {
       order_user.Insert(it->user_hash1, it->user_hash2, to_change);
     }
   }
-  trains_day.Erase(id_hash1, id_hash2, train_actual);
-  trains_day.Insert(id_hash1, id_hash2, train_actual);
+  TrainDayIndex to_change;
+  to_change.month = train_actual.month;
+  to_change.day = train_actual.day;
+  auto index = 
+  trains_day_index.find(id_hash1, id_hash2, to_change);
+  train_day_info.write(train_actual, index.front().index);
   return;
 }

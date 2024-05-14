@@ -6,6 +6,14 @@
 #define TRAIN_HPP
 using std::string;
 const int smell = 114514191;
+struct TrainDayIndex {
+  int month = 0;
+  int day = 0;
+  int index = 0;
+  bool operator<(const TrainDayIndex&) const;
+  bool operator>(const TrainDayIndex&) const;
+  bool operator==(const TrainDayIndex&) const;
+};
 class AskData {
 private:
   int start_index;

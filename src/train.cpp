@@ -2,14 +2,14 @@
 #include "../include/exception.hpp"
 #include "../include/store.hpp"
 #include "../include/valid.hpp"
-#include <algorithm>
 #include <cstring>
 #include <iostream>
 #include <string>
 sjtu::BPT<int> train_index("train_index");
 sjtu::MemoryRiver<TrainInfo, 1> train_info("train_database");
 sjtu::BPT<int> station_database("station");
-sjtu::BPT<TrainDay, 20> trains_day("train_day");
+sjtu::BPT<TrainDayIndex, 126, 12> trains_day_index("train_day_index");
+sjtu::MemoryRiver<TrainDay, 1> train_day_info("train_day_info");
 void AddTrain(std::string &command) {
   string ID, num_raw, seat_raw, stations, prices, start_time, travel_time,
       stop_time, sale_date, type;
@@ -181,11 +181,20 @@ void ReleaseTrain(string &command) {
   Time end_time(to_release.des_month, to_release.des_day, 23, 59);
   TrainDay to_release_day(to_release.sale_month, to_release.sale_day,
                           to_release.seat_number);
+  int current;
+  train_day_info.get_info(current, 1);
   for (auto i = time; (i < end_time); i.Add(60 * 24)) {
     to_release_day.month = i.GetMonth();
     to_release_day.day = i.GetDay();
-    trains_day.Insert(hash1, hash2, to_release_day);
+    current++;
+    train_day_info.write(to_release_day, current);
+    TrainDayIndex res;
+    res.month = to_release_day.month;
+    res.day = to_release_day.day;
+    res.index = current;
+    trains_day_index.Insert(hash1, hash2, res);
   }
+  train_day_info.write_info(current, 1);
   train_info.write(to_release, index);
   return;
 }
@@ -300,13 +309,18 @@ void QueryTrain(string &command) {
     Time time(month, day, to_query.start_hour, to_query.start_minute);
     time.Print();
     TrainDay actual_train(month, day, 0);
+    TrainDayIndex to_find;
+    to_find.month = month;
+    to_find.day = day;
     unsigned long long id_hash1, id_hash2;
     id_hash1 = sjtu::MyHash(id, exp1);
     id_hash2 = sjtu::MyHash(id, exp2);
-    auto bigger_train = actual_train;
+    auto bigger_train = to_find;
     bigger_train.day++;
-    auto raw_actual_train = trains_day.find2(id_hash1, id_hash2, actual_train, bigger_train);
-    actual_train = raw_actual_train.front();
+    auto raw_actual_train =
+        trains_day_index.find2(id_hash1, id_hash2, to_find, bigger_train);
+    to_find = raw_actual_train.front();
+    train_day_info.read(actual_train, to_find.index);
     std::cout << 0 << ' ' << actual_train.ticket[0] << '\n';
     int price = 0;
     for (int i = 1; i < (to_query.station_number - 1); i++) {
@@ -499,11 +513,17 @@ void QueryTicket(string &command) {
     hash1 = sjtu::MyHash(it->ID, exp1);
     hash2 = sjtu::MyHash(it->ID, exp2);
     TrainDay to_find((it->out_time).GetMonth(), (it->out_time).GetDay(), 0);
-    auto bigger_find = to_find;
+    TrainDayIndex to_find_index;
+    to_find_index.month = to_find.month;
+    to_find_index.day = to_find.day;
+    auto bigger_find = to_find_index;
     bigger_find.day++;
-    auto trains = trains_day.find2(hash1, hash2, to_find, bigger_find);
+    auto trains =
+        trains_day_index.find2(hash1, hash2, to_find_index, bigger_find);
     if (trains.size()) {
-      auto to_check = trains.front();
+      auto to_check_index = trains.front();
+      TrainDay to_check;
+      train_day_info.read(to_check, to_check_index.index);
       if ((to_check.month == it->out_time.GetMonth()) &&
           (to_check.day == it->out_time.GetDay())) {
         int available = maxn;
@@ -633,7 +653,13 @@ void QueryTransfer(string &command) {
     TrainDay actual_train;
     actual_train.month = out_time.GetMonth();
     actual_train.day = out_time.GetDay();
-    auto day_trains_raw = trains_day.find(id_hash1, id_hash2, actual_train);
+    TrainDayIndex to_find;
+    to_find.month = actual_train.month;
+    to_find.day = actual_train.day;
+    auto bigger = to_find;
+    bigger.day++;
+    auto day_trains_raw =
+        trains_day_index.find2(id_hash1, id_hash2, to_find, bigger);
     if ((day_trains_raw.empty())) {
       continue;
     }
@@ -641,7 +667,7 @@ void QueryTransfer(string &command) {
         (day_trains_raw.front().month != day_trains_raw.front().month)) {
       continue;
     }
-    actual_train = day_trains_raw.front();
+    train_day_info.read(actual_train, day_trains_raw.front().index);
     AskData first_train;
     first_train.ID = res.ID;
     first_train.out_time = out_time;
@@ -650,7 +676,7 @@ void QueryTransfer(string &command) {
     first_train.seat = 2e7;
     for (int i = (start_index + 1); i < res.station_number; i++) {
       string inter_station = res.stations[i];
-      if(inter_station == end) {
+      if (inter_station == end) {
         continue;
       }
       unsigned long long station_hash1, station_hash2;
@@ -697,12 +723,15 @@ void QueryTransfer(string &command) {
         TrainDay second_day_train;
         second_day_train.month = test_out_time.GetMonth();
         second_day_train.day = test_out_time.GetDay();
+        TrainDayIndex second_index;
+        second_index.month = second_day_train.month;
+        second_index.day = second_day_train.day;
         auto second_day_trains =
-            trains_day.find(id2_hash1, id2_hash2, second_day_train);
+            trains_day_index.find(id2_hash1, id2_hash2, second_index);
         if (second_day_trains.empty()) {
           continue;
         }
-        second_day_train = second_day_trains.front();
+        train_day_info.read(second_day_train, second_day_trains.front().index);
         AskData second_train;
         second_train.ID = second_train_info.ID;
         second_train.start_index = start_index2;
@@ -802,4 +831,16 @@ bool CompareTransferByTime::operator()(TransferData lhs, TransferData rhs) {
     return (lhs.line1.ID < rhs.line1.ID);
   }
   return (lhs.line2.ID < rhs.line2.ID);
+}
+bool TrainDayIndex::operator<(const TrainDayIndex &other) const {
+  if (month != other.month) {
+    return month < other.month;
+  }
+  return day < other.day;
+}
+bool TrainDayIndex::operator>(const TrainDayIndex &other) const {
+  return (other < *this);
+}
+bool TrainDayIndex::operator==(const TrainDayIndex &other) const {
+  return (!(*this < other)) && (!(other < *this));
 }

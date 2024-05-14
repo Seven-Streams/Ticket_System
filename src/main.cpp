@@ -15,12 +15,13 @@ class Account;
 extern sjtu::MemoryRiver<Account, 1> account_content;
 extern sjtu::map<HashOfAccount, bool, sjtu::Less<HashOfAccount>> account_logged;
 extern sjtu::BPT<int> account_index;
-extern sjtu::BPT<OrderByUser, 20> order_user;
-extern sjtu::BPT<OrderByTrain, 70> queue_list;
+extern sjtu::BPT<OrderByUser, 20, 33> order_user;
+extern sjtu::BPT<OrderByTrain, 66, 15> queue_list;
 extern sjtu::BPT<int> train_index;
 extern sjtu::MemoryRiver<TrainInfo, 1> train_info;
 extern sjtu::BPT<int> station_database;
-extern sjtu::BPT<TrainDay, 20> trains_day;
+extern sjtu::BPT<TrainDayIndex, 126, 12> trains_day_index;
+extern sjtu::MemoryRiver<TrainDay, 1> train_day_info;
 void Clean() {
   account_content.clear();
   account_logged.clear();
@@ -30,7 +31,8 @@ void Clean() {
   train_index.Clear();
   train_info.clear();
   station_database.Clear();
-  trains_day.Clear();
+  trains_day_index.Clear();
+  train_day_info.clear();
   return;
 }
 int main() {
