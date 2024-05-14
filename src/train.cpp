@@ -345,7 +345,7 @@ bool TrainDay::operator==(const TrainDay &rhs) const {
 bool TrainInfo::IsReleased() { return released; }
 int TrainInfo::FindIndex(const char *str) {
   for (int i = 0; i < station_number; i++) {
-    if (strcmp(stations[i], str)) {
+    if (strcmp(stations[i], str) == 0) {
       return i;
     }
   }
@@ -594,10 +594,10 @@ void QueryTransfer(string &command) {
     }
     if (op == "-p") {
       string res = ProcessTxt(command);
-      if (command == "time") {
+      if (res == "time") {
         continue;
       }
-      if (command == "cost") {
+      if (res == "cost") {
         by_time = false;
       }
       throw(SevenStream::exception("Invalid priority type."));

@@ -160,7 +160,6 @@ void Buy(std::string &command, int stamp) {
   start_index = train_total.FindIndex(start_station.c_str());
   end_index = train_total.FindIndex(end_station.c_str());
   if (end_index <= start_index) {
-    std::cout << start_index << ' ' << end_index << std::endl;
     throw(SevenStream::exception("Invalid station."));
   }
   int number = std::stoi(number_raw);
