@@ -792,7 +792,7 @@ private:
     int right_sibling = 0;
     int now_size = 0;
     int pos = 0;
-  } nothing;
+  }nothing;
   sjtu::vector<int> recycle;
   int B_total = 0;
   int B_root = 0;
@@ -1415,6 +1415,8 @@ public:
   }
   BPT() = delete;
   BPT(std::string name) {
+    // int check = sizeof(nothing);
+    // std::cout << check << std::endl;
     mydatabase.ChangeName(name);
     mydatabase.get_info(B_total, 1);
     mydatabase.get_info(B_root, 2);

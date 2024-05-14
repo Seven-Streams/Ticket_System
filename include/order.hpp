@@ -27,9 +27,9 @@ public:
 };
 class OrderByUser {
 private:
-  char Train_ID[21] = "";
-  char start_station[41] = "";
-  char end_station[41] = "";
+  char Train_ID[24] = "";
+  char start_station[44] = "";
+  char end_station[44] = "";
   int number = 0;
   Time start_time, end_time;
   int stamp = 0;
