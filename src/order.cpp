@@ -47,7 +47,7 @@ bool OrderByTrain::operator<(const OrderByTrain &rhs) const {
   if (start_day != rhs.start_day) {
     return rhs.start_day > start_day;
   }
-  return stamp < rhs.stamp;
+  return (stamp < rhs.stamp);
 }
 bool OrderByTrain::operator>(const OrderByTrain &rhs) const {
   return rhs < *this;
@@ -280,6 +280,21 @@ void Refund(std::string &command) {
     cnt++;
   }
   auto to_refund = *it;
+  if (to_refund.status == 3) {
+    return;
+  }
+  if (to_refund.status == 2) {
+    to_refund.status = 3;
+    order_user.Erase(user_hash1, user_hash2, to_refund);
+    order_user.Insert(user_hash1, user_hash2, to_refund);
+    OrderByTrain to_remove;
+    to_remove.stamp = to_refund.stamp;
+    unsigned long long hash1, hash2;
+    hash1 = sjtu::MyHash(to_refund.Train_ID, exp1);
+    hash2 = sjtu::MyHash(to_refund.Train_ID, exp2);
+    queue_list.Erase(hash1, hash2, to_remove);
+    return;
+  }
   to_refund.status = 3;
   order_user.Erase(user_hash1, user_hash2, to_refund);
   order_user.Insert(user_hash1, user_hash2, to_refund);
@@ -298,7 +313,8 @@ void Refund(std::string &command) {
   nothing_order.stamp = minus_max;
   auto queues = queue_list.find(id_hash1, id_hash2, nothing_order);
   for (auto it = queues.begin(); it != queues.end(); it++) {
-    if((it->start_day != to_refund.out_day) || (it->start_month != to_refund.out_month)) {
+    if ((it->start_day != to_refund.out_day) ||
+        (it->start_month != to_refund.out_month)) {
       break;
     }
     bool OK = true;

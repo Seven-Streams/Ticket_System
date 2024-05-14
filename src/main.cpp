@@ -125,7 +125,7 @@ int main() {
         cout << stamp << ' ';
         string num_raw = stamp;
         num_raw.erase(0, 1);
-        num_raw.erase(num_raw.size() - 1, 1);
+        num_raw.pop_back();
         int number = std::stoi(num_raw);
         Buy(command, number);
         continue;
@@ -149,7 +149,7 @@ int main() {
       }
     } catch (SevenStream::exception &e) {
       // cout << e.what() << std::endl;
-      cout <<  "-1" << std::endl;
+      cout << "-1" << std::endl;
     }
   }
   return 0;

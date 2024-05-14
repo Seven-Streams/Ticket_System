@@ -368,7 +368,7 @@ Time TrainInfo::AskOutTime(int index, int month, int day) {
   int final_month, final_day;
   final_month = time.GetMonth();
   final_day = time.GetDay();
-  while ((final_month != month) || (final_day != day)) {
+  while ((final_month != month) || (final_day > day)) {
     time.Minus(24 * 60);
     final_month = time.GetMonth();
     final_day = time.GetDay();
@@ -465,25 +465,30 @@ void QueryTicket(string &command) {
     }
   }
   sjtu::list<AskData> condidate_trains;
-  for (auto it = same_index.begin(); it != same_index.end(); it++) {
-    TrainInfo res;
-    train_info.read(res, *it);
-    int start_index, end_index;
-    start_index = res.FindIndex(start.c_str());
-    end_index = res.FindIndex(end.c_str());
-    if (end_index > start_index) {
-      AskData to_push;
-      to_push.ID = res.ID;
-      to_push.end_index = end_index;
-      to_push.start_index = start_index;
-      to_push.price = res.AskPrice(start_index, end_index);
-      to_push.out_time = res.AskOutTime(start_index, month, day);
-      to_push.start_time = res.AskLeaveTime(
-          start_index, to_push.out_time.GetMonth(), to_push.out_time.GetDay());
-      to_push.end_time = res.AskArriveTime(
-          end_index, to_push.out_time.GetMonth(), to_push.out_time.GetDay());
-      to_push.time = res.AskTime(start_index, end_index);
-      condidate_trains.push_back(to_push);
+  if (same_index.size()) {
+    int cnt = 0;
+    for (auto it = same_index.begin(); it != same_index.end(); it++) {
+      TrainInfo res;
+      train_info.read(res, *it);
+      int start_index, end_index;
+      start_index = res.FindIndex(start.c_str());
+      end_index = res.FindIndex(end.c_str());
+      if (end_index > start_index) {
+        AskData to_push;
+        to_push.ID = res.ID;
+        to_push.end_index = end_index;
+        to_push.start_index = start_index;
+        to_push.price = res.AskPrice(start_index, end_index);
+        // throw(SevenStream::exception("ENDLOOP"));
+        to_push.out_time = res.AskOutTime(start_index, month, day);
+        to_push.start_time =
+            res.AskLeaveTime(start_index, to_push.out_time.GetMonth(),
+                             to_push.out_time.GetDay());
+        to_push.end_time = res.AskArriveTime(
+            end_index, to_push.out_time.GetMonth(), to_push.out_time.GetDay());
+        to_push.time = res.AskTime(start_index, end_index);
+        condidate_trains.push_back(to_push);
+      }
     }
   }
   sjtu::list<AskData> confirmed_data;
