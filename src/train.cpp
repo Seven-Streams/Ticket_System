@@ -354,7 +354,7 @@ int TrainInfo::AskPrice(int start, int end) {
 Time TrainInfo::AskOutTime(int index, int month, int day) {
   Time start_time(month, day, start_hour, start_minute);
   Time time = start_time;
-  for (int i = 1; i < index; i++) {
+  for (int i = 1; i <= index; i++) {
     time.Add(travel[i]);
     time.Add(stop[i]);
   }

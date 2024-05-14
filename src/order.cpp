@@ -32,8 +32,10 @@ void QueryOrder(string &command) {
   min_element.stamp = maxn;
   auto orders = order_user.find(hash1, hash2, min_element);
   std::cout << orders.size() << '\n';
-  for (auto it = orders.begin(); it != orders.end(); it++) {
-    (*it).Print();
+  if (orders.size()) {
+    for (auto it = orders.begin(); it != orders.end(); it++) {
+      (*it).Print();
+    }
   }
   return;
 }
