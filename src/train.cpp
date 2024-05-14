@@ -344,14 +344,11 @@ bool TrainDay::operator==(const TrainDay &rhs) const {
 }
 bool TrainInfo::IsReleased() { return released; }
 int TrainInfo::FindIndex(const char *str) {
-  std::cout << ID << " ID" << std::endl;
-  std::cout << station_number << std::endl;
   for (int i = 0; i < station_number; i++) {
-    if (str == stations[i]) {
+    if (strcmp(stations[i], str)) {
       return i;
     }
   }
-  std::cout << str << ' ';
   throw(SevenStream::exception("No such station."));
 }
 int TrainInfo::AskPrice(int start, int end) {
