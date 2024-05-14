@@ -274,6 +274,7 @@ void Refund(std::string &command) {
   auto it = orders.begin();
   while (cnt < number) {
     it++;
+    cnt++;
   }
   auto to_refund = *it;
   to_refund.status = 3;
