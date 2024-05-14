@@ -153,7 +153,7 @@ void Buy(std::string &command, int stamp) {
   id_hash1 = sjtu::MyHash(id, exp1);
   id_hash2 = sjtu::MyHash(id, exp2);
   auto index_raw = train_index.find(id_hash1, id_hash2, minus_max);
-  if(index_raw.empty()) {
+  if (index_raw.empty()) {
     throw(SevenStream::exception("The Train Doesn't exist."));
   }
   int index = index_raw.front();
@@ -184,7 +184,7 @@ void Buy(std::string &command, int stamp) {
   }
   TrainDay acutual_train(out_month, out_day, 0);
   auto find = trains_day.find(id_hash1, id_hash2, acutual_train);
-  if(find.empty()) {
+  if (find.empty()) {
     throw(SevenStream::exception("No available train."));
   }
   acutual_train = find.front();
@@ -271,6 +271,9 @@ void Refund(std::string &command) {
   nothing.stamp = maxn;
   auto orders = order_user.find(user_hash1, user_hash2, nothing);
   int cnt = 1;
+  if (number > orders.size()) {
+    throw(SevenStream::exception("There aren't enough orders."));
+  }
   auto it = orders.begin();
   while (cnt < number) {
     it++;
@@ -295,6 +298,9 @@ void Refund(std::string &command) {
   nothing_order.stamp = minus_max;
   auto queues = queue_list.find(id_hash1, id_hash2, nothing_order);
   for (auto it = queues.begin(); it != queues.end(); it++) {
+    if((it->start_day != to_refund.out_day) || (it->start_month != to_refund.out_month)) {
+      break;
+    }
     bool OK = true;
     for (int j = it->start_station; j < it->end_station; j++) {
       if (train_actual.ticket[j] < it->number) {
@@ -316,5 +322,7 @@ void Refund(std::string &command) {
       order_user.Insert(it->user_hash1, it->user_hash2, to_change);
     }
   }
+  trains_day.Erase(id_hash1, id_hash2, train_actual);
+  trains_day.Insert(id_hash1, id_hash2, train_actual);
   return;
 }

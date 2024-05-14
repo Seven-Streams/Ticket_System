@@ -166,7 +166,7 @@ void ReleaseTrain(string &command) {
   int index = index_raw.front();
   TrainInfo to_release;
   train_info.read(to_release, index);
-  if(to_release.released) {
+  if (to_release.released) {
     throw(SevenStream::exception("The train has been released."));
   }
   to_release.released = true;
@@ -181,7 +181,7 @@ void ReleaseTrain(string &command) {
   Time end_time(to_release.des_month, to_release.des_day, 23, 59);
   TrainDay to_release_day(to_release.sale_month, to_release.sale_day,
                           to_release.seat_number);
-  for (auto i = time; (i < end_time) ; i.Add(60 * 24)) {
+  for (auto i = time; (i < end_time); i.Add(60 * 24)) {
     to_release_day.month = i.GetMonth();
     to_release_day.day = i.GetDay();
     trains_day.Insert(hash1, hash2, to_release_day);
@@ -625,8 +625,10 @@ void QueryTransfer(string &command) {
     actual_train.month = out_time.GetMonth();
     actual_train.day = out_time.GetDay();
     auto day_trains_raw = trains_day.find(id_hash1, id_hash2, actual_train);
-    if (day_trains_raw.empty() ||
-        (day_trains_raw.front().day != actual_train.day) ||
+    if ((day_trains_raw.empty())) {
+      continue;
+    }
+    if ((day_trains_raw.front().day != actual_train.day) ||
         (day_trains_raw.front().month != day_trains_raw.front().month)) {
       continue;
     }
@@ -649,7 +651,7 @@ void QueryTransfer(string &command) {
       auto possible_trains =
           station_database.find(station_hash1, station_hash2, -1);
       for (auto it2 = possible_trains.begin(); it2 != possible_trains.end();
-           it++) {
+           it2++) {
         if (!end_indexs.count(*it2)) {
           continue;
         } // Can't reach the target.
