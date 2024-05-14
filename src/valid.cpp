@@ -441,9 +441,6 @@ void CheckDate(const char *str) {
     month *= 10;
     month += (str[i] - '0');
   }
-  if ((month < 6) || (month > 8)) {
-    throw(SevenStream::exception("InvalidDate"));
-  }
   for (int i = 3; i < 5; i++) {
     if (str[i] < '0' || str[i] > '9') {
       throw(SevenStream::exception("InvalidDate"));

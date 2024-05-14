@@ -571,7 +571,7 @@ void QueryTransfer(string &command) {
     }
     if (op == "-t") {
       end = ProcessTxt(command);
-      CheckStation(start.c_str());
+      CheckStation(end.c_str());
       continue;
     }
     if (op == "-d") {
