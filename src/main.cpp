@@ -48,14 +48,14 @@ int main() {
     has_account = false;
   }
   while (!cin.eof()) {
-    // string stamp;
+    string stamp;
     int time_now;
     times.get_info(time_now, 1);
     time_now++;
     times.write_info(time_now, 1);
     try {
       getline(cin, command);
-      // stamp = ProcessTxt(command);
+      stamp = ProcessTxt(command);
       string type;
       type = ProcessTxt(command);
       if (type == "add_user") {
@@ -152,7 +152,7 @@ int main() {
         continue;
       }
       if (type == "clean") {
-        // cout << stamp << ' ';
+        cout << stamp << ' ';
         Clean();
         cout << "0\n";
         continue;
