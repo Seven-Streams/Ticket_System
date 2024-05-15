@@ -4,7 +4,7 @@
 
 using std::string;
 sjtu::map<HashOfAccount, bool, sjtu::Less<HashOfAccount>> account_logged;
-sjtu::BPT<int> account_index("account_index");
+sjtu::BPT<AccountIndex, 126, 4> account_index("account_index");
 sjtu::MemoryRiver<Account, 1> account_content("account_content");
 HashOfAccount::HashOfAccount(string name) {
   hash1 = sjtu::MyHash(name, exp1);
@@ -115,12 +115,6 @@ void AddAccount(string command) {
   if ((!c) || (!u) || (!p) || (!n) || (!m) || (!g)) {
     throw(SevenStream::exception("Incorrect input."));
   }
-  CheckUsername(current_user.c_str());
-  CheckUsername(user_name.c_str());
-  CheckPassword(password.c_str());
-  Checkname(name.c_str());
-  CheckMail(mail.c_str());
-  CheckPrivilege(pri_row.c_str());
   int pr = std::stoi(pri_row);
   // finish the first part of check.
   HashOfAccount to_check(current_user);
@@ -130,18 +124,19 @@ void AddAccount(string command) {
   unsigned long long hash1_of_new, hash2_of_new;
   hash1_of_new = sjtu::MyHash(user_name, exp1);
   hash2_of_new = sjtu::MyHash(user_name, exp2);
-  auto check = account_index.find(hash1_of_new, hash2_of_new, minus_max);
-  if (!account_index.find(hash1_of_new, hash2_of_new, minus_max).empty()) {
+  AccountIndex mini;
+  mini.index = minus_max;
+  auto check = account_index.find(hash1_of_new, hash2_of_new, mini);
+  if (!account_index.find(hash1_of_new, hash2_of_new, mini).empty()) {
     throw(SevenStream::exception("The account has been created."));
   }
   unsigned long long hash1_of_current, hash2_of_current;
   hash1_of_current = sjtu::MyHash(current_user, exp1);
   hash2_of_current = sjtu::MyHash(current_user, exp2);
-  check = account_index.find(hash1_of_current, hash2_of_current, minus_max);
-  int index = check.front();
-  Account current_account = GetAccount(index);
-  if (current_account.privilege <= pr) {
-    throw(SevenStream::exception("Privilege is not available."));
+  check = account_index.find(hash1_of_current, hash2_of_current, mini);
+  auto index = check.front();
+  if(index.privilege <= pr) {
+        throw(SevenStream::exception("Privilege is not available."));
   }
   Account to_add(user_name.c_str(), password.c_str(), name.c_str(),
                  mail.c_str(), pr);
@@ -150,7 +145,10 @@ void AddAccount(string command) {
   total++;
   account_content.write(to_add, total);
   account_content.write_info(total, 1);
-  account_index.Insert(hash1_of_new, hash2_of_new, total);
+  AccountIndex res;
+  res.index = total;
+  res.privilege = pr;
+  account_index.Insert(hash1_of_new, hash2_of_new, res);
   return;
 }
 void AddFirstAccount(string command) {
@@ -214,10 +212,6 @@ void AddFirstAccount(string command) {
   if ((!u) || (!p) || (!n) || (!m)) {
     throw(SevenStream::exception("Incorrect input7."));
   }
-  CheckUsername(user_name.c_str());
-  CheckPassword(password.c_str());
-  Checkname(name.c_str());
-  CheckMail(mail.c_str());
   Account to_add(user_name.c_str(), password.c_str(), name.c_str(),
                  mail.c_str(), 10);
   unsigned long long hash1, hash2;
@@ -226,7 +220,10 @@ void AddFirstAccount(string command) {
   account_content.write(to_add, 1);
   int total = 1;
   account_content.write_info(total, 1);
-  account_index.Insert(hash1, hash2, 1);
+  AccountIndex res;
+  res.index = 1;
+  res.privilege = 10;
+  account_index.Insert(hash1, hash2, res);
   return;
 }
 void Logout(string command) {
@@ -235,7 +232,6 @@ void Logout(string command) {
     throw(SevenStream::exception("Incorrect input."));
   }
   string user = ProcessTxt(command);
-  CheckUsername(user.c_str());
   HashOfAccount to_remove(user);
   auto res = account_logged.find(to_remove);
   if (res != account_logged.end()) {
@@ -280,8 +276,6 @@ void Login(string command) {
   if ((!u) || (!p)) {
     throw(SevenStream::exception("Incorrect input."));
   }
-  CheckUsername(user.c_str());
-  CheckPassword(password.c_str());
   HashOfAccount hash_of_login(user);
 
   if (account_logged.count(hash_of_login)) {
@@ -290,12 +284,14 @@ void Login(string command) {
   unsigned long long hash1, hash2;
   hash1 = sjtu::MyHash(user, exp1);
   hash2 = sjtu::MyHash(user, exp2);
-  auto index_raw = account_index.find(hash1, hash2, minus_max);
+  AccountIndex mini;
+  mini.index = minus_max;
+  auto index_raw = account_index.find(hash1, hash2, mini);
   if (index_raw.empty()) {
     throw(SevenStream::exception("This account doesn't exist."));
   }
-  int index = index_raw.front();
-  Account to_login = GetAccount(index);
+  auto index = index_raw.front();
+  Account to_login = GetAccount(index.index);
   if (to_login.password != password) {
     throw(SevenStream::exception("Wrong Password."));
   }
@@ -337,8 +333,6 @@ string QueryAccount(string command) {
   if ((!c) || (!u)) {
     throw(SevenStream::exception("Incorrect input."));
   }
-  CheckUsername(current.c_str());
-  CheckUsername(to_query.c_str());
   HashOfAccount hash_current(current);
   bool logged = false;
   if (!account_logged.count(hash_current)) {
@@ -347,23 +341,24 @@ string QueryAccount(string command) {
   unsigned long long hash1_current, hash2_current;
   hash1_current = sjtu::MyHash(current, exp1);
   hash2_current = sjtu::MyHash(current, exp2);
-  auto current_raw =
-      account_index.find(hash1_current, hash2_current, minus_max);
-  int current_index = current_raw.front();
-  Account current_account = GetAccount(current_index);
+  AccountIndex mini;
+  mini.index = minus_max;
+  auto current_raw = account_index.find(hash1_current, hash2_current, mini);
+  auto current_index = current_raw.front();
   unsigned long long hash1_query, hash2_query;
   hash1_query = sjtu::MyHash(to_query, exp1);
   hash2_query = sjtu::MyHash(to_query, exp2);
-  auto query_raw = account_index.find(hash1_query, hash2_query, minus_max);
+  auto query_raw = account_index.find(hash1_query, hash2_query, mini);
   if (query_raw.empty()) {
     throw(SevenStream::exception("The query account doesn't exist."));
   }
-  int query_index = query_raw.front();
-  Account query_account = GetAccount(query_index);
-  if (query_account.privilege >= current_account.privilege &&
-      (to_query != current)) {
-    throw(SevenStream::exception("Not enough privilege."));
+  auto query_index = query_raw.front();
+  if ((current != to_query) &&
+      (query_index.privilege >= current_index.privilege)) {
+    throw(SevenStream::exception("Not enough privilege!"));
   }
+  Account current_account = GetAccount(current_index.index);
+  Account query_account = GetAccount(query_index.index);
   string query_ans;
   query_ans += query_account.username;
   query_ans += ' ';
@@ -442,8 +437,6 @@ string ModifyAccount(string command) {
     }
     }
   }
-  CheckUsername(current.c_str());
-  CheckUsername(to_query.c_str());
   if ((!c) || (!u)) {
     throw(SevenStream::exception("Incorrect input."));
   }
@@ -454,44 +447,44 @@ string ModifyAccount(string command) {
   unsigned long long hash1_current, hash2_current;
   hash1_current = sjtu::MyHash(current, exp1);
   hash2_current = sjtu::MyHash(current, exp2);
-  auto current_raw =
-      account_index.find(hash1_current, hash2_current, minus_max);
-  int current_index = current_raw.front();
-  Account current_account = GetAccount(current_index);
-  unsigned long long hash1_query, hash2_query;
-  hash1_query = sjtu::MyHash(to_query, exp1);
-  hash2_query = sjtu::MyHash(to_query, exp2);
-  auto query_raw = account_index.find(hash1_query, hash2_query, minus_max);
-  if (query_raw.empty()) {
-    throw(SevenStream::exception("The query account doesn't exist."));
-  }
-  int query_index = query_raw.front();
-  Account query_account = GetAccount(query_index);
-  if ((query_account.privilege >= current_account.privilege) &&
-      (current != to_query)) {
-    throw(SevenStream::exception("Not enough privilege."));
-  }
-  if (password != "") {
-    CheckPassword(password.c_str());
-    strcpy(query_account.password, password.c_str());
-  }
-  if (name != "") {
-    Checkname(name.c_str());
-    strcpy(query_account.name, name.c_str());
-  }
-  if (mail != "") {
-    CheckMail(mail.c_str());
-    strcpy(query_account.mail, mail.c_str());
-  }
+  AccountIndex mini;
+  mini.index = minus_max;
+  auto current_raw = account_index.find(hash1_current, hash2_current, mini);
+  auto current_index = current_raw.front();
   if (pri_row != "") {
-    CheckPrivilege(pri_row.c_str());
     int pr = std::stoi(pri_row);
-    query_account.privilege = pr;
-    if (pr >= current_account.privilege) {
+    if (pr >= current_index.privilege) {
       throw(SevenStream::exception("Not Enough privilege."));
     }
   }
-  account_content.write(query_account, query_index);
+  unsigned long long hash1_query, hash2_query;
+  hash1_query = sjtu::MyHash(to_query, exp1);
+  hash2_query = sjtu::MyHash(to_query, exp2);
+  auto query_raw = account_index.find(hash1_query, hash2_query, mini);
+  if (query_raw.empty()) {
+    throw(SevenStream::exception("The query account doesn't exist."));
+  }
+  auto query_index = query_raw.front();
+  if((current != to_query) && (query_index.privilege >= current_index.privilege)) {
+    throw (SevenStream::exception("Not enough privilege!"));
+  }
+  Account query_account = GetAccount(query_index.index);
+  if (password != "") {
+    strcpy(query_account.password, password.c_str());
+  }
+  if (name != "") {
+    strcpy(query_account.name, name.c_str());
+  }
+  if (mail != "") {
+    strcpy(query_account.mail, mail.c_str());
+  }
+  if (pri_row != "") {
+    int pr = std::stoi(pri_row);
+    query_account.privilege = pr;
+    query_index.privilege = pr;
+    account_index.Insert(hash1_query, hash2_query, query_index);
+  }
+  account_content.write(query_account, query_index.index);
   string query_ans;
   query_ans += query_account.username;
   query_ans += ' ';
@@ -513,4 +506,13 @@ bool HashOfAccount::operator>(const HashOfAccount &rhs) {
     return (hash1 > rhs.hash1);
   }
   return (hash2 > rhs.hash2);
+}
+bool AccountIndex::operator<(const AccountIndex &other) const {
+  return index < other.index;
+}
+bool AccountIndex::operator>(const AccountIndex &other) const {
+  return index > other.index;
+}
+bool AccountIndex::operator==(const AccountIndex &other) const {
+  return index == other.index;
 }

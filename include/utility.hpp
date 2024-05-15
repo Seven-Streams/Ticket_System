@@ -1,7 +1,15 @@
 #ifndef UTILITY_HPP
 #define UTILITY_HPP
-#include "exception.hpp"
 #include <iostream>
+namespace SevenStream {
+class exception {
+  std::string type;
+
+public:
+  exception(const std::string &txt) { type = txt; }
+  std::string what() { return type; }
+};
+} // namespace SevenStream
 class Time {
 private:
   int month = 0;

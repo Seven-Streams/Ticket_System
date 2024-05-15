@@ -1,7 +1,5 @@
 #include "../include/train.hpp"
-#include "../include/exception.hpp"
 #include "../include/store.hpp"
-#include "../include/valid.hpp"
 #include <cstring>
 #include <iostream>
 #include <string>
@@ -20,21 +18,18 @@ void AddTrain(std::string &command) {
         throw(SevenStream::exception("Invalid input."));
       }
       ID = ProcessTxt(command);
-      CheckTrainID(ID.c_str());
     }
     if (op == "-n") {
       if (num_raw != "") {
         throw(SevenStream::exception("Invalid input."));
       }
       num_raw = ProcessTxt(command);
-      CheckStatNum(num_raw.c_str());
     }
     if (op == "-m") {
       if (seat_raw != "") {
         throw(SevenStream::exception("Invalid input."));
       }
       seat_raw = ProcessTxt(command);
-      CheckSeatNum(seat_raw.c_str());
     }
     if (op == "-s") {
       if (stations != "") {
@@ -53,7 +48,6 @@ void AddTrain(std::string &command) {
         throw(SevenStream::exception("Invalid input."));
       }
       start_time = ProcessTxt(command);
-      CheckStartTime(start_time.c_str());
     }
     if (op == "-t") {
       if (travel_time != "") {
@@ -78,7 +72,6 @@ void AddTrain(std::string &command) {
         throw(SevenStream::exception("Invalid input."));
       }
       type = ProcessTxt(command);
-      CheckType(type.c_str());
     }
   }
   if ((ID == "") || (num_raw == "") || (seat_raw == "") || (stations == "") ||
@@ -101,40 +94,33 @@ void AddTrain(std::string &command) {
   res.seat_number = seat_num;
   for (int i = 1; i < num; i++) {
     string price_raw = ProcessMalValue(prices);
-    CheckPrice(price_raw.c_str());
     int price = std::stoi(price_raw);
     res.price[i] = price;
   }
   for (int i = 0; i < num; i++) {
     string station = ProcessMalValue(stations);
-    CheckStation(station.c_str());
     strcpy(res.stations[i], station.c_str());
   }
-  CheckStartTime(start_time.c_str());
   int hour = (start_time[0] - '0') * 10 + (start_time[1] - '0');
   int minute = (start_time[3] - '0') * 10 + (start_time[4] - '0');
   res.start_hour = hour;
   res.start_minute = minute;
   for (int i = 1; i < num; i++) {
     string travel_time_raw = ProcessMalValue(travel_time);
-    CheckInterTime(travel_time_raw.c_str());
     int time = std::stoi(travel_time_raw);
     res.travel[i] = time;
   }
   for (int i = 1; i < (num - 1); i++) {
     string stop_time_raw = ProcessMalValue(stop_time);
-    CheckInterTime(stop_time_raw.c_str());
     int time = std::stoi(stop_time_raw);
     res.stop[i] = time;
   }
   string date = ProcessMalValue(sale_date);
-  CheckDate(date.c_str());
   int month = (date[0] - '0') * 10 + (date[1] - '0');
   int day = (date[3] - '0') * 10 + (date[4] - '0');
   res.sale_month = month;
   res.sale_day = day;
   date = ProcessMalValue(sale_date);
-  CheckDate(date.c_str());
   month = (date[0] - '0') * 10 + (date[1] - '0');
   day = (date[3] - '0') * 10 + (date[4] - '0');
   res.des_month = month;
@@ -156,7 +142,6 @@ void ReleaseTrain(string &command) {
     throw(SevenStream::exception("Invalid input."));
   }
   string id = ProcessTxt(command);
-  CheckTrainID(id.c_str());
   unsigned long long hash1 = sjtu::MyHash(id, exp1);
   unsigned long long hash2 = sjtu::MyHash(id, exp2);
   auto index_raw = train_index.find(hash1, hash2, minus_max);
@@ -204,7 +189,6 @@ void DeleteTrain(string &command) {
     throw(SevenStream::exception("Invalid input."));
   }
   string id = ProcessTxt(command);
-  CheckTrainID(id.c_str());
   unsigned long long hash1 = sjtu::MyHash(id, exp1);
   unsigned long long hash2 = sjtu::MyHash(id, exp2);
   auto index_raw = train_index.find(hash1, hash2, minus_max);
@@ -249,8 +233,6 @@ void QueryTrain(string &command) {
       throw(SevenStream::exception("Invalid input."));
     }
   }
-  CheckDate(date.c_str());
-  CheckTrainID(id.c_str());
   int month, day;
   month = 0;
   day = 0;
@@ -431,17 +413,14 @@ void QueryTicket(string &command) {
     string op = ProcessTxt(command);
     if (op == "-s") {
       start = ProcessTxt(command);
-      CheckStation(start.c_str());
       continue;
     }
     if (op == "-t") {
       end = ProcessTxt(command);
-      CheckStation(end.c_str());
       continue;
     }
     if (op == "-d") {
       date = ProcessTxt(command);
-      CheckDate(date.c_str());
       continue;
     }
     if (op == "-p") {
@@ -595,17 +574,14 @@ void QueryTransfer(string &command) {
     string op = ProcessTxt(command);
     if (op == "-s") {
       start = ProcessTxt(command);
-      CheckStation(start.c_str());
       continue;
     }
     if (op == "-t") {
       end = ProcessTxt(command);
-      CheckStation(end.c_str());
       continue;
     }
     if (op == "-d") {
       date = ProcessTxt(command);
-      CheckDate(date.c_str());
       continue;
     }
     if (op == "-p") {

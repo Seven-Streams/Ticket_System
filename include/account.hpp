@@ -1,10 +1,15 @@
-#include "exception.hpp"
 #include "store.hpp"
 #include "utility.hpp"
-#include "valid.hpp"
 #ifndef ACCOUNT_HPP
 #define ACCOUNT_HPP
 using std::string;
+struct AccountIndex {
+  int index = 0;
+  int privilege = 0;
+  bool operator<(const AccountIndex &other) const;
+  bool operator>(const AccountIndex &other) const;
+  bool operator==(const AccountIndex &other) const;
+};
 class HashOfAccount {
 private:
   unsigned long long hash1, hash2;

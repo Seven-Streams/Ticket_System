@@ -8,5 +8,4 @@ src/account.cpp
 src/main.cpp
 src/order.cpp
 src/train.cpp
-src/utility.cpp
-src/valid.cpp)
+src/utility.cpp)

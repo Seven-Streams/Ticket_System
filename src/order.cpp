@@ -96,32 +96,26 @@ void Buy(std::string &command, int stamp) {
     string op = ProcessTxt(command);
     if (op == "-u") {
       user = ProcessTxt(command);
-      CheckUsername(user.c_str());
       continue;
     }
     if (op == "-i") {
       id = ProcessTxt(command);
-      CheckTrainID(id.c_str());
       continue;
     }
     if (op == "-d") {
       date = ProcessTxt(command);
-      CheckDate(date.c_str());
       continue;
     }
     if (op == "-n") {
       number_raw = ProcessTxt(command);
-      CheckNumber(number_raw.c_str());
       continue;
     }
     if (op == "-f") {
       start_station = ProcessTxt(command);
-      CheckStation(start_station.c_str());
       continue;
     }
     if (op == "-t") {
       end_station = ProcessTxt(command);
-      CheckStation(end_station.c_str());
       continue;
     }
     if (op == "-q") {

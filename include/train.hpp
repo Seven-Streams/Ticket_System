@@ -1,4 +1,3 @@
-#include "exception.hpp"
 #include "utility.hpp"
 #include <cstring>
 #include <string>

@@ -1,10 +1,8 @@
 #include "../include/account.hpp"
-#include "../include/exception.hpp"
 #include "../include/order.hpp"
 #include "../include/store.hpp"
 #include "../include/train.hpp"
 #include "../include/utility.hpp"
-#include "../include/valid.hpp"
 #include <ios>
 #include <iostream>
 #include <string>
@@ -14,7 +12,7 @@ using std::string;
 class Account;
 extern sjtu::MemoryRiver<Account, 1> account_content;
 extern sjtu::map<HashOfAccount, bool, sjtu::Less<HashOfAccount>> account_logged;
-extern sjtu::BPT<int> account_index;
+extern sjtu::BPT<AccountIndex, 126, 4> account_index;
 extern sjtu::BPT<OrderByUser, 19, 20> order_user;
 extern sjtu::BPT<OrderByTrain, 62, 12> queue_list;
 extern sjtu::BPT<int> train_index;
@@ -22,6 +20,7 @@ extern sjtu::MemoryRiver<TrainInfo, 1> train_info;
 extern sjtu::BPT<int> station_database;
 extern sjtu::BPT<TrainDayIndex, 126, 4> trains_day_index;
 extern sjtu::MemoryRiver<TrainDay, 1> train_day_info;
+sjtu::MemoryRiver<int, 1> times;
 void Clean() {
   account_content.clear();
   account_logged.clear();
@@ -50,13 +49,17 @@ int main() {
   }
   while (!cin.eof()) {
     string stamp;
+    int time_now;
+    times.get_info(time_now, 1);
+    time_now++;
+    times.write_info(time_now, 1);
     try {
       getline(cin, command);
       stamp = ProcessTxt(command);
       string type;
       type = ProcessTxt(command);
       if (type == "add_user") {
-        cout << stamp << ' ';
+        // cout << stamp << ' ';
         if (has_account) {
           AddAccount(command);
         } else {
@@ -67,82 +70,83 @@ int main() {
         continue;
       }
       if (type == "login") {
-        cout << stamp << ' ';
+        // cout << stamp << ' ';
         Login(command);
         cout << "0" << '\n';
         continue;
       }
       if (type == "logout") {
-        cout << stamp << ' ';
+        // cout << stamp << ' ';
         Logout(command);
         cout << "0" << '\n';
         continue;
       }
       if (type == "query_profile") {
-        cout << stamp << ' ';
+        // cout << stamp << ' ';
         std::string ans = QueryAccount(command);
         cout << ans << '\n';
         continue;
       }
       if (type == "modify_profile") {
-        cout << stamp << ' ';
+        // cout << stamp << ' ';
         std::string ans = ModifyAccount(command);
         cout << ans << '\n';
         continue;
       }
       if (type == "exit") {
-        cout << stamp << " bye\n";
+        // cout << stamp << " bye\n";
+        cout  << " bye\n";
         return 0;
       }
       if (type == "add_train") {
-        cout << stamp << ' ';
+        // cout << stamp << ' ';
         AddTrain(command);
         cout << "0\n";
         continue;
       }
       if (type == "delete_train") {
-        cout << stamp << ' ';
+        // cout << stamp << ' ';
         DeleteTrain(command);
         cout << "0\n";
         continue;
       }
       if (type == "release_train") {
-        cout << stamp << ' ';
+        // cout << stamp << ' ';
         ReleaseTrain(command);
         cout << "0\n";
         continue;
       }
       if (type == "query_train") {
-        cout << stamp << ' ';
+        // cout << stamp << ' ';
         QueryTrain(command);
         continue;
       }
       if (type == "query_ticket") {
-        cout << stamp << ' ';
+        // cout << stamp << ' ';
         QueryTicket(command);
         continue;
       }
       if (type == "query_transfer") {
-        cout << stamp << ' ';
+        // cout << stamp << ' ';
         QueryTransfer(command);
         continue;
       }
       if (type == "buy_ticket") {
-        cout << stamp << ' ';
-        string num_raw = stamp;
-        num_raw.erase(0, 1);
-        num_raw.pop_back();
-        int number = std::stoi(num_raw);
-        Buy(command, number);
+        // cout << stamp << ' ';
+        // string num_raw = stamp;
+        // num_raw.erase(0, 1);
+        // num_raw.pop_back();
+        // int number = std::stoi(num_raw);
+        Buy(command, time_now);
         continue;
       }
       if (type == "query_order") {
-        cout << stamp << ' ';
+        // cout << stamp << ' ';
         QueryOrder(command);
         continue;
       }
       if (type == "refund_ticket") {
-        cout << stamp << ' ';
+        // cout << stamp << ' ';
         Refund(command);
         cout << "0\n";
         continue;
