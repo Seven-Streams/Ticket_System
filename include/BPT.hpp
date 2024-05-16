@@ -1,6 +1,7 @@
 #include "list.hpp"
 #include "vector.hpp"
 #include "memoryriver.hpp"
+#include "map.hpp"
 #ifndef BPT_HPP
 #define BPT_HPP
 namespace sjtu {
@@ -57,39 +58,42 @@ private:
   MemoryRiver<Node, 3> mydatabase;
   MemoryRiver<int, 1> myrecycle;
   sjtu::list<Node> mycache;
+  sjtu::map<int, typename sjtu::list<Node>::iterator> mycache_map;
   void ReadwithCache(Node &res, int pos) {
-    for (auto it = mycache.begin(); it != mycache.end(); it++) {
-      if (it->pos == pos) {
-        res = *it;
-        mycache.erase(it);
-        mycache.push_front(res);
-        return;
-      }
+    if (mycache_map.count(pos)) {
+      res = *(mycache_map[pos]);
+      mycache.erase(mycache_map[pos]);
+      mycache.push_front(res);
+      mycache_map[pos] = mycache.begin();
+      return;
     }
     mydatabase.read(res, pos);
     mycache.push_front(res);
+    mycache_map[pos] = mycache.begin();
     if (mycache.size() > cachesize) {
       Node the_back = mycache.back();
-      mycache.pop_back();
+      mycache_map.erase(mycache_map.find(the_back.pos));
       mydatabase.write(the_back, the_back.pos);
+      mycache.pop_back();
     }
     // Node res;
     // mydatabase.read(res, pos);
     return;
   }
   void WritewithCache(Node to_write, int nothing) {
-    for (auto it = mycache.begin(); it != mycache.end(); it++) {
-      if (it->pos == to_write.pos) {
-        mycache.erase(it);
-        mycache.push_front(to_write);
-        return;
-      }
+    if (mycache_map.count(to_write.pos)) {
+      mycache.erase(mycache_map[to_write.pos]);
+      mycache.push_front(to_write);
+      mycache_map[to_write.pos] = mycache.begin();
+      return;
     }
     mycache.push_front(to_write);
+    mycache_map[to_write.pos] = mycache.begin();
     if (mycache.size() > cachesize) {
       Node the_back = mycache.back();
-      mycache.pop_back();
+      mycache_map.erase(mycache_map.find(the_back.pos));
       mydatabase.write(the_back, the_back.pos);
+      mycache.pop_back();
     }
     // mydatabase.write(to_write, to_write.pos);
     return;
