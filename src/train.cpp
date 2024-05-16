@@ -1,8 +1,4 @@
 #include "../include/train.hpp"
-#include "../include/store.hpp"
-#include <cstring>
-#include <iostream>
-#include <string>
 sjtu::BPT<int> train_index("train_index");
 sjtu::MemoryRiver<TrainInfo, 1> train_info("train_database");
 sjtu::BPT<int> station_database("station");

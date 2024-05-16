@@ -1,8 +1,8 @@
 #include "account.hpp"
-#include "store.hpp"
-#include "utility.hpp"
-#include <string>
 #include "train.hpp"
+#include "utility.hpp"
+#include <cstring>
+#include <string>
 #ifndef ORDER_HPP
 #define ORDER_HPP
 class OrderByTrain {
@@ -14,13 +14,14 @@ private:
   int start_day = 0;
   int stamp = 0;
   unsigned long long user_hash1, user_hash2 = 0;
+
 public:
   OrderByTrain() = default;
   ~OrderByTrain() = default;
-  bool operator<(const OrderByTrain&) const;
-  bool operator>(const OrderByTrain&) const;
-  bool operator==(const OrderByTrain&) const;
-  friend void Buy(std::string&, int);
+  bool operator<(const OrderByTrain &) const;
+  bool operator>(const OrderByTrain &) const;
+  bool operator==(const OrderByTrain &) const;
+  friend void Buy(std::string &, int);
   friend void Refund(std::string &);
 };
 class OrderByUser {
@@ -37,16 +38,16 @@ private:
   int out_day = 0;
   int start_index = 0;
   int end_index = 0;
-//status = 1, OK; 2, pending; 3, refunded;
+  // status = 1, OK; 2, pending; 3, refunded;
 public:
   OrderByUser() = default;
-  OrderByUser(const OrderByUser& rhs) = default;
+  OrderByUser(const OrderByUser &rhs) = default;
   ~OrderByUser() = default;
   bool operator<(const OrderByUser &) const;
   bool operator>(const OrderByUser &) const;
   bool operator==(const OrderByUser &) const;
   void Print();
-  friend void QueryOrder(std::string&);
+  friend void QueryOrder(std::string &);
   friend void Buy(std::string &, int);
   friend void Refund(std::string &);
 };

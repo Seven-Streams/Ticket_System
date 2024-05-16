@@ -1,6 +1,5 @@
 #include "../include/order.hpp"
-#include <cstring>
-#include <string>
+
 using std::string;
 sjtu::BPT<OrderByUser, 19, 20>  order_user("order_user");
 sjtu::BPT<OrderByTrain, 62, 12> queue_list("queue");

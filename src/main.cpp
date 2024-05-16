@@ -1,13 +1,7 @@
 #include "../include/account.hpp"
-#include "../include/exception.hpp"
 #include "../include/order.hpp"
-#include "../include/store.hpp"
 #include "../include/train.hpp"
 #include "../include/utility.hpp"
-#include "../include/valid.hpp"
-#include <ios>
-#include <iostream>
-#include <string>
 using std::cin;
 using std::cout;
 using std::string;

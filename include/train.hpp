@@ -1,5 +1,10 @@
+#include "BPT.hpp"
+#include "map.hpp"
+#include "memoryriver.hpp"
+#include "priority_queue.hpp"
 #include "utility.hpp"
 #include <cstring>
+#include <iostream>
 #include <string>
 #ifndef TRAIN_HPP
 #define TRAIN_HPP
@@ -9,9 +14,9 @@ struct TrainDayIndex {
   int month = 0;
   int day = 0;
   int index = 0;
-  bool operator<(const TrainDayIndex&) const;
-  bool operator>(const TrainDayIndex&) const;
-  bool operator==(const TrainDayIndex&) const;
+  bool operator<(const TrainDayIndex &) const;
+  bool operator>(const TrainDayIndex &) const;
+  bool operator==(const TrainDayIndex &) const;
 };
 class AskData {
 private:
@@ -38,6 +43,7 @@ private:
   AskData line1, line2;
   int interval;
   string transfer = "";
+
 public:
   friend void QueryTransfer(string &);
   friend class CompareTransferByCost;

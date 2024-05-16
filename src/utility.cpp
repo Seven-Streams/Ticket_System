@@ -1,5 +1,4 @@
 #include "../include/utility.hpp"
-#include <fstream>
 using std::cout;
 using std::string;
 string ProcessTxt(string &txt) {

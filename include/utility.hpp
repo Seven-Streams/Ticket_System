@@ -1,6 +1,10 @@
 #ifndef UTILITY_HPP
 #define UTILITY_HPP
+#include <fstream>
 #include <iostream>
+const unsigned long long exp1 = 13331, exp2 = 131;
+const int minus_max = -2147483648;
+const int maxn = 2147483647;
 namespace SevenStream {
 class exception {
   std::string type;
@@ -25,7 +29,7 @@ public:
   void Minus(int);
   void Print();
   int GetMonth() const;
-  int  GetDay() const;
+  int GetDay() const;
   friend int IntervalMinute(Time, Time);
   bool operator<(const Time &rhs) const;
   bool operator>(const Time &rhs) const;
@@ -49,6 +53,18 @@ public:
   template <class U1, class U2>
   pair(pair<U1, U2> &&other) : first(other.first), second(other.second) {}
 };
-
+template <class T> class Less {
+public:
+  bool operator()(T a, T b) { return a < b; }
+};
+inline unsigned long long MyHash(const std::string &txt,
+                                 const unsigned long long &exp) {
+  unsigned long long ans = 0;
+  for (int i = 0; i < txt.size(); i++) {
+    ans *= exp;
+    ans += txt[i];
+  }
+  return ans;
+}
 } // namespace sjtu
 #endif

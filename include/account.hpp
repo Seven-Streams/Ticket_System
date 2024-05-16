@@ -1,5 +1,9 @@
-#include "store.hpp"
+#include "BPT.hpp"
+#include "map.hpp"
+#include "memoryriver.hpp"
 #include "utility.hpp"
+#include <cstring>
+#include <string>
 #ifndef ACCOUNT_HPP
 #define ACCOUNT_HPP
 using std::string;

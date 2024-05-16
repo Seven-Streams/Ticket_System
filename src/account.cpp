@@ -1,6 +1,4 @@
 #include "../include/account.hpp"
-#include <cstring>
-#include <string>
 
 using std::string;
 sjtu::map<HashOfAccount, bool, sjtu::Less<HashOfAccount>> account_logged;
@@ -135,8 +133,8 @@ void AddAccount(string command) {
   hash2_of_current = sjtu::MyHash(current_user, exp2);
   check = account_index.find(hash1_of_current, hash2_of_current, mini);
   auto index = check.front();
-  if(index.privilege <= pr) {
-        throw(SevenStream::exception("Privilege is not available."));
+  if (index.privilege <= pr) {
+    throw(SevenStream::exception("Privilege is not available."));
   }
   Account to_add(user_name.c_str(), password.c_str(), name.c_str(),
                  mail.c_str(), pr);
@@ -465,8 +463,9 @@ string ModifyAccount(string command) {
     throw(SevenStream::exception("The query account doesn't exist."));
   }
   auto query_index = query_raw.front();
-  if((current != to_query) && (query_index.privilege >= current_index.privilege)) {
-    throw (SevenStream::exception("Not enough privilege!"));
+  if ((current != to_query) &&
+      (query_index.privilege >= current_index.privilege)) {
+    throw(SevenStream::exception("Not enough privilege!"));
   }
   Account query_account = GetAccount(query_index.index);
   if (password != "") {
