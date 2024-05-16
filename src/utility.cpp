@@ -2,19 +2,16 @@
 using std::cout;
 using std::string;
 string ProcessTxt(string &txt) {
-  while (txt[0] == ' ') {
-    txt.erase(0, 1);
+  size_t pos = txt.find(' ');
+  if(pos == string::npos) {
+    string tmp = txt;
+    txt = "";
+    return tmp;
   }
-  while (txt[txt.size() - 1] == ' ') {
-    txt.erase(txt.size() - 1, 1);
-  }
-  string tmp = "";
-  while ((!txt.empty()) && txt[0] != ' ') {
-    tmp += txt[0];
-    txt.erase(0, 1);
-  }
-  while ((!txt.empty()) && txt[0] == ' ') {
-    txt.erase(0, 1);
+  string tmp = txt.substr(0, pos);
+  txt.erase(0, pos + 1);
+  if (tmp.empty()) {
+    throw(SevenStream::exception("Empty value."));
   }
   return tmp;
 }
@@ -44,14 +41,14 @@ void Time::Add(const int& duration_minutes) {
   }
 }
 string ProcessMalValue(string &txt) {
-  string tmp;
-  if (txt[0] == '|') {
-    txt.erase(0, 1);
+  size_t pos = txt.find('|');
+  if(pos == string::npos) {
+    string tmp = txt;
+    txt = "";
+    return tmp;
   }
-  while ((!txt.empty()) && txt[0] != '|') {
-    tmp += txt[0];
-    txt.erase(0, 1);
-  }
+  string tmp = txt.substr(0, pos);
+  txt.erase(0, pos + 1);
   if (tmp.empty()) {
     throw(SevenStream::exception("Empty value."));
   }
