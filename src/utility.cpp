@@ -18,13 +18,13 @@ string ProcessTxt(string &txt) {
   }
   return tmp;
 }
-Time::Time(int _mon, int _d, int _h, int _min) {
+Time::Time(const int& _mon, const int& _d, const int& _h, const int& _min) {
   month = _mon;
   day = _d;
   hour = _h;
   minute = _min;
 }
-void Time::Add(int duration_minutes) {
+void Time::Add(const int& duration_minutes) {
   minute += duration_minutes;
   int add_hour = minute / 60;
   minute %= 60;
@@ -58,7 +58,7 @@ string ProcessMalValue(string &txt) {
   return tmp;
 }
 
-void Time::Minus(int duration_minutes) {
+void Time::Minus(const int& duration_minutes) {
   int to_minus_hour = duration_minutes / 60;
   int to_minus_min = duration_minutes % 60;
   if (minute < to_minus_min) {
@@ -86,7 +86,7 @@ void Time::Minus(int duration_minutes) {
   return;
 }
 
-void Time::Print() {
+void Time::Print() const{
   if (month < 10) {
     cout << 0;
   }

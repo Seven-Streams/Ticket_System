@@ -319,7 +319,7 @@ void QueryTrain(string &command) {
   }
   return;
 }
-TrainDay::TrainDay(int _m, int _d, int _s) {
+TrainDay::TrainDay(const int &_m, const int &_d, const int &_s) {
   month = _m;
   day = _d;
   for (int &element : ticket) {
@@ -336,8 +336,8 @@ bool TrainDay::operator>(const TrainDay &rhs) const { return rhs < (*this); }
 bool TrainDay::operator==(const TrainDay &rhs) const {
   return ((!(rhs < (*this))) && (!((*this) < rhs)));
 }
-bool TrainInfo::IsReleased() { return released; }
-int TrainInfo::FindIndex(const char *str) {
+bool TrainInfo::IsReleased() const { return released; }
+int TrainInfo::FindIndex(const char *str) const {
   for (int i = 0; i < station_number; i++) {
     if (strcmp(stations[i], str) == 0) {
       return i;
@@ -345,14 +345,15 @@ int TrainInfo::FindIndex(const char *str) {
   }
   throw(SevenStream::exception("No such station."));
 }
-int TrainInfo::AskPrice(int start, int end) {
+int TrainInfo::AskPrice(const int &start, const int &end) const {
   int ans = 0;
   for (int i = (start + 1); i <= end; i++) {
     ans += price[i];
   }
   return ans;
 }
-Time TrainInfo::AskOutTime(int index, int month, int day) {
+Time TrainInfo::AskOutTime(const int &index, const int &month,
+                           const int &day) const {
   Time start_time(month, day, start_hour, start_minute);
   Time time = start_time;
   for (int i = 1; i <= index; i++) {
@@ -370,7 +371,7 @@ Time TrainInfo::AskOutTime(int index, int month, int day) {
   }
   return start_time;
 }
-bool TrainInfo::IsSaleTime(int _m, int _d) {
+bool TrainInfo::IsSaleTime(const int &_m, const int &_d) const {
   if (_m < sale_month) {
     return false;
   }
@@ -385,7 +386,8 @@ bool TrainInfo::IsSaleTime(int _m, int _d) {
   }
   return true;
 }
-Time TrainInfo::AskLeaveTime(int index, int _m, int _d) {
+Time TrainInfo::AskLeaveTime(const int &index, const int &_m,
+                             const int &_d) const {
   Time ans(_m, _d, start_hour, start_minute);
   for (int i = 1; i <= index; i++) {
     ans.Add(travel[i]);
@@ -393,7 +395,8 @@ Time TrainInfo::AskLeaveTime(int index, int _m, int _d) {
   }
   return ans;
 }
-Time TrainInfo::AskArriveTime(int index, int _m, int _d) {
+Time TrainInfo::AskArriveTime(const int &index, const int &_m,
+                              const int &_d) const {
   Time ans(_m, _d, start_hour, start_minute);
   for (int i = 1; i < index; i++) {
     ans.Add(travel[i]);
@@ -541,7 +544,7 @@ void QueryTicket(string &command) {
   return;
 }
 
-int TrainInfo::AskTime(int start_index, int end_index) {
+int TrainInfo::AskTime(const int &start_index, const int &end_index) const {
   int ans = 0;
   for (int i = start_index + 1; i < end_index; i++) {
     ans += travel[i];
@@ -550,13 +553,13 @@ int TrainInfo::AskTime(int start_index, int end_index) {
   ans += travel[end_index];
   return ans;
 }
-bool SortTrainByTime::operator()(AskData lhs, AskData rhs) {
+bool SortTrainByTime::operator()(const AskData &lhs, const AskData &rhs) const {
   if (lhs.time != rhs.time) {
     return (lhs.time < rhs.time);
   }
   return (lhs.ID < rhs.ID);
 }
-bool SortTrainByCost::operator()(AskData lhs, AskData rhs) {
+bool SortTrainByCost::operator()(const AskData &lhs, const AskData &rhs) const {
   if (lhs.price != rhs.price) {
     return (lhs.price < rhs.price);
   }
@@ -757,7 +760,7 @@ void QueryTransfer(string &command) {
   return;
 }
 
-bool TrainInfo::CheckAvailable(const Time &out_time) {
+bool TrainInfo::CheckAvailable(const Time &out_time) const {
   if (out_time.GetMonth() < sale_month) {
     return false;
   }
@@ -772,7 +775,8 @@ bool TrainInfo::CheckAvailable(const Time &out_time) {
   }
   return true;
 }
-bool CompareTransferByCost::operator()(TransferData lhs, TransferData rhs) {
+bool CompareTransferByCost::operator()(const TransferData &lhs,
+                                       const TransferData &rhs) const {
   int price_1 = (lhs.line1.price + lhs.line2.price);
   int price_2 = (rhs.line1.price + rhs.line2.price);
   if (price_1 != price_2) {
@@ -788,7 +792,8 @@ bool CompareTransferByCost::operator()(TransferData lhs, TransferData rhs) {
   }
   return (lhs.line2.ID < rhs.line2.ID);
 }
-bool CompareTransferByTime::operator()(TransferData lhs, TransferData rhs) {
+bool CompareTransferByTime::operator()(const TransferData &lhs,
+                                       const TransferData &rhs) const {
   int time_1 = IntervalMinute(lhs.line1.start_time, lhs.line2.end_time);
   int time_2 = IntervalMinute(rhs.line1.start_time, rhs.line2.end_time);
   if (time_1 != time_2) {

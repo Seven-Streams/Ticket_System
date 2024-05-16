@@ -8,29 +8,29 @@ HashOfAccount::HashOfAccount(string name) {
   hash1 = sjtu::MyHash(name, exp1);
   hash2 = sjtu::MyHash(name, exp2);
 }
-bool HashOfAccount::operator==(const HashOfAccount &other) {
+bool HashOfAccount::operator==(const HashOfAccount &other) const{
   return (hash1 == other.hash1) && (hash2 == other.hash2);
 }
 
-void Account::ModifyPassword(char *_password) {
+void Account::ModifyPassword(const char *_password) {
   strcpy(password, _password);
   return;
 }
-void Account::ModifyName(char *_name) {
+void Account::ModifyName(const char *_name) {
   strcpy(name, _name);
   return;
 }
-void Account::ModifyMail(char *_mail) {
+void Account::ModifyMail(const char *_mail) {
   strcpy(mail, _mail);
   return;
 }
-void Account::ModifyPrivilege(int pr) {
+void Account::ModifyPrivilege(const int pr) {
   privilege = pr;
   return;
 }
 
 Account::Account(const char *_user, const char *_password, const char *_name,
-                 const char *_mail, int _privilege) {
+                 const char *_mail, const int _privilege) {
   strcpy(username, _user);
   strcpy(password, _password);
   strcpy(name, _name);
@@ -42,7 +42,7 @@ Account GetAccount(int pos) {
   account_content.read(res, pos);
   return res;
 }
-void AddAccount(string command) {
+void AddAccount(string& command) {
   string current_user;
   string user_name;
   string password;
@@ -149,7 +149,7 @@ void AddAccount(string command) {
   account_index.Insert(hash1_of_new, hash2_of_new, res);
   return;
 }
-void AddFirstAccount(string command) {
+void AddFirstAccount(string& command) {
   string user_name;
   string password;
   string name;
@@ -224,7 +224,7 @@ void AddFirstAccount(string command) {
   account_index.Insert(hash1, hash2, res);
   return;
 }
-void Logout(string command) {
+void Logout(string& command) {
   string key = ProcessTxt(command);
   if (key != "-u") {
     throw(SevenStream::exception("Incorrect input."));
@@ -239,7 +239,7 @@ void Logout(string command) {
   }
   return;
 }
-void Login(string command) {
+void Login(string& command) {
   string user;
   string password;
   bool u, p;
@@ -296,7 +296,7 @@ void Login(string command) {
   account_logged[hash_of_login] = true;
   return;
 }
-string QueryAccount(string command) {
+string QueryAccount(string& command) {
   string current;
   string to_query;
   bool c, u;
@@ -367,7 +367,7 @@ string QueryAccount(string command) {
   query_ans += std::to_string(query_account.privilege);
   return query_ans;
 }
-string ModifyAccount(string command) {
+string ModifyAccount(string& command) {
   string current;
   string to_query;
   string password;
@@ -494,13 +494,13 @@ string ModifyAccount(string command) {
   query_ans += std::to_string(query_account.privilege);
   return query_ans;
 }
-bool HashOfAccount::operator<(const HashOfAccount &rhs) {
+bool HashOfAccount::operator<(const HashOfAccount &rhs) const{
   if (hash1 != rhs.hash1) {
     return (hash1 < rhs.hash1);
   }
   return (hash2 < rhs.hash2);
 }
-bool HashOfAccount::operator>(const HashOfAccount &rhs) {
+bool HashOfAccount::operator>(const HashOfAccount &rhs) const{
   if (hash1 != rhs.hash1) {
     return (hash1 > rhs.hash1);
   }

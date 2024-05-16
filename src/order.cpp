@@ -60,7 +60,7 @@ bool OrderByUser::operator==(const OrderByUser &rhs) const {
   return stamp == rhs.stamp;
 }
 
-void OrderByUser::Print() {
+void OrderByUser::Print() const{
   switch (status) {
   case (1): {
     std::cout << "[success] ";
@@ -88,7 +88,7 @@ void OrderByUser::Print() {
   std::cout << number << '\n';
 }
 
-void Buy(std::string &command, int stamp) {
+void Buy(std::string &command, const int stamp) {
   bool queue = false;
   string user, id, date, number_raw, start_station, end_station;
   while (command != "") {

@@ -21,7 +21,7 @@ public:
   bool operator<(const OrderByTrain &) const;
   bool operator>(const OrderByTrain &) const;
   bool operator==(const OrderByTrain &) const;
-  friend void Buy(std::string &, int);
+  friend void Buy(std::string &, const int);
   friend void Refund(std::string &);
 };
 class OrderByUser {
@@ -46,12 +46,12 @@ public:
   bool operator<(const OrderByUser &) const;
   bool operator>(const OrderByUser &) const;
   bool operator==(const OrderByUser &) const;
-  void Print();
+  void Print() const;
   friend void QueryOrder(std::string &);
   friend void Buy(std::string &, int);
   friend void Refund(std::string &);
 };
 void QueryOrder(std::string &);
-void Buy(std::string &, int);
+void Buy(std::string &, const int);
 void Refund(std::string &);
 #endif

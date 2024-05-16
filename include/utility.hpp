@@ -24,10 +24,10 @@ private:
 public:
   ~Time() = default;
   Time() = default;
-  Time(int, int, int, int);
-  void Add(int);
-  void Minus(int);
-  void Print();
+  Time(const int &, const int &, const int &, const int &);
+  void Add(const int &);
+  void Minus(const int &);
+  void Print() const;
   int GetMonth() const;
   int GetDay() const;
   friend int IntervalMinute(Time, Time);
