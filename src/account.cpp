@@ -1,7 +1,7 @@
 #include "../include/account.hpp"
 
 using std::string;
-sjtu::map<HashOfAccount, bool, sjtu::Less<HashOfAccount>> account_logged;
+sjtu::map<HashOfAccount, int, sjtu::Less<HashOfAccount>> account_logged;
 sjtu::BPT<AccountIndex, 126, 4> account_index("account_index");
 sjtu::MemoryRiver<Account, 1> account_content("account_content");
 HashOfAccount::HashOfAccount(string name) {
@@ -129,11 +129,8 @@ void AddAccount(string& command) {
     throw(SevenStream::exception("The account has been created."));
   }
   unsigned long long hash1_of_current, hash2_of_current;
-  hash1_of_current = sjtu::MyHash(current_user, exp1);
-  hash2_of_current = sjtu::MyHash(current_user, exp2);
-  check = account_index.find(hash1_of_current, hash2_of_current, mini);
-  auto index = check.front();
-  if (index.privilege <= pr) {
+  int current_privilege = account_logged[to_check];
+  if (current_privilege <= pr) {
     throw(SevenStream::exception("Privilege is not available."));
   }
   Account to_add(user_name.c_str(), password.c_str(), name.c_str(),
@@ -293,7 +290,7 @@ void Login(string& command) {
   if (to_login.password != password) {
     throw(SevenStream::exception("Wrong Password."));
   }
-  account_logged[hash_of_login] = true;
+  account_logged[hash_of_login] = to_login.privilege;
   return;
 }
 string QueryAccount(string& command) {
@@ -341,8 +338,7 @@ string QueryAccount(string& command) {
   hash2_current = sjtu::MyHash(current, exp2);
   AccountIndex mini;
   mini.index = minus_max;
-  auto current_raw = account_index.find(hash1_current, hash2_current, mini);
-  auto current_index = current_raw.front();
+  int current_privilege = account_logged[hash_current];
   unsigned long long hash1_query, hash2_query;
   hash1_query = sjtu::MyHash(to_query, exp1);
   hash2_query = sjtu::MyHash(to_query, exp2);
@@ -352,10 +348,9 @@ string QueryAccount(string& command) {
   }
   auto query_index = query_raw.front();
   if ((current != to_query) &&
-      (query_index.privilege >= current_index.privilege)) {
+      (query_index.privilege >= current_privilege)) {
     throw(SevenStream::exception("Not enough privilege!"));
   }
-  Account current_account = GetAccount(current_index.index);
   Account query_account = GetAccount(query_index.index);
   string query_ans;
   query_ans += query_account.username;
@@ -447,11 +442,10 @@ string ModifyAccount(string& command) {
   hash2_current = sjtu::MyHash(current, exp2);
   AccountIndex mini;
   mini.index = minus_max;
-  auto current_raw = account_index.find(hash1_current, hash2_current, mini);
-  auto current_index = current_raw.front();
+  int current_privilege = account_logged[hash_current];
   if (pri_row != "") {
     int pr = std::stoi(pri_row);
-    if (pr >= current_index.privilege) {
+    if (pr >= current_privilege) {
       throw(SevenStream::exception("Not Enough privilege."));
     }
   }
@@ -464,7 +458,7 @@ string ModifyAccount(string& command) {
   }
   auto query_index = query_raw.front();
   if ((current != to_query) &&
-      (query_index.privilege >= current_index.privilege)) {
+      (query_index.privilege >= current_privilege)) {
     throw(SevenStream::exception("Not enough privilege!"));
   }
   Account query_account = GetAccount(query_index.index);
