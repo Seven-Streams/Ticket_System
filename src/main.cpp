@@ -14,7 +14,7 @@ extern sjtu::BPT<OrderByTrain, 62, 12> queue_list;
 extern sjtu::BPT<int> train_index;
 extern sjtu::MemoryRiver<TrainInfo, 1> train_info;
 extern sjtu::BPT<int> station_database;
-extern sjtu::BPT<TrainDayIndex, 126, 4, 1000> trains_day_index;
+extern sjtu::BPT<TrainDayIndex, 126, 4, 2000> trains_day_index;
 extern sjtu::MemoryRiver<TrainDay, 1> train_day_info;
 void Clean() {
   account_content.clear();
