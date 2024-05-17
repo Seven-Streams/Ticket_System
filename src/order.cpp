@@ -8,7 +8,7 @@ extern sjtu::map<HashOfAccount, bool, sjtu::Less<HashOfAccount>> account_logged;
 extern sjtu::BPT<int> train_index;
 extern sjtu::MemoryRiver<TrainInfo, 1> train_info;
 extern sjtu::MemoryRiver<TrainDay, 1> train_day_info;
-extern sjtu::BPT<TrainDayIndex, 126, 4, 2000> trains_day_index;
+extern sjtu::BPT<TrainDayIndex, 126, 4, 1700> trains_day_index;
 void QueryOrder(string &command) {
   string op = ProcessTxt(command);
   if (op != "-u") {

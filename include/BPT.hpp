@@ -6,7 +6,7 @@
 #define BPT_HPP
 namespace sjtu {
   template <class Value = int, int size = 168, int redundancy = 6,
-          int cachesize = 400>
+          int cachesize = 200>
 class BPT {
 private:
   struct MyData {
