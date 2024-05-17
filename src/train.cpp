@@ -343,7 +343,15 @@ int TrainInfo::FindIndex(const char *str) const {
       return i;
     }
   }
-  throw(SevenStream::exception("No such station."));
+  throw(SevenStream::exception("No such station!"));
+}
+int TrainInfo::FindIndex2(const char *str) const {
+  for (int i = 0; i < station_number; i++) {
+    if (strcmp(stations[i], str) == 0) {
+      return i;
+    }
+  }
+  return -1;
 }
 int TrainInfo::AskPrice(const int &start, const int &end) const {
   int ans = 0;
@@ -431,7 +439,7 @@ void QueryTicket(string &command) {
         by_time = false;
         continue;
       }
-      throw(SevenStream::exception("Invalid priority type."));
+      std::cout << "-1" << '\n';//throw(SevenStream::exception("Invalid priority type."));
     }
   }
   int month = date[0] - '0';
@@ -465,15 +473,14 @@ void QueryTicket(string &command) {
       TrainInfo res;
       train_info.read(res, *it);
       int start_index, end_index;
-      start_index = res.FindIndex(start.c_str());
-      end_index = res.FindIndex(end.c_str());
-      if (end_index > start_index) {
+      start_index = res.FindIndex2(start.c_str());
+      end_index = res.FindIndex2(end.c_str());
+      if (end_index > start_index && start_index >= 0 && end_index >= 0) {
         AskData to_push;
         to_push.ID = res.ID;
         to_push.end_index = end_index;
         to_push.start_index = start_index;
         to_push.price = res.AskPrice(start_index, end_index);
-        // throw(SevenStream::exception("ENDLOOP"));
         to_push.out_time = res.AskOutTime(start_index, month, day);
         to_push.start_time =
             res.AskLeaveTime(start_index, to_push.out_time.GetMonth(),

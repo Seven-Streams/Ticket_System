@@ -1,7 +1,7 @@
 #include "../include/order.hpp"
 
 using std::string;
-sjtu::BPT<OrderByUser, 19, 20>  order_user("order_user");
+sjtu::BPT<OrderByUser, 19, 20> order_user("order_user");
 sjtu::BPT<OrderByTrain, 62, 12> queue_list("queue");
 // Consider that if a user ordered first, the index will be smaller.
 extern sjtu::map<HashOfAccount, bool, sjtu::Less<HashOfAccount>> account_logged;
@@ -60,7 +60,7 @@ bool OrderByUser::operator==(const OrderByUser &rhs) const {
   return stamp == rhs.stamp;
 }
 
-void OrderByUser::Print() const{
+void OrderByUser::Print() const {
   switch (status) {
   case (1): {
     std::cout << "[success] ";
@@ -120,7 +120,8 @@ void Buy(std::string &command, const int stamp) {
     if (op == "-q") {
       string res = ProcessTxt(command);
       if ((res != "true") && (res != "false")) {
-        throw(SevenStream::exception("Invalid queue_status."));
+        std::cout << "-1\n";
+        return; // throw(SevenStream::exception("Invalid queue_status."));
       }
       if (res == "true") {
         queue = true;
@@ -129,30 +130,36 @@ void Buy(std::string &command, const int stamp) {
   }
   HashOfAccount hash_user(user);
   if (!account_logged.count(hash_user)) {
-    throw(SevenStream::exception("Not log in."));
+    std::cout << "-1\n";
+    return; // throw(SevenStream::exception("Not log in."));
   }
   unsigned long long id_hash1, id_hash2;
   id_hash1 = sjtu::MyHash(id, exp1);
   id_hash2 = sjtu::MyHash(id, exp2);
   auto index_raw = train_index.find(id_hash1, id_hash2, minus_max);
   if (index_raw.empty()) {
-    throw(SevenStream::exception("The Train Doesn't exist."));
+    std::cout << "-1\n";
+    return; // throw(SevenStream::exception("The Train Doesn't exist."));
   }
   int index = index_raw.front();
   TrainInfo train_total;
   train_info.read(train_total, index);
   if (!train_total.IsReleased()) {
-    throw(SevenStream::exception("The train haven't been released."));
+    std::cout << "-1\n";
+    return; // throw(SevenStream::exception("The train haven't been
+            // released."));
   }
   int start_index, end_index;
-  start_index = train_total.FindIndex(start_station.c_str());
-  end_index = train_total.FindIndex(end_station.c_str());
-  if (end_index <= start_index) {
-    throw(SevenStream::exception("Invalid station."));
+  start_index = train_total.FindIndex2(start_station.c_str());
+  end_index = train_total.FindIndex2(end_station.c_str());
+  if (end_index <= start_index || (start_index < 0) || (end_index < 0)) {
+    std::cout << "-1\n";
+    return; // throw(SevenStream::exception("Invalid station."));
   }
   int number = std::stoi(number_raw);
-  if(number > train_total.seat_number) {
-    throw(SevenStream::exception("There aren't enough seats!"));
+  if (number > train_total.seat_number) {
+    std::cout << "-1\n";
+    return; // throw(SevenStream::exception("There aren't enough seats!"));
   }
   int price = train_total.AskPrice(start_index, end_index);
   int ask_month = date[0] - '0';
@@ -165,7 +172,8 @@ void Buy(std::string &command, const int stamp) {
   int out_month = out_time.GetMonth();
   int out_day = out_time.GetDay();
   if (!train_total.IsSaleTime(out_month, out_day)) {
-    throw(SevenStream::exception("Not in sale time."));
+    std::cout << "-1\n";
+    return; // throw(SevenStream::exception("Not in sale time."));
   }
   TrainDay acutual_train(out_month, out_day, 0);
   TrainDayIndex train_index;
@@ -173,9 +181,11 @@ void Buy(std::string &command, const int stamp) {
   train_index.day = acutual_train.day;
   auto bigger_train = train_index;
   bigger_train.day++;
-  auto find = trains_day_index.find2(id_hash1, id_hash2, train_index, bigger_train);
+  auto find =
+      trains_day_index.find2(id_hash1, id_hash2, train_index, bigger_train);
   if (find.empty()) {
-    throw(SevenStream::exception("No available train."));
+    std::cout << "-1\n";
+    return; // throw(SevenStream::exception("No available train."));
   }
   train_day_info.read(acutual_train, find.front().index);
   int available = 1e7;
@@ -183,7 +193,8 @@ void Buy(std::string &command, const int stamp) {
     available = std::min(available, acutual_train.ticket[i]);
   }
   if ((available < number) && (!queue)) {
-    throw(SevenStream::exception("Not enough tickets."));
+    std::cout << "-1\n";
+    return; // throw(SevenStream::exception("Not enough tickets."));
   }
   OrderByUser order_by_user;
   strcpy(order_by_user.end_station, end_station.c_str());
@@ -296,7 +307,8 @@ void Refund(std::string &command) {
   train_index.day = empty_train.day;
   auto bigger_train = train_index;
   bigger_train.day++;
-  auto train_actual_raw = trains_day_index.find2(id_hash1, id_hash2, train_index, bigger_train);
+  auto train_actual_raw =
+      trains_day_index.find2(id_hash1, id_hash2, train_index, bigger_train);
   TrainDay train_actual;
   train_day_info.read(train_actual, train_actual_raw.front().index);
   for (int i = to_refund.start_index; i < to_refund.end_index; i++) {
@@ -330,7 +342,8 @@ void Refund(std::string &command) {
       OrderByUser bigger = to_change;
       bigger.stamp++;
       to_change.stamp = it->stamp;
-      auto to_find = order_user.find2(it->user_hash1, it->user_hash2, to_change, bigger);
+      auto to_find =
+          order_user.find2(it->user_hash1, it->user_hash2, to_change, bigger);
       to_change = to_find.front();
       to_change.status = 1;
       order_user.Erase(it->user_hash1, it->user_hash2, to_change);
@@ -340,8 +353,7 @@ void Refund(std::string &command) {
   TrainDayIndex to_change;
   to_change.month = train_actual.month;
   to_change.day = train_actual.day;
-  auto index = 
-  trains_day_index.find(id_hash1, id_hash2, to_change);
+  auto index = trains_day_index.find(id_hash1, id_hash2, to_change);
   train_day_info.write(train_actual, index.front().index);
   return;
 }

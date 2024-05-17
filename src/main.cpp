@@ -44,11 +44,31 @@ int main() {
   }
   while (!cin.eof()) {
     string stamp;
+    getline(cin, command);
+    stamp = ProcessTxt(command);
+    string type;
+    type = ProcessTxt(command);
+    if (type == "query_profile") {
+      cout << stamp << ' ';
+      std::string ans = QueryAccount(command);
+      cout << ans << '\n';
+      continue;
+    }
+    if (type == "query_ticket") {
+      cout << stamp << ' ';
+      QueryTicket(command);
+      continue;
+    }
+    if (type == "buy_ticket") {
+      cout << stamp << ' ';
+      string num_raw = stamp;
+      num_raw.erase(0, 1);
+      num_raw.pop_back();
+      int number = std::stoi(num_raw);
+      Buy(command, number);
+      continue;
+    }
     try {
-      getline(cin, command);
-      stamp = ProcessTxt(command);
-      string type;
-      type = ProcessTxt(command);
       if (type == "add_user") {
         cout << stamp << ' ';
         if (has_account) {
@@ -70,12 +90,6 @@ int main() {
         cout << stamp << ' ';
         Logout(command);
         cout << "0" << '\n';
-        continue;
-      }
-      if (type == "query_profile") {
-        cout << stamp << ' ';
-        std::string ans = QueryAccount(command);
-        cout << ans << '\n';
         continue;
       }
       if (type == "modify_profile") {
@@ -111,23 +125,9 @@ int main() {
         QueryTrain(command);
         continue;
       }
-      if (type == "query_ticket") {
-        cout << stamp << ' ';
-        QueryTicket(command);
-        continue;
-      }
       if (type == "query_transfer") {
         cout << stamp << ' ';
         QueryTransfer(command);
-        continue;
-      }
-      if (type == "buy_ticket") {
-        cout << stamp << ' ';
-        string num_raw = stamp;
-        num_raw.erase(0, 1);
-        num_raw.pop_back();
-        int number = std::stoi(num_raw);
-        Buy(command, number);
         continue;
       }
       if (type == "query_order") {

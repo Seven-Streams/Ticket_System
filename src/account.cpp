@@ -301,12 +301,12 @@ string QueryAccount(string& command) {
   while (command != "") {
     string res = ProcessTxt(command);
     if (res[0] != '-') {
-      throw(SevenStream::exception("Incorrect input."));
+      return "-1";//throw(SevenStream::exception("Incorrect input."));
     }
     switch (res[1]) {
     case 'c': {
       if (c == true) {
-        throw(SevenStream::exception("Incorrect input."));
+        return "-1";//throw(SevenStream::exception("Incorrect input."));
       }
       c = true;
       current = ProcessTxt(command);
@@ -314,24 +314,24 @@ string QueryAccount(string& command) {
     }
     case 'u': {
       if (u == true) {
-        throw(SevenStream::exception("Incorrect input."));
+        return "-1";//throw(SevenStream::exception("Incorrect input."));
       }
       u = true;
       to_query = ProcessTxt(command);
       break;
     }
     default: {
-      throw(SevenStream::exception("Incorrect input."));
+      return "-1";//throw(SevenStream::exception("Incorrect input."));
     }
     }
   }
   if ((!c) || (!u)) {
-    throw(SevenStream::exception("Incorrect input."));
+    return "-1";//throw(SevenStream::exception("Incorrect input."));
   }
   HashOfAccount hash_current(current);
   bool logged = false;
   if (!account_logged.count(hash_current)) {
-    throw(SevenStream::exception("Not login."));
+    return "-1";//throw(SevenStream::exception("Not login."));
   }
   unsigned long long hash1_current, hash2_current;
   hash1_current = sjtu::MyHash(current, exp1);
@@ -344,12 +344,12 @@ string QueryAccount(string& command) {
   hash2_query = sjtu::MyHash(to_query, exp2);
   auto query_raw = account_index.find(hash1_query, hash2_query, mini);
   if (query_raw.empty()) {
-    throw(SevenStream::exception("The query account doesn't exist."));
+    return "-1";//throw(SevenStream::exception("The query account doesn't exist."));
   }
   auto query_index = query_raw.front();
   if ((current != to_query) &&
       (query_index.privilege >= current_privilege)) {
-    throw(SevenStream::exception("Not enough privilege!"));
+    return "-1";//throw(SevenStream::exception("Not enough privilege!"));
   }
   Account query_account = GetAccount(query_index.index);
   string query_ans;

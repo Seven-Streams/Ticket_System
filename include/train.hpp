@@ -91,6 +91,7 @@ public:
   Time AskArriveTime(const int &, const int &, const int &) const;
   bool CheckAvailable(const Time &) const;
   int AskTime(const int &, const int &) const;
+  int FindIndex2(const char *) const;
   friend void AddTrain(string &);
   friend void ReleaseTrain(string &);
   friend void DeleteTrain(string &);
