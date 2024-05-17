@@ -52,17 +52,17 @@ private:
 
 public:
   Account() = default;
-  Account(const char *, const char *, const char *, const char *, const int);
+  Account(const char *_u, const char *_p, const char *_n, const char *_m, const int pr);
   ~Account() = default;
   friend void AddAccount(string &);
   friend void Login(string &);
   friend string QueryAccount(string &);
   friend string ModifyAccount(string &);
 };
-void AddAccount(string &);
-void Login(string &);
-void Logout(string &);
-std::string QueryAccount(string &);
-std::string ModifyAccount(string &);
-void AddFirstAccount(string &);
+void AddAccount(string &);//输入合法命令，即可以创建账号。
+void Login(string &);//输入合法命令进行登录。
+void Logout(string &);//输入合法命令进行登出。
+std::string QueryAccount(string &);//查询账号。如果权限合法，会返回一个带有查询对象的字符串。
+std::string ModifyAccount(string &);//修改账号。如果权限合法，会返回一个带有修改对象的字符串。
+void AddFirstAccount(string &);//如果没有账户，会创建第一个账户。
 #endif

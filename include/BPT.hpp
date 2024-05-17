@@ -5,7 +5,7 @@
 #ifndef BPT_HPP
 #define BPT_HPP
 namespace sjtu {
-  template <class Value = int, int size = 168, int redundency = 6,
+  template <class Value = int, int size = 168, int redundancy = 6,
           int cachesize = 400>
 class BPT {
 private:
@@ -44,7 +44,7 @@ private:
     bool operator!=(const MyData &other) { return !(*this == other); }
   };
   struct Node {
-    int empty[redundency];
+    int empty[redundancy];
     MyData datas[size + 1];
     int left_sibling = 0;
     int right_sibling = 0;
