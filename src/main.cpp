@@ -9,7 +9,7 @@ class Account;
 extern sjtu::MemoryRiver<Account, 1> account_content;
 extern sjtu::map<HashOfAccount, int, sjtu::Less<HashOfAccount>> account_logged;
 extern sjtu::BPT<int> account_index;
-extern sjtu::BPT<OrderByUser, 19, 20> order_user;
+extern sjtu::BPT<OrderByUser, 38, 6> order_user;
 extern sjtu::BPT<OrderByTrain, 62, 12> queue_list;
 extern sjtu::BPT<int> train_index;
 extern sjtu::MemoryRiver<TrainInfo, 1> train_info;
@@ -33,6 +33,7 @@ int main() {
   std::ios_base::sync_with_stdio(false);
   cin.tie(0);
   cout.tie(0);
+  std::cout << order_user.CheckSize() << std::endl;
   string command;
   bool has_account;
   int total;

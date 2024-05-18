@@ -902,6 +902,9 @@ public:
     }
     return;
   }
+  int CheckSize() {
+    return sizeof(nothing);
+  }
 };
 } // namespace sjtu
 #endif
