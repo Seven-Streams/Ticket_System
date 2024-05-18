@@ -1,11 +1,11 @@
 #include "list.hpp"
-#include "vector.hpp"
-#include "memoryriver.hpp"
 #include "map.hpp"
+#include "memoryriver.hpp"
+#include "vector.hpp"
 #ifndef BPT_HPP
 #define BPT_HPP
 namespace sjtu {
-  template <class Value = int, int size = 168, int redundancy = 6,
+template <class Value = int, int size = 168, int redundancy = 6,
           int cachesize = 200>
 class BPT {
 private:
@@ -50,7 +50,7 @@ private:
     int right_sibling = 0;
     int now_size = 0;
     int pos = 0;
-  }nothing;
+  } nothing;
   sjtu::vector<int> recycle;
   int B_total = 0;
   int B_root = 0;
@@ -730,6 +730,56 @@ public:
       NodeInsert(res, root, 0, nothing);
       total++;
       B_total = total;
+    }
+    return;
+  }
+  void Replace(const unsigned long long &hash_1,
+               const unsigned long long &hash_2, const Value &to_replace) {
+    if (B_total == 0) {
+      return;
+    }
+    Node res;
+    MyData data;
+    data.hash1 = hash_1;
+    data.hash2 = hash_2;
+    data.value = to_replace;
+    ReadwithCache(res, B_root);
+    while (res.datas[0].son != 0) {
+      for (int i = 0; i < res.now_size; i++) {
+        if ((data < res.datas[i]) || (data == res.datas[i])) {
+          ReadwithCache(res, res.datas[i].son);
+          break;
+        }
+        if (i == (res.now_size - 1)) {
+          return;
+        }
+      }
+    }
+    int found = 0;
+    for (found = 0; found < res.now_size; found++) {
+      if ((hash_1 == res.datas[found].hash1) &&
+          (hash_2 == res.datas[found].hash2)) {
+        break;
+      }
+    }
+    if (found == res.now_size) {
+      return;
+    }
+    while ((hash_1 == res.datas[found].hash1) &&
+           (hash_2 == res.datas[found].hash2)) {
+      if (res.datas[found].value == to_replace) {
+        res.datas[found].value = to_replace;
+        WritewithCache(res, res.pos);
+        return;
+      }
+      found++;
+      if (found == res.now_size) {
+        if (res.right_sibling == 0) {
+          return;
+        }
+        ReadwithCache(res, res.right_sibling);
+        found = 0;
+      }
     }
     return;
   }

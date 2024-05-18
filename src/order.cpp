@@ -1,7 +1,7 @@
 #include "../include/order.hpp"
 
 using std::string;
-sjtu::BPT<OrderByUser, 19, 20, 300> order_user("order_user");
+sjtu::BPT<OrderByUser, 19, 20> order_user("order_user");
 sjtu::BPT<OrderByTrain, 62, 12> queue_list("queue");
 // Consider that if a user ordered first, the index will be smaller.
 extern sjtu::map<HashOfAccount, bool, sjtu::Less<HashOfAccount>> account_logged;
@@ -283,8 +283,7 @@ void Refund(std::string &command) {
   }
   if (to_refund.status == 2) {
     to_refund.status = 3;
-    order_user.Erase(user_hash1, user_hash2, to_refund);
-    order_user.Insert(user_hash1, user_hash2, to_refund);
+    order_user.Replace(user_hash1, user_hash2, to_refund);
     OrderByTrain to_remove;
     to_remove.stamp = to_refund.stamp;
     to_remove.start_month = to_refund.out_month;
@@ -296,8 +295,7 @@ void Refund(std::string &command) {
     return;
   }
   to_refund.status = 3;
-  order_user.Erase(user_hash1, user_hash2, to_refund);
-  order_user.Insert(user_hash1, user_hash2, to_refund);
+  order_user.Replace(user_hash1, user_hash2, to_refund);
   unsigned long long id_hash1, id_hash2;
   id_hash1 = sjtu::MyHash(to_refund.Train_ID, exp1);
   id_hash2 = sjtu::MyHash(to_refund.Train_ID, exp2);
@@ -346,8 +344,7 @@ void Refund(std::string &command) {
           order_user.find2(it->user_hash1, it->user_hash2, to_change, bigger);
       to_change = to_find.front();
       to_change.status = 1;
-      order_user.Erase(it->user_hash1, it->user_hash2, to_change);
-      order_user.Insert(it->user_hash1, it->user_hash2, to_change);
+      order_user.Replace(it->user_hash1, it->user_hash2, to_change);
     }
   }
   TrainDayIndex to_change;

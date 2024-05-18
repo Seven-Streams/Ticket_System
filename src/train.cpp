@@ -1,7 +1,7 @@
 #include "../include/train.hpp"
 sjtu::BPT<int> train_index("train_index");
 sjtu::MemoryRiver<TrainInfo, 1> train_info("train_database");
-sjtu::BPT<int> station_database("station");
+sjtu::BPT<int, 168, 6, 300> station_database("station");
 sjtu::BPT<TrainDayIndex, 126, 4, 1700> trains_day_index("train_day_index");
 sjtu::MemoryRiver<TrainDay, 1> train_day_info("train_day_info");
 void AddTrain(std::string &command) {
