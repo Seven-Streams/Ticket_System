@@ -68,6 +68,11 @@ int main() {
       Buy(command, number);
       continue;
     }
+    if (type == "query_transfer") {
+      cout << stamp << ' ';
+      QueryTransfer(command);
+      continue;
+    }
     try {
       if (type == "add_user") {
         cout << stamp << ' ';
@@ -123,11 +128,6 @@ int main() {
       if (type == "query_train") {
         cout << stamp << ' ';
         QueryTrain(command);
-        continue;
-      }
-      if (type == "query_transfer") {
-        cout << stamp << ' ';
-        QueryTransfer(command);
         continue;
       }
       if (type == "query_order") {
