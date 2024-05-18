@@ -9,7 +9,7 @@ class Account;
 extern sjtu::MemoryRiver<Account, 1> account_content;
 extern sjtu::map<HashOfAccount, int, sjtu::Less<HashOfAccount>> account_logged;
 extern sjtu::BPT<int> account_index;
-extern sjtu::BPT<OrderByUser, 19, 20, 200> order_user;
+extern sjtu::BPT<OrderByUser, 19, 20, 300> order_user;
 extern sjtu::BPT<OrderByTrain, 62, 12> queue_list;
 extern sjtu::BPT<int> train_index;
 extern sjtu::MemoryRiver<TrainInfo, 1> train_info;

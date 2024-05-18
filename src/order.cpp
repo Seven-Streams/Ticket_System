@@ -1,7 +1,7 @@
 #include "../include/order.hpp"
 
 using std::string;
-sjtu::BPT<OrderByUser, 19, 20, 200> order_user("order_user");
+sjtu::BPT<OrderByUser, 19, 20, 300> order_user("order_user");
 sjtu::BPT<OrderByTrain, 62, 12> queue_list("queue");
 // Consider that if a user ordered first, the index will be smaller.
 extern sjtu::map<HashOfAccount, bool, sjtu::Less<HashOfAccount>> account_logged;
