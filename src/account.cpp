@@ -8,7 +8,7 @@ HashOfAccount::HashOfAccount(string name) {
   hash1 = sjtu::MyHash(name, exp1);
   hash2 = sjtu::MyHash(name, exp2);
 }
-bool HashOfAccount::operator==(const HashOfAccount &other) const{
+bool HashOfAccount::operator==(const HashOfAccount &other) const {
   return (hash1 == other.hash1) && (hash2 == other.hash2);
 }
 
@@ -42,7 +42,7 @@ Account GetAccount(int pos) {
   account_content.read(res, pos);
   return res;
 }
-void AddAccount(string& command) {
+void AddAccount(string &command) {
   string current_user;
   string user_name;
   string password;
@@ -54,12 +54,12 @@ void AddAccount(string& command) {
   while (command != "") {
     string res = ProcessTxt(command);
     if (res[0] != '-') {
-      throw(SevenStream::exception("Incorrect input."));
+      std::cout << "-1\n";return;//throw(SevenStream::exception("Incorrect input."));
     }
     switch (res[1]) {
     case 'c': {
       if (c == true) {
-        throw(SevenStream::exception("Incorrect input."));
+        std::cout << "-1\n";return;//throw(SevenStream::exception("Incorrect input."));
       }
       c = true;
       current_user = ProcessTxt(command);
@@ -67,7 +67,7 @@ void AddAccount(string& command) {
     }
     case 'u': {
       if (u == true) {
-        throw(SevenStream::exception("Incorrect input."));
+        std::cout << "-1\n";return;//throw(SevenStream::exception("Incorrect input."));
       }
       u = true;
       user_name = ProcessTxt(command);
@@ -75,7 +75,7 @@ void AddAccount(string& command) {
     }
     case 'p': {
       if (p == true) {
-        throw(SevenStream::exception("Incorrect input."));
+        std::cout << "-1\n";return;//throw(SevenStream::exception("Incorrect input."));
       }
       p = true;
       password = ProcessTxt(command);
@@ -83,7 +83,7 @@ void AddAccount(string& command) {
     }
     case 'n': {
       if (n == true) {
-        throw(SevenStream::exception("Incorrect input."));
+        std::cout << "-1\n";return;//throw(SevenStream::exception("Incorrect input."));
       }
       n = true;
       name = ProcessTxt(command);
@@ -91,7 +91,7 @@ void AddAccount(string& command) {
     }
     case 'm': {
       if (m == true) {
-        throw(SevenStream::exception("Incorrect input."));
+        std::cout << "-1\n";return;//throw(SevenStream::exception("Incorrect input."));
       }
       m = true;
       mail = ProcessTxt(command);
@@ -99,25 +99,25 @@ void AddAccount(string& command) {
     }
     case 'g': {
       if (g == true) {
-        throw(SevenStream::exception("Incorrect input."));
+        std::cout << "-1\n";return;//throw(SevenStream::exception("Incorrect input."));
       }
       g = true;
       pri_row = ProcessTxt(command);
       break;
     }
     default: {
-      throw(SevenStream::exception("Incorrect input."));
+      std::cout << "-1\n";return;//throw(SevenStream::exception("Incorrect input."));
     }
     }
   }
   if ((!c) || (!u) || (!p) || (!n) || (!m) || (!g)) {
-    throw(SevenStream::exception("Incorrect input."));
+    std::cout << "-1\n";return;//throw(SevenStream::exception("Incorrect input."));
   }
   int pr = std::stoi(pri_row);
   // finish the first part of check.
   HashOfAccount to_check(current_user);
   if (!account_logged.count(to_check)) {
-    throw(SevenStream::exception("Not login."));
+    std::cout << "-1\n";return;//throw(SevenStream::exception("Not login."));
   }
   unsigned long long hash1_of_new, hash2_of_new;
   hash1_of_new = sjtu::MyHash(user_name, exp1);
@@ -126,12 +126,12 @@ void AddAccount(string& command) {
   mini.index = minus_max;
   auto check = account_index.find(hash1_of_new, hash2_of_new, mini);
   if (!account_index.find(hash1_of_new, hash2_of_new, mini).empty()) {
-    throw(SevenStream::exception("The account has been created."));
+    std::cout << "-1\n";return;//throw(SevenStream::exception("The account has been created."));
   }
   unsigned long long hash1_of_current, hash2_of_current;
   int current_privilege = account_logged[to_check];
   if (current_privilege <= pr) {
-    throw(SevenStream::exception("Privilege is not available."));
+    std::cout << "-1\n";return;//throw(SevenStream::exception("Privilege is not available."));
   }
   Account to_add(user_name.c_str(), password.c_str(), name.c_str(),
                  mail.c_str(), pr);
@@ -144,9 +144,10 @@ void AddAccount(string& command) {
   res.index = total;
   res.privilege = pr;
   account_index.Insert(hash1_of_new, hash2_of_new, res);
+  std::cout << "0\n";
   return;
 }
-void AddFirstAccount(string& command) {
+void AddFirstAccount(string &command) {
   string user_name;
   string password;
   string name;
@@ -156,7 +157,7 @@ void AddFirstAccount(string& command) {
   while (command != "") {
     string res = ProcessTxt(command);
     if (res[0] != '-') {
-      throw(SevenStream::exception("Incorrect input1."));
+      std::cout << "-1\n";return;//throw(SevenStream::exception("Incorrect input1."));
     }
     switch (res[1]) {
     case 'c': {
@@ -169,7 +170,7 @@ void AddFirstAccount(string& command) {
     }
     case 'u': {
       if (u == true) {
-        throw(SevenStream::exception("Incorrect input2."));
+        std::cout << "-1\n";return;//throw(SevenStream::exception("Incorrect input2."));
       }
       u = true;
       user_name = ProcessTxt(command);
@@ -177,7 +178,7 @@ void AddFirstAccount(string& command) {
     }
     case 'p': {
       if (p == true) {
-        throw(SevenStream::exception("Incorrect input3."));
+        std::cout << "-1\n";return;//throw(SevenStream::exception("Incorrect input3."));
       }
       p = true;
       password = ProcessTxt(command);
@@ -185,7 +186,7 @@ void AddFirstAccount(string& command) {
     }
     case 'n': {
       if (n == true) {
-        throw(SevenStream::exception("Incorrect input4."));
+        std::cout << "-1\n";return;//throw(SevenStream::exception("Incorrect input4."));
       }
       n = true;
       name = ProcessTxt(command);
@@ -193,19 +194,19 @@ void AddFirstAccount(string& command) {
     }
     case 'm': {
       if (m == true) {
-        throw(SevenStream::exception("Incorrect input5."));
+        std::cout << "-1\n";return;//throw(SevenStream::exception("Incorrect input5."));
       }
       m = true;
       mail = ProcessTxt(command);
       break;
     }
     default: {
-      throw(SevenStream::exception("Incorrect input6."));
+      std::cout << "-1\n";return;//throw(SevenStream::exception("Incorrect input6."));
     }
     }
   }
   if ((!u) || (!p) || (!n) || (!m)) {
-    throw(SevenStream::exception("Incorrect input7."));
+    std::cout << "-1\n";return;//throw(SevenStream::exception("Incorrect input7."));
   }
   Account to_add(user_name.c_str(), password.c_str(), name.c_str(),
                  mail.c_str(), 10);
@@ -219,12 +220,14 @@ void AddFirstAccount(string& command) {
   res.index = 1;
   res.privilege = 10;
   account_index.Insert(hash1, hash2, res);
+  std::cout << "0\n";
   return;
 }
-void Logout(string& command) {
+void Logout(string &command) {
   string key = ProcessTxt(command);
   if (key != "-u") {
-    throw(SevenStream::exception("Incorrect input."));
+    std::cout << "-1\n";
+    return; // throw(SevenStream::exception("Incorrect input."));
   }
   string user = ProcessTxt(command);
   HashOfAccount to_remove(user);
@@ -232,11 +235,13 @@ void Logout(string& command) {
   if (res != account_logged.end()) {
     account_logged.erase(res);
   } else {
-    throw(SevenStream::exception("This account doesn't login."));
+    std::cout << "-1\n";
+    return; // throw(SevenStream::exception("This account doesn't login."));
   }
+  std::cout << "0\n";
   return;
 }
-void Login(string& command) {
+void Login(string &command) {
   string user;
   string password;
   bool u, p;
@@ -244,12 +249,14 @@ void Login(string& command) {
   while (command != "") {
     string res = ProcessTxt(command);
     if (res[0] != '-') {
-      throw(SevenStream::exception("Incorrect input."));
+      std::cout << "-1\n";
+      return; // throw(SevenStream::exception("Incorrect input."));
     }
     switch (res[1]) {
     case 'u': {
       if (u == true) {
-        throw(SevenStream::exception("Incorrect input."));
+        std::cout << "-1\n";
+        return; // throw(SevenStream::exception("Incorrect input."));
       }
       u = true;
       user = ProcessTxt(command);
@@ -257,24 +264,28 @@ void Login(string& command) {
     }
     case 'p': {
       if (p == true) {
-        throw(SevenStream::exception("Incorrect input."));
+        std::cout << "-1\n";
+        return; // throw(SevenStream::exception("Incorrect input."));
       }
       p = true;
       password = ProcessTxt(command);
       break;
     }
     default: {
-      throw(SevenStream::exception("Incorrect input."));
+      std::cout << "-1\n";
+      return; // throw(SevenStream::exception("Incorrect input."));
     }
     }
   }
   if ((!u) || (!p)) {
-    throw(SevenStream::exception("Incorrect input."));
+    std::cout << "-1\n";
+    return; // throw(SevenStream::exception("Incorrect input."));
   }
   HashOfAccount hash_of_login(user);
 
   if (account_logged.count(hash_of_login)) {
-    throw(SevenStream::exception("The account has logged in."));
+    std::cout << "-1\n";
+    return; // throw(SevenStream::exception("The account has logged in."));
   }
   unsigned long long hash1, hash2;
   hash1 = sjtu::MyHash(user, exp1);
@@ -283,17 +294,20 @@ void Login(string& command) {
   mini.index = minus_max;
   auto index_raw = account_index.find(hash1, hash2, mini);
   if (index_raw.empty()) {
-    throw(SevenStream::exception("This account doesn't exist."));
+    std::cout << "-1\n";
+    return; // throw(SevenStream::exception("This account doesn't exist."));
   }
   auto index = index_raw.front();
   Account to_login = GetAccount(index.index);
   if (to_login.password != password) {
-    throw(SevenStream::exception("Wrong Password."));
+    std::cout << "-1\n";
+    return; // throw(SevenStream::exception("Wrong Password."));
   }
   account_logged[hash_of_login] = to_login.privilege;
+  std::cout << "0\n";
   return;
 }
-string QueryAccount(string& command) {
+string QueryAccount(string &command) {
   string current;
   string to_query;
   bool c, u;
@@ -301,12 +315,12 @@ string QueryAccount(string& command) {
   while (command != "") {
     string res = ProcessTxt(command);
     if (res[0] != '-') {
-      return "-1";//throw(SevenStream::exception("Incorrect input."));
+      return "-1"; // throw(SevenStream::exception("Incorrect input."));
     }
     switch (res[1]) {
     case 'c': {
       if (c == true) {
-        return "-1";//throw(SevenStream::exception("Incorrect input."));
+        return "-1"; // throw(SevenStream::exception("Incorrect input."));
       }
       c = true;
       current = ProcessTxt(command);
@@ -314,24 +328,24 @@ string QueryAccount(string& command) {
     }
     case 'u': {
       if (u == true) {
-        return "-1";//throw(SevenStream::exception("Incorrect input."));
+        return "-1"; // throw(SevenStream::exception("Incorrect input."));
       }
       u = true;
       to_query = ProcessTxt(command);
       break;
     }
     default: {
-      return "-1";//throw(SevenStream::exception("Incorrect input."));
+      return "-1"; // throw(SevenStream::exception("Incorrect input."));
     }
     }
   }
   if ((!c) || (!u)) {
-    return "-1";//throw(SevenStream::exception("Incorrect input."));
+    return "-1"; // throw(SevenStream::exception("Incorrect input."));
   }
   HashOfAccount hash_current(current);
   bool logged = false;
   if (!account_logged.count(hash_current)) {
-    return "-1";//throw(SevenStream::exception("Not login."));
+    return "-1"; // throw(SevenStream::exception("Not login."));
   }
   unsigned long long hash1_current, hash2_current;
   hash1_current = sjtu::MyHash(current, exp1);
@@ -344,12 +358,12 @@ string QueryAccount(string& command) {
   hash2_query = sjtu::MyHash(to_query, exp2);
   auto query_raw = account_index.find(hash1_query, hash2_query, mini);
   if (query_raw.empty()) {
-    return "-1";//throw(SevenStream::exception("The query account doesn't exist."));
+    return "-1"; // throw(SevenStream::exception("The query account doesn't
+                 // exist."));
   }
   auto query_index = query_raw.front();
-  if ((current != to_query) &&
-      (query_index.privilege >= current_privilege)) {
-    return "-1";//throw(SevenStream::exception("Not enough privilege!"));
+  if ((current != to_query) && (query_index.privilege >= current_privilege)) {
+    return "-1"; // throw(SevenStream::exception("Not enough privilege!"));
   }
   Account query_account = GetAccount(query_index.index);
   string query_ans;
@@ -362,7 +376,7 @@ string QueryAccount(string& command) {
   query_ans += std::to_string(query_account.privilege);
   return query_ans;
 }
-string ModifyAccount(string& command) {
+string ModifyAccount(string &command) {
   string current;
   string to_query;
   string password;
@@ -374,12 +388,12 @@ string ModifyAccount(string& command) {
   while (command != "") {
     string res = ProcessTxt(command);
     if (res[0] != '-') {
-      throw(SevenStream::exception("Incorrect input."));
+      return "-1"; // throw(SevenStream::exception("Incorrect input."));
     }
     switch (res[1]) {
     case 'c': {
       if (c == true) {
-        throw(SevenStream::exception("Incorrect input."));
+        return "-1"; // throw(SevenStream::exception("Incorrect input."));
       }
       c = true;
       current = ProcessTxt(command);
@@ -387,7 +401,7 @@ string ModifyAccount(string& command) {
     }
     case 'u': {
       if (u == true) {
-        throw(SevenStream::exception("Incorrect input."));
+        return "-1"; // throw(SevenStream::exception("Incorrect input."));
       }
       u = true;
       to_query = ProcessTxt(command);
@@ -395,7 +409,7 @@ string ModifyAccount(string& command) {
     }
     case 'p': {
       if (p == true) {
-        throw(SevenStream::exception("Incorrect input."));
+        return "-1"; // throw(SevenStream::exception("Incorrect input."));
       }
       p = true;
       password = ProcessTxt(command);
@@ -403,7 +417,7 @@ string ModifyAccount(string& command) {
     }
     case 'n': {
       if (n == true) {
-        throw(SevenStream::exception("Incorrect input."));
+        return "-1"; // throw(SevenStream::exception("Incorrect input."));
       }
       n = true;
       name = ProcessTxt(command);
@@ -411,7 +425,7 @@ string ModifyAccount(string& command) {
     }
     case 'm': {
       if (m == true) {
-        throw(SevenStream::exception("Incorrect input."));
+        return "-1"; // throw(SevenStream::exception("Incorrect input."));
       }
       m = true;
       mail = ProcessTxt(command);
@@ -419,23 +433,23 @@ string ModifyAccount(string& command) {
     }
     case 'g': {
       if (g == true) {
-        throw(SevenStream::exception("Incorrect input."));
+        return "-1"; // throw(SevenStream::exception("Incorrect input."));
       }
       g = true;
       pri_row = ProcessTxt(command);
       break;
     }
     default: {
-      throw(SevenStream::exception("Incorrect input."));
+      return "-1"; // throw(SevenStream::exception("Incorrect input."));
     }
     }
   }
   if ((!c) || (!u)) {
-    throw(SevenStream::exception("Incorrect input."));
+    return "-1"; // throw(SevenStream::exception("Incorrect input."));
   }
   HashOfAccount hash_current(current);
   if (!account_logged.count(hash_current)) {
-    throw(SevenStream::exception("Not login."));
+    return "-1"; // throw(SevenStream::exception("Not login."));
   }
   unsigned long long hash1_current, hash2_current;
   hash1_current = sjtu::MyHash(current, exp1);
@@ -446,7 +460,7 @@ string ModifyAccount(string& command) {
   if (pri_row != "") {
     int pr = std::stoi(pri_row);
     if (pr >= current_privilege) {
-      throw(SevenStream::exception("Not Enough privilege."));
+      return "-1"; // throw(SevenStream::exception("Not Enough privilege."));
     }
   }
   unsigned long long hash1_query, hash2_query;
@@ -454,12 +468,12 @@ string ModifyAccount(string& command) {
   hash2_query = sjtu::MyHash(to_query, exp2);
   auto query_raw = account_index.find(hash1_query, hash2_query, mini);
   if (query_raw.empty()) {
-    throw(SevenStream::exception("The query account doesn't exist."));
+    return "-1"; // throw(SevenStream::exception("The query account doesn't
+                 // exist."));
   }
   auto query_index = query_raw.front();
-  if ((current != to_query) &&
-      (query_index.privilege >= current_privilege)) {
-    throw(SevenStream::exception("Not enough privilege!"));
+  if ((current != to_query) && (query_index.privilege >= current_privilege)) {
+    return "-1"; // throw(SevenStream::exception("Not enough privilege!"));
   }
   Account query_account = GetAccount(query_index.index);
   if (password != "") {
@@ -488,13 +502,13 @@ string ModifyAccount(string& command) {
   query_ans += std::to_string(query_account.privilege);
   return query_ans;
 }
-bool HashOfAccount::operator<(const HashOfAccount &rhs) const{
+bool HashOfAccount::operator<(const HashOfAccount &rhs) const {
   if (hash1 != rhs.hash1) {
     return (hash1 < rhs.hash1);
   }
   return (hash2 < rhs.hash2);
 }
-bool HashOfAccount::operator>(const HashOfAccount &rhs) const{
+bool HashOfAccount::operator>(const HashOfAccount &rhs) const {
   if (hash1 != rhs.hash1) {
     return (hash1 > rhs.hash1);
   }

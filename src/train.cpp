@@ -11,61 +11,71 @@ void AddTrain(std::string &command) {
     string op = ProcessTxt(command);
     if (op == "-i") {
       if (ID != "") {
-        throw(SevenStream::exception("Invalid input."));
+        std::cout << "-1\n";
+        return; // throw(SevenStream::exception("Invalid input."));
       }
       ID = ProcessTxt(command);
     }
     if (op == "-n") {
       if (num_raw != "") {
-        throw(SevenStream::exception("Invalid input."));
+        std::cout << "-1\n";
+        return; // throw(SevenStream::exception("Invalid input."));
       }
       num_raw = ProcessTxt(command);
     }
     if (op == "-m") {
       if (seat_raw != "") {
-        throw(SevenStream::exception("Invalid input."));
+        std::cout << "-1\n";
+        return; // throw(SevenStream::exception("Invalid input."));
       }
       seat_raw = ProcessTxt(command);
     }
     if (op == "-s") {
       if (stations != "") {
-        throw(SevenStream::exception("Invalid input."));
+        std::cout << "-1\n";
+        return; // throw(SevenStream::exception("Invalid input."));
       }
       stations = ProcessTxt(command);
     }
     if (op == "-p") {
       if (prices != "") {
-        throw(SevenStream::exception("Invalid input."));
+        std::cout << "-1\n";
+        return; // throw(SevenStream::exception("Invalid input."));
       }
       prices = ProcessTxt(command);
     }
     if (op == "-x") {
       if (start_time != "") {
-        throw(SevenStream::exception("Invalid input."));
+        std::cout << "-1\n";
+        return; // throw(SevenStream::exception("Invalid input."));
       }
       start_time = ProcessTxt(command);
     }
     if (op == "-t") {
       if (travel_time != "") {
-        throw(SevenStream::exception("Invalid input."));
+        std::cout << "-1\n";
+        return; // throw(SevenStream::exception("Invalid input."));
       }
       travel_time = ProcessTxt(command);
     }
     if (op == "-o") {
       if (stop_time != "") {
-        throw(SevenStream::exception("Invalid input."));
+        std::cout << "-1\n";
+        return; // throw(SevenStream::exception("Invalid input."));
       }
       stop_time = ProcessTxt(command);
     }
     if (op == "-d") {
       if (sale_date != "") {
-        throw(SevenStream::exception("Invalid input."));
+        std::cout << "-1\n";
+        return; // throw(SevenStream::exception("Invalid input."));
       }
       sale_date = ProcessTxt(command);
     }
     if (op == "-y") {
       if (type != "") {
-        throw(SevenStream::exception("Invalid input."));
+        std::cout << "-1\n";
+        return; // throw(SevenStream::exception("Invalid input."));
       }
       type = ProcessTxt(command);
     }
@@ -73,7 +83,8 @@ void AddTrain(std::string &command) {
   if ((ID == "") || (num_raw == "") || (seat_raw == "") || (stations == "") ||
       (prices == "") || (start_time == "") || (travel_time == "") ||
       (stop_time == "") || (sale_date == "") || (type == "")) {
-    throw(SevenStream::exception("Invalid input."));
+    std::cout << "-1\n";
+    return; // throw(SevenStream::exception("Invalid input."));
   }
   TrainInfo res;
   unsigned long long hash1, hash2;
@@ -81,7 +92,8 @@ void AddTrain(std::string &command) {
   hash2 = sjtu::MyHash(ID, exp2);
   auto exist_check = train_index.find(hash1, hash2, minus_max);
   if (!exist_check.empty()) {
-    throw(SevenStream::exception("The train has been added."));
+    std::cout << "-1\n";
+    return; // throw(SevenStream::exception("The train has been added."));
   }
   strcpy(res.ID, ID.c_str());
   int num = std::stoi(num_raw);
@@ -129,26 +141,31 @@ void AddTrain(std::string &command) {
   train_info.write_info(current, 1);
   train_info.write(res, current);
   train_index.Insert(hash1, hash2, current);
+  std::cout << "0\n";
   return;
+  ;
 }
 void ReleaseTrain(string &command) {
   string op;
   op = ProcessTxt(command);
   if (op != "-i") {
-    throw(SevenStream::exception("Invalid input."));
+    std::cout << "-1\n";
+    return; // throw(SevenStream::exception("Invalid input."));
   }
   string id = ProcessTxt(command);
   unsigned long long hash1 = sjtu::MyHash(id, exp1);
   unsigned long long hash2 = sjtu::MyHash(id, exp2);
   auto index_raw = train_index.find(hash1, hash2, minus_max);
   if (index_raw.empty()) {
-    throw(SevenStream::exception("The train doesn't exist."));
+    std::cout << "-1\n";
+    return; // throw(SevenStream::exception("The train doesn't exist."));
   }
   int index = index_raw.front();
   TrainInfo to_release;
   train_info.read(to_release, index);
   if (to_release.released) {
-    throw(SevenStream::exception("The train has been released."));
+    std::cout << "-1\n";
+    return; // throw(SevenStream::exception("The train has been released."));
   }
   to_release.released = true;
   for (int i = 0; i < to_release.station_number; i++) {
@@ -177,28 +194,35 @@ void ReleaseTrain(string &command) {
   }
   train_day_info.write_info(current, 1);
   train_info.write(to_release, index);
+  std::cout << "0\n";
   return;
+  ;
 }
 void DeleteTrain(string &command) {
   string op = ProcessTxt(command);
   if (op != "-i") {
-    throw(SevenStream::exception("Invalid input."));
+    std::cout << "-1\n";
+    return; // throw(SevenStream::exception("Invalid input."));
   }
   string id = ProcessTxt(command);
   unsigned long long hash1 = sjtu::MyHash(id, exp1);
   unsigned long long hash2 = sjtu::MyHash(id, exp2);
   auto index_raw = train_index.find(hash1, hash2, minus_max);
   if (index_raw.empty()) {
-    throw(SevenStream::exception("The train doesn't exist."));
+    std::cout << "-1\n";
+    return; // throw(SevenStream::exception("The train doesn't exist."));
   }
   int index = index_raw.front();
   TrainInfo to_delete;
   train_info.read(to_delete, index);
   if (to_delete.released) {
-    throw(SevenStream::exception("The train has been released."));
+    std::cout << "-1\n";
+    return; // throw(SevenStream::exception("The train has been released."));
   }
   train_index.Erase(hash1, hash2, index);
+  std::cout << "0\n";
   return;
+  ;
 }
 
 void QueryTrain(string &command) {
@@ -210,23 +234,23 @@ void QueryTrain(string &command) {
     if (op == "-d") {
       date = ProcessTxt(command);
     } else {
-      throw(SevenStream::exception("Invalid input."));
+      std::cout << "-1\n";return;//throw(SevenStream::exception("Invalid input."));
     }
   }
   op = ProcessTxt(command);
   if (op == "-i") {
     if (id != "") {
-      throw(SevenStream::exception("Invalid input."));
+      std::cout << "-1\n";return;//throw(SevenStream::exception("Invalid input."));
     }
     id = ProcessTxt(command);
   } else {
     if (op == "-d") {
       if (date != "") {
-        throw(SevenStream::exception("Invalid input."));
+        std::cout << "-1\n";return;//throw(SevenStream::exception("Invalid input."));
       }
       date = ProcessTxt(command);
     } else {
-      throw(SevenStream::exception("Invalid input."));
+      std::cout << "-1\n";return;//throw(SevenStream::exception("Invalid input."));
     }
   }
   int month, day;
@@ -242,22 +266,22 @@ void QueryTrain(string &command) {
   unsigned long long hash2 = sjtu::MyHash(id, exp2);
   auto index_raw = train_index.find(hash1, hash2, minus_max);
   if (index_raw.empty()) {
-    throw(SevenStream::exception("The train doesn't exist."));
+    std::cout << "-1\n";return;//throw(SevenStream::exception("The train doesn't exist."));
   }
   int index = index_raw.front();
   TrainInfo to_query;
   train_info.read(to_query, index);
   if (month < to_query.sale_month) {
-    throw(SevenStream::exception("Invalid date1."));
+    std::cout << "-1\n";return;//throw(SevenStream::exception("Invalid date1."));
   }
   if (month > to_query.des_month) {
-    throw(SevenStream::exception("Invalid date2."));
+    std::cout << "-1\n";return;//throw(SevenStream::exception("Invalid date2."));
   }
   if ((month == to_query.sale_month) && (day < to_query.sale_day)) {
-    throw(SevenStream::exception("Invalid date3."));
+    std::cout << "-1\n";return;//throw(SevenStream::exception("Invalid date3."));
   }
   if ((month == to_query.des_month) && (day > to_query.des_day)) {
-    throw(SevenStream::exception("Invalid date4."));
+    std::cout << "-1\n";return;//throw(SevenStream::exception("Invalid date4."));
   }
   if (!to_query.released) {
     std::cout << to_query.ID << ' ' << to_query.type << '\n';
@@ -439,7 +463,9 @@ void QueryTicket(string &command) {
         by_time = false;
         continue;
       }
-      std::cout << "-1" << '\n';//throw(SevenStream::exception("Invalid priority type."));
+      std::cout
+          << "-1"
+          << '\n'; // throw(SevenStream::exception("Invalid priority type."));
     }
   }
   int month = date[0] - '0';

@@ -73,72 +73,64 @@ int main() {
       QueryTransfer(command);
       continue;
     }
-    try {
-      if (type == "add_user") {
-        cout << stamp << ' ';
-        if (has_account) {
-          AddAccount(command);
-        } else {
-          AddFirstAccount(command);
-          has_account = true;
-        }
-        cout << "0" << '\n';
-        continue;
+    if (type == "login") {
+      cout << stamp << ' ';
+      Login(command);
+      continue;
+    }
+    if (type == "logout") {
+      cout << stamp << ' ';
+      Logout(command);
+      continue;
+    }
+    if (type == "modify_profile") {
+      cout << stamp << ' ';
+      std::string ans = ModifyAccount(command);
+      cout << ans << '\n';
+      continue;
+    }
+    if (type == "exit") {
+      cout << stamp << " bye\n";
+      return 0;
+    }
+    if (type == "query_order") {
+      cout << stamp << ' ';
+      QueryOrder(command);
+      continue;
+    }
+    if (type == "add_user") {
+      cout << stamp << ' ';
+      if (has_account) {
+        AddAccount(command);
+      } else {
+        AddFirstAccount(command);
+        has_account = true;
       }
-      if (type == "login") {
-        cout << stamp << ' ';
-        Login(command);
-        cout << "0" << '\n';
-        continue;
-      }
-      if (type == "logout") {
-        cout << stamp << ' ';
-        Logout(command);
-        cout << "0" << '\n';
-        continue;
-      }
-      if (type == "modify_profile") {
-        cout << stamp << ' ';
-        std::string ans = ModifyAccount(command);
-        cout << ans << '\n';
-        continue;
-      }
-      if (type == "exit") {
-        cout << stamp << " bye\n";
-        return 0;
-      }
-      if (type == "add_train") {
-        cout << stamp << ' ';
-        AddTrain(command);
-        cout << "0\n";
-        continue;
-      }
-      if (type == "delete_train") {
-        cout << stamp << ' ';
-        DeleteTrain(command);
-        cout << "0\n";
-        continue;
-      }
-      if (type == "release_train") {
-        cout << stamp << ' ';
-        ReleaseTrain(command);
-        cout << "0\n";
-        continue;
-      }
+      continue;
+    }
+    if (type == "add_train") {
+      cout << stamp << ' ';
+      AddTrain(command);
+      continue;
+    }
+    if (type == "delete_train") {
+      cout << stamp << ' ';
+      DeleteTrain(command);
+      continue;
+    }
+    if (type == "release_train") {
+      cout << stamp << ' ';
+      ReleaseTrain(command);
+      continue;
+    }
       if (type == "query_train") {
         cout << stamp << ' ';
         QueryTrain(command);
         continue;
       }
-      if (type == "query_order") {
-        cout << stamp << ' ';
-        QueryOrder(command);
-        continue;
-      }
       if (type == "refund_ticket") {
         cout << stamp << ' ';
         Refund(command);
-        cout << "0\n";
         continue;
       }
       if (type == "clean") {
@@ -147,10 +139,6 @@ int main() {
         cout << "0\n";
         continue;
       }
-    } catch (SevenStream::exception &e) {
-      // cout << e.what() << '\n';
-      cout << "-1" << '\n';
-    }
   }
   return 0;
 }

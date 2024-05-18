@@ -12,13 +12,13 @@ extern sjtu::BPT<TrainDayIndex, 126, 4, 1700> trains_day_index;
 void QueryOrder(string &command) {
   string op = ProcessTxt(command);
   if (op != "-u") {
-    throw(SevenStream::exception("The user doesn't log in."));
+    std::cout << "-1\n";return;//throw(SevenStream::exception("The user doesn't log in."));
   }
   string user_name = ProcessTxt(command);
   bool logged = false;
   HashOfAccount user_hash(user_name);
   if (!account_logged.count(user_hash)) {
-    throw(SevenStream::exception("The account doesn't log in."));
+    std::cout << "-1\n";return;//throw(SevenStream::exception("The account doesn't log in."));
   }
   unsigned long long hash1, hash2;
   hash1 = sjtu::MyHash(user_name, exp1);
@@ -260,7 +260,7 @@ void Refund(std::string &command) {
   bool logged = false;
   HashOfAccount to_check(user);
   if (!account_logged.count(to_check)) {
-    throw(SevenStream::exception("The account doesn't login."));
+    std::cout << "-1\n";return;//throw(SevenStream::exception("The account doesn't login."));
   }
   unsigned long long user_hash1, user_hash2;
   user_hash1 = sjtu::MyHash(user, exp1);
@@ -270,7 +270,7 @@ void Refund(std::string &command) {
   auto orders = order_user.find(user_hash1, user_hash2, nothing);
   int cnt = 1;
   if (number > orders.size()) {
-    throw(SevenStream::exception("There aren't enough orders."));
+    std::cout << "-1\n";return;//throw(SevenStream::exception("There aren't enough orders."));
   }
   auto it = orders.begin();
   while (cnt < number) {
@@ -279,7 +279,7 @@ void Refund(std::string &command) {
   }
   auto to_refund = *it;
   if (to_refund.status == 3) {
-    throw(SevenStream::exception("Have been refunded."));
+    std::cout << "-1\n";return;//throw(SevenStream::exception("Have been refunded."));
   }
   if (to_refund.status == 2) {
     to_refund.status = 3;
@@ -292,7 +292,7 @@ void Refund(std::string &command) {
     hash1 = sjtu::MyHash(to_refund.Train_ID, exp1);
     hash2 = sjtu::MyHash(to_refund.Train_ID, exp2);
     queue_list.Erase(hash1, hash2, to_remove);
-    return;
+    std::cout << "0\n";return;//
   }
   to_refund.status = 3;
   order_user.Replace(user_hash1, user_hash2, to_refund);
@@ -352,5 +352,5 @@ void Refund(std::string &command) {
   to_change.day = train_actual.day;
   auto index = trains_day_index.find(id_hash1, id_hash2, to_change);
   train_day_info.write(train_actual, index.front().index);
-  return;
+  std::cout << "0\n";return;
 }
