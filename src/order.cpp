@@ -1,14 +1,14 @@
 #include "../include/order.hpp"
 
 using std::string;
-sjtu::BPT<OrderByUser, 19, 20> order_user("order_user");
+sjtu::BPT<OrderByUser, 19, 450> order_user("order_user");
 sjtu::BPT<OrderByTrain, 62, 12> queue_list("queue");
 // Consider that if a user ordered first, the index will be smaller.
 extern sjtu::map<HashOfAccount, bool, sjtu::Less<HashOfAccount>> account_logged;
 extern sjtu::BPT<int> train_index;
 extern sjtu::MemoryRiver<TrainInfo, 1> train_info;
 extern sjtu::MemoryRiver<TrainDay, 1> train_day_info;
-extern sjtu::BPT<TrainDayIndex, 126, 4, 1700> trains_day_index;
+extern sjtu::BPT<TrainDayIndex, 126, 4, 1500> trains_day_index;
 void QueryOrder(string &command) {
   string op = ProcessTxt(command);
   if (op != "-u") {
