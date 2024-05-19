@@ -33,6 +33,7 @@ int main() {
   std::ios_base::sync_with_stdio(false);
   cin.tie(0);
   cout.tie(0);
+  std::cout << order_user.CheckSize() << std::endl;
   string command;
   bool has_account;
   int total;
