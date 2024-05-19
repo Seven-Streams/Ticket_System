@@ -9,12 +9,12 @@ class Account;
 extern sjtu::MemoryRiver<Account, 1> account_content;
 extern sjtu::map<HashOfAccount, int, sjtu::Less<HashOfAccount>> account_logged;
 extern sjtu::BPT<int> account_index;
-extern sjtu::BPT<OrderByUser, 19, 20, 450> order_user;
+extern sjtu::BPT<OrderByUser, 19, 20> order_user;
 extern sjtu::BPT<OrderByTrain, 62, 12> queue_list;
 extern sjtu::BPT<int> train_index;
 extern sjtu::MemoryRiver<TrainInfo, 1> train_info;
 extern sjtu::BPT<int, 168, 6, 300> station_database;
-extern sjtu::BPT<TrainDayIndex, 126, 4, 1500> trains_day_index;
+extern sjtu::BPT<TrainDayIndex, 126, 4, 1700> trains_day_index;
 extern sjtu::MemoryRiver<TrainDay, 1> train_day_info;
 void Clean() {
   account_content.clear();
