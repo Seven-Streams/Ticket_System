@@ -99,7 +99,6 @@ public:
   friend void QueryTicket(string &);
   friend void QueryTransfer(string &);
   friend void Buy(std::string &, int);
-  friend class OrderByUser;
 };
 class TrainDay {
 private:

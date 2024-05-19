@@ -1,7 +1,7 @@
 #include "../include/order.hpp"
 
 using std::string;
-sjtu::BPT<OrderByUser, 38, 6> order_user("order_user");
+sjtu::BPT<OrderByUser, 19, 20> order_user("order_user");
 sjtu::BPT<OrderByTrain, 62, 12> queue_list("queue");
 // Consider that if a user ordered first, the index will be smaller.
 extern sjtu::map<HashOfAccount, bool, sjtu::Less<HashOfAccount>> account_logged;
@@ -78,14 +78,11 @@ void OrderByUser::Print() const {
     throw(SevenStream::exception("Invalid status."));
   }
   }
-  auto res = train_index.find(hash1, hash2, -1);
-  TrainInfo train;
-  train_info.read(train, res.front());
-  std::cout << train.ID << ' ';
-  std::cout << train.stations[start_index] << ' ';
+  std::cout << Train_ID << ' ';
+  std::cout << start_station << ' ';
   start_time.Print();
   std::cout << "-> ";
-  std::cout << train.stations[end_index] << ' ';
+  std::cout << end_station << ' ';
   end_time.Print();
   std::cout << price << ' ';
   std::cout << number << '\n';
@@ -200,11 +197,9 @@ void Buy(std::string &command, const int stamp) {
     return; // throw(SevenStream::exception("Not enough tickets."));
   }
   OrderByUser order_by_user;
-  unsigned long long hash1, hash2;
-  hash1 = sjtu::MyHash(id, exp1);
-  hash2 = sjtu::MyHash(id, exp2);
-  order_by_user.hash1 = hash1;
-  order_by_user.hash2 = hash2;
+  strcpy(order_by_user.end_station, end_station.c_str());
+  strcpy(order_by_user.Train_ID, id.c_str());
+  strcpy(order_by_user.start_station, start_station.c_str());
   order_by_user.start_index = start_index;
   order_by_user.end_index = end_index;
   order_by_user.out_month = out_month;
@@ -294,16 +289,16 @@ void Refund(std::string &command) {
     to_remove.start_month = to_refund.out_month;
     to_remove.start_day = to_refund.out_day;
     unsigned long long hash1, hash2;
-    hash1 = to_refund.hash1;
-    hash2 = to_refund.hash2;
+    hash1 = sjtu::MyHash(to_refund.Train_ID, exp1);
+    hash2 = sjtu::MyHash(to_refund.Train_ID, exp2);
     queue_list.Erase(hash1, hash2, to_remove);
     std::cout << "0\n";return;//
   }
   to_refund.status = 3;
   order_user.Replace(user_hash1, user_hash2, to_refund);
   unsigned long long id_hash1, id_hash2;
-  id_hash1 = to_refund.hash1;
-  id_hash2 = to_refund.hash2;
+  id_hash1 = sjtu::MyHash(to_refund.Train_ID, exp1);
+  id_hash2 = sjtu::MyHash(to_refund.Train_ID, exp2);
   TrainDay empty_train(to_refund.out_month, to_refund.out_day, 0);
   TrainDayIndex train_index;
   train_index.month = empty_train.month;

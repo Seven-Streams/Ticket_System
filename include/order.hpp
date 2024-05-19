@@ -26,8 +26,9 @@ public:
 };
 class OrderByUser {
 private:
-  unsigned long long hash1 = 0;
-  unsigned long long hash2 = 0;
+  char Train_ID[24] = "";
+  char start_station[44] = "";
+  char end_station[44] = "";
   int number = 0;
   Time start_time, end_time;
   int stamp = 0;
